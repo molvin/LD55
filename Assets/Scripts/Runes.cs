@@ -37,14 +37,17 @@ public static class Runes
         Text  = "Gives runes to the side +1 power when placed",
         OnEnter = (int selfIndex, Player player) =>
         {
-            Rune left = player.GetRuneInCircle(selfIndex - 1);
-            Rune right = player.GetRuneInCircle(selfIndex + 1);
-            
-            if (left != null)
-                left.Power += 1;
+            Rune prev = player.GetRuneInCircle(selfIndex - 1);
+            Rune next = player.GetRuneInCircle(selfIndex + 1);
 
-            if (right != null)
-                right.Power += 1;
+            TempStats stats;
+            stats.Power = 1;
+
+            if (prev != null)
+                player.AddStats(prev, stats);
+
+            if (next != null)
+                player.AddStats(next, stats);
         },
     };
     // Uruz
