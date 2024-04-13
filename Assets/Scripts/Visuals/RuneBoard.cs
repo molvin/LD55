@@ -21,13 +21,17 @@ public class RuneBoard : MonoBehaviour
 
     public Transform PentagramOrigin;
 
+    public GameObject PentagramObject;
+    public GameObject ShopObject;
+
     public TextMeshProUGUI ScoreText;
 
     private RuneSlot[] slots;
     private List<RuneVisuals> runes = new();
-    private RuneVisuals held;
-    private RuneVisuals inspect;
-    private SpringJoint joint;
+    private List<Draggable> shopObjects = new();
+    private List<Draggable> allDragables => shopObjects.Union(runes.Select(x => x as Draggable)).ToList();
+    private Draggable held;
+    private Draggable inspect;
     public float PlaneHeight;
     private Plane playSpace;
     private Vector3 runeVelocity;
@@ -40,10 +44,20 @@ public class RuneBoard : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);
+            slots[i].transform.parent = PentagramObject.transform;
             slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i + 2), 0);
         }
 
         runes = FindObjectsOfType<RuneVisuals>().ToList();
+        var draggables = FindObjectsOfType<Draggable>();
+        foreach(Draggable draggable in draggables)
+        {
+            if (draggable is not RuneVisuals)
+                shopObjects.Add(draggable);
+        }
+
+        PentagramObject.SetActive(true);
+        ShopObject.SetActive(false);
     }
 
     public void RemoveRune(Rune rune)
@@ -72,7 +86,6 @@ public class RuneBoard : MonoBehaviour
         Destroy(visual.gameObject);
     }
 
-
     public IEnumerator Draw(List<Rune> hand)
     {
         foreach(Rune rune in hand)
@@ -96,6 +109,8 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Play()
     {
+        PentagramObject.SetActive(true);
+
         bool running = true;
         HUD.Instance.EndTurnButton.onClick.AddListener(() => running = false);
         HUD.Instance.EndTurnButton.interactable = true;
@@ -114,7 +129,7 @@ public class RuneBoard : MonoBehaviour
             }
             else
             {
-                UpdateDrag(ray);
+                UpdateDrag(ray, false);
             }
 
             yield return null;
@@ -122,22 +137,22 @@ public class RuneBoard : MonoBehaviour
 
         HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
         HUD.Instance.EndTurnButton.interactable = false;
-
-        // TODO: destroy all runes
     }
 
     private void UpdateHover(Ray ray)
     {
+        // TODO: we can also hover and inspect shop objects
+
         runeVelocity = Vector3.zero;
-        RuneVisuals hovered = null;
+        Draggable hovered = null;
         RuneSlot hoveredSlot = null;
 
-        foreach (RuneVisuals vis in runes)
+        foreach (Draggable drag in allDragables)
         {
-            if (vis.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
+            if (drag.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
             {
-                hovered = vis;
-                grabOffset = vis.transform.InverseTransformPoint(hit.point);
+                hovered = drag;
+                grabOffset = drag.transform.InverseTransformPoint(hit.point);
                 grabOffset.y = 0.0f;
             }
         }
@@ -152,7 +167,7 @@ public class RuneBoard : MonoBehaviour
                 if (hoveredSlot != null)
                 {
                     hoveredSlot.Take();
-                    runes.Add(held);
+                    runes.Add((RuneVisuals) held);
                 }
             }
             else if (Input.GetMouseButtonDown(1))
@@ -160,19 +175,26 @@ public class RuneBoard : MonoBehaviour
                 // Inspect
                 inspect = hovered;
                 inspect.Rigidbody.isKinematic = true;
-                //StartCoroutine(Inspect());
             }
         }
     }
 
-    private void UpdateDrag(Ray ray)
+    private void UpdateDrag(Ray ray, bool shopping)
     {
         RuneSlot hovered = null;
-        foreach (RuneSlot slot in slots)
+        if (shopping)
         {
-            if (slot.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
+            // TODO: check if youre selling a shard, or buying something
+        
+        }
+        else
+        {
+            foreach (RuneSlot slot in slots)
             {
-                hovered = slot;
+                if (slot.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
+                {
+                    hovered = slot;
+                }
             }
         }
 
@@ -182,9 +204,10 @@ public class RuneBoard : MonoBehaviour
             if (hovered != null && hovered.Open)
             {
                 int index = Array.IndexOf(slots, hovered);
-                Player.Instance?.Place(held.Rune, index);
-                hovered.Set(held);
-                runes.Remove(held);
+                var vis = (RuneVisuals)held;
+                Player.Instance?.Place(vis.Rune, index);
+                hovered.Set(vis);
+                runes.Remove(vis);
             }
             else
             {
@@ -265,5 +288,41 @@ public class RuneBoard : MonoBehaviour
         runes.Clear();
 
         yield return new WaitForSeconds(1.0f);
+    }
+
+    public IEnumerator Shop()
+    {
+        PentagramObject.SetActive(false);
+        ShopObject.SetActive(true);
+
+        bool running = true;
+        HUD.Instance.EndTurnButton.onClick.AddListener(() => running = false);
+        HUD.Instance.EndTurnButton.interactable = true;
+
+        while (running)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (held == null && inspect == null)
+            {
+                UpdateHover(ray);
+            }
+            else if (inspect != null)
+            {
+                yield return Inspect();
+            }
+            else
+            {
+                UpdateDrag(ray, true);
+            }
+
+            yield return null;
+        }
+
+        HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
+        HUD.Instance.EndTurnButton.interactable = false;
+
+        PentagramObject.SetActive(true);
+        ShopObject.SetActive(false);
     }
 }

@@ -4,14 +4,12 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class RuneVisuals : MonoBehaviour
+public class RuneVisuals : Draggable
 {
     public TextMeshProUGUI Name;
     public TextMeshProUGUI Power;
     public Image Icon;
-    public MeshCollider Collider;
-    public BoxCollider HoverCollider;
-    public Rigidbody Rigidbody;
+
 
     private Rune rune;
     private Player player;

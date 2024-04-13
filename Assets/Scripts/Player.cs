@@ -172,8 +172,10 @@ public class Player : MonoBehaviour
                 currentRound++;
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
-
-                // TODO: shopping
+                
+                yield return runeBoard.Draw(deckRef);
+                yield return runeBoard.Shop();
+                yield return runeBoard.EndRound();
 
                 opponentHealth = Settings.GetOpponentHealth(currentRound);
                 HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
