@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public delegate void EventTrigger(int selfIndex, Player player);
-public delegate bool AuraPredicate(Rune other, Player player);
+public delegate bool AuraPredicate(int selfIndex, int other, Player player);
 
 public struct Aura
 {

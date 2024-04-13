@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using TMPro;
 
 public enum Location
 {
@@ -28,6 +29,28 @@ public class Player : MonoBehaviour
 
     public bool CircleIsFull => circle.All(rune => rune != null);
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
+    public int GetIndexOfRune(Rune rune) => circle.IndexOf(rune);
+    public int GetRunePower(int runeIndex)
+    {
+        runeIndex = CircularIndex(runeIndex);
+        Rune rune = circle[runeIndex];
+        int runePower = rune.Power;
+
+        for (int i = 0; i < NumSlots; i++)
+        {
+            Rune other = circle[i];
+            if (other != null && other.Aura.IsValid)
+            {
+                if (other.Aura.Application.Invoke(runeIndex, i, this))
+                {
+                    runePower += other.Aura.Power;
+                }
+            }
+        }
+
+        return runePower;
+    }
+
     public void ForEach(Location location, Action<Rune> action) {
         List<Rune> collection = new();
         switch (location)
@@ -49,16 +72,14 @@ public class Player : MonoBehaviour
             if (rune != null)
                 action(rune);
     }
-    private void TryPlace(int runeIndex)
+    private void TryPlace(int runeIndex, int slot)
     {
-        if (CircleIsFull || runeIndex < 0 || runeIndex >= hand.Count)
+        if (CircleIsFull || runeIndex < 0 || runeIndex >= hand.Count || circle[slot] != null)
             return;
 
         Rune rune = hand[runeIndex];
         hand.Remove(rune);
-        Place(rune);
-
-        DebugPrint();
+        Place(rune, slot);
     }
 
     public void Place(Rune rune, int? slot = null)
@@ -79,11 +100,9 @@ public class Player : MonoBehaviour
         rune.OnEnter?.Invoke(slot.Value, this);
     }
 
-    void DebugPrint()
+    private void ResolveCircle()
     {
-        Debug.Log("SUMMON CIRCLE");
-        ForEach(Location.Circle, rune => Debug.Log($"{rune.Name}: {rune.Power}"));
-        Debug.Log("------------");
+
     }
 
     private void Start()
@@ -103,43 +122,72 @@ public class Player : MonoBehaviour
         }
     }
 
+    private int? state = null;
+    public List<TextMeshProUGUI> SlotTexts;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            TryPlace(0);
+            if (state == null)
+                state = 0;
+            else
+            {
+                TryPlace(state.Value, 0);
+                state = null;
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            TryPlace(1);
+            if (state == null)
+                state = 1;
+            else
+            {
+                TryPlace(state.Value, 1);
+                state = null;
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            TryPlace(2);
+            if (state == null)
+                state = 2;
+            else
+            {
+                TryPlace(state.Value, 2);
+                state = null;
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            TryPlace(3);
+            if (state == null)
+                state = 3;
+            else
+            {
+                TryPlace(state.Value, 3);
+                state = null;
+            }
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            TryPlace(4);
+            if (state == null)
+                state = 4;
+            else
+            {
+                TryPlace(state.Value, 4);
+                state = null;
+            }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
+
+        for (int i = 0; i < SlotTexts.Count; i++)
         {
-            TryPlace(5);
+            if (circle[i] != null)
+                SlotTexts[i].text = $"{circle[i].Name}: {GetRunePower(i)}";
+            else
+                SlotTexts[i].text = "...";
         }
-        if (Input.GetKeyDown(KeyCode.Alpha7))
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            TryPlace(6);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha8))
-        {
-            TryPlace(7);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            TryPlace(8);
+            ResolveCircle();
         }
     }
 }

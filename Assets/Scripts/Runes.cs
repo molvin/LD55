@@ -34,6 +34,7 @@ public static class Runes
     {
         Name  = "Fehu",
         Power = 1,
+        Text  = "Gives runes to the side +1 power when placed",
         OnEnter = (int selfIndex, Player player) =>
         {
             Rune left = player.GetRuneInCircle(selfIndex - 1);
@@ -63,6 +64,21 @@ public static class Runes
     {
         Name  = "Ansuz",
         Power = 4,
+    };
+    private static Rune Raidho => new()
+    {
+        Name  = "Raidho",
+        Power = 1,
+        Text  = "Runes opposite to this has +1 Power",
+        Aura =
+        {
+            Power = 1,
+            Application = (int selfIndex, int other, Player player) =>
+            {
+                return Player.CircularIndex(selfIndex + 2) == other
+                    || Player.CircularIndex(selfIndex - 2) == other;
+            },
+        },
     };
     // Raidho
     // Kenaz
