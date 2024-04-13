@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 
 public static class Runes
 {
-    public static List<Rune> GetAllRunes(int minCost = 0, int maxCost = 10)
+    public static List<Rune> GetAllRunes()
     {
         var runeImpls = typeof(Runes).GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
@@ -14,7 +15,7 @@ public static class Runes
             if (impl.ReturnType == typeof(Rune))
             {
                 Rune rune = impl.Invoke(null, null) as Rune;
-                if (rune.Name != null && !rune.Name.StartsWith('_') && rune.Cost >= minCost && rune.Cost <= maxCost)
+                if (rune.Name != null && !rune.Name.StartsWith('_'))
                 {
                     runes.Add(rune);
                 }
@@ -29,6 +30,47 @@ public static class Runes
     // Implemented Runes
     // ---------------------------------------------------------------------------------------------------------
 
+    // I
+    private static Rune Iron => new()
+    {
+        Name  = "Iron",
+        Power = 2,
+        Text  = "Neighbouring shards has +5 Power",
+        Aura =
+        {
+            Power = 5,
+            Application = (int selfIndex, int other, Player player) =>
+            {
+                return Player.CircularIndex(selfIndex + 1) == other
+                    || Player.CircularIndex(selfIndex - 1) == other;
+            },
+        },
+    };
+    // P
+    private static Rune Prysm => new()
+    {
+        Name  = "Prysm",
+        Power = 3,
+        Rarity = Rarity.Starter,
+        Text  = "",
+        Aura =
+        {
+            Multiplier = 2,
+            Application = (int selfIndex, int other, Player player) =>
+            {
+                return selfIndex == other;
+            },
+        },
+    };
+    // S
+    private static Rune Strike => new()
+    {
+        Name  = "Strike",
+        Power = 10,
+        Rarity = Rarity.Starter,
+        Text  = "",
+    };
+
     // Fehu
     private static Rune Fehu => new()
     {
@@ -40,9 +82,7 @@ public static class Runes
             Rune prev = player.GetRuneInCircle(selfIndex - 1);
             Rune next = player.GetRuneInCircle(selfIndex + 1);
 
-            TempStats stats;
-            stats.Power = 1;
-
+            TempStats stats = new() { Power = 1, Multiplier = 1 };
             if (prev != null)
                 player.AddStats(prev, stats);
 
@@ -100,32 +140,4 @@ public static class Runes
     // Laguz
     // Ingwaz
     // Dagaz
-
-    private static Rune Tal => new()
-    {
-        /*
-        Name = "Tal",
-        Type = { Type.Creature },
-        Alignment = Alignment.Pure,
-        Kind = { Kind.Gargantuon },
-        Cost = 5,
-        Speed = 2,
-        Power = 2,
-        Health = 2,
-        Text = $"{Trigger.OnDeath}: Summon a 4/4 Paternal Ursidae",
-        OnDeath = (Entity ent, Entity _, Board board) =>
-        {
-            var (ok, index) = board.FindPos(ent);
-            if (ok)
-            {
-                board.PushToStack(CombatStep.Summon(() =>
-                {
-                    Entity newEntity = board.CreateEntityFromCard(PaternalUrsidae);
-                    board.ResolveCard(newEntity, index);
-                    return newEntity;
-                }));
-            }
-        },
-        */
-    };
 }
