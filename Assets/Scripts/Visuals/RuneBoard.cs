@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ public class RuneBoard : MonoBehaviour
     public TextMeshProUGUI ScoreText;
 
     private RuneSlot[] slots;
-    private List<RuneVisuals> runes;
+    private List<RuneVisuals> runes = new();
     private RuneVisuals held;
     private RuneVisuals inspect;
     public float PlaneHeight;
@@ -37,7 +38,7 @@ public class RuneBoard : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);
-            slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * i, 0);
+            slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i * 2), 0);
             slots[i].transform.position += slots[i].transform.forward * 0.2f;
 
         }
@@ -105,6 +106,11 @@ public class RuneBoard : MonoBehaviour
         }
     }
 
+    public void AddRune(RuneVisuals rune)
+    {
+        runes.Add(rune);
+    }
+
     private void UpdateDrag(Ray ray, Vector3 planePoint)
     {
         RuneSlot hovered = null;
@@ -121,6 +127,8 @@ public class RuneBoard : MonoBehaviour
             // Release held
             if (hovered != null && hovered.Open)
             {
+                int index = Array.IndexOf(slots, hovered);
+                Player.Instance.Place(held.Rune, index);
                 hovered.Set(held);
                 runes.Remove(held);
             }

@@ -551,10 +551,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16b07ceb1e26c3c47a0236c005709303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: {fileID: 0}
-  Power: {fileID: 0}
-  Icon: {fileID: 0}
-  Collider: {fileID: 8819068920826010620}
+  Name: {fileID: 7527579255718810653}
+  Power: {fileID: 8597786555992850285}
+  Icon: {fileID: 9126180257228466855}
+  Collider: {fileID: 2043401309500666943}
   HoverCollider: {fileID: 1519032538741375664}
   Rigidbody: {fileID: 8826767862864762015}
 --- !u!54 &8826767862864762015

@@ -18,13 +18,18 @@ public class Player : MonoBehaviour
     const int NumSlots = 5;
     const int HandSize = 5;
     public static int CircularIndex(int index) => index < 0 ? NumSlots + index : index >= NumSlots ? index - NumSlots : index;
+    public static Player Instance;
 
+    public RuneVisuals RuneVisualPrefab;
     public List<RuneRef> BaseDeck;
 
     private List<Rune> bag = new();
     [SerializeField]
     private List<Rune> hand = new();
     private List<Rune> circle = new(new Rune[NumSlots]);
+    private List<Rune> discardPile = new();
+
+    private RuneBoard runeBoard;
 
 
     public bool CircleIsFull => circle.All(rune => rune != null);
@@ -82,27 +87,67 @@ public class Player : MonoBehaviour
         Place(rune, slot);
     }
 
-    public void Place(Rune rune, int? slot = null)
+    public void Place(Rune rune, int slot)
     {
-        if (slot == null)
-        {
-            for (int i = 0; i < NumSlots; i++)
-            {
-                if (circle[i] == null)
-                {
-                    slot = i;
-                    break;
-                }
-            }
-        }
-
-        circle[slot.Value] = rune;
-        rune.OnEnter?.Invoke(slot.Value, this);
+        circle[slot] = rune;
+        rune.OnEnter?.Invoke(slot, this);
     }
 
     private void ResolveCircle()
     {
+        int power = 0;
+        for (int i = 0; i < circle.Count; i++)
+        {
+            if (circle[i] == null)
+                continue;
 
+            power += GetRunePower(i);
+        }
+
+        Debug.Log($"DEALING DAMAGE: {power}");
+
+        ClearCircle();
+    }
+
+    private void ClearCircle()
+    {
+        for (int i = 0; i < circle.Count; i++)
+        {
+            if (circle[i] != null)
+            {
+                discardPile.Add(circle[i]);
+                circle[i] = null;
+            }
+        }
+    }
+
+    private IEnumerator DrawHand()
+    {
+        while (bag.Count > 0 && hand.Count < HandSize)
+        {
+            Rune rune = bag[0];
+            hand.Add(rune);
+            bag.RemoveAt(0);
+
+            RuneVisuals runeVisual = Instantiate(RuneVisualPrefab);
+            runeVisual.Init(rune, this);
+            runeBoard.AddRune(runeVisual);
+
+            runeVisual.transform.position = new Vector3(
+                UnityEngine.Random.Range(-0.5f, 0.5f),
+                1.0f,
+                UnityEngine.Random.Range(-2.5f, -1.5f));
+            var rigidBody = runeVisual.GetComponent<Rigidbody>();
+            rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
+
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    private void Awake()
+    {
+        Instance = this;
+        runeBoard = FindObjectOfType<RuneBoard>();
     }
 
     private void Start()
@@ -114,12 +159,7 @@ public class Player : MonoBehaviour
         }
 
         bag.Shuffle();
-
-        for (int i = 0; i < HandSize && bag.Count > 0; i++)
-        {
-            hand.Add(bag[0]);
-            bag.RemoveAt(0);
-        }
+        StartCoroutine(DrawHand());
     }
 
     private int? state = null;
@@ -188,6 +228,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             ResolveCircle();
+            StartCoroutine(DrawHand());
         }
     }
 }
