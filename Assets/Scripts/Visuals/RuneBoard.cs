@@ -61,56 +61,73 @@ public class RuneBoard : MonoBehaviour
             {
                 if(Input.GetMouseButtonDown(0))
                 {
+                    // Drag
                     held = hovered;
-                    held.Rigidbody.useGravity = false;
+                    held.Rigidbody.isKinematic = true;
+                }
+                else if(Input.GetMouseButtonDown(1))
+                {
+                    // Inspect
+
                 }
             }
         }
         else
         {
-            RuneSlot hovered = null;
-            foreach (RuneSlot slot in slots)
-            {
-                if (slot.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
-                {
-                    hovered = slot;
-                }
-            }
+            UpdateDrag(ray, planePoint);
+            UpdateInspect();
+        }
+    }
 
-            if (!Input.GetMouseButton(0))
+    private void UpdateDrag(Ray ray, Vector3 planePoint)
+    {
+        RuneSlot hovered = null;
+        foreach (RuneSlot slot in slots)
+        {
+            if (slot.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
             {
-                // Release held
-                if (hovered != null && hovered.Open)
-                {
-                    hovered.Set(held);
-                    runes.Remove(held);
-                }
-                else
-                {
-                    held.Rigidbody.useGravity = true;
-                    held.Rigidbody.velocity = runeVelocity;
-                }
-                held = null;
+                hovered = slot;
+            }
+        }
+
+        if (!Input.GetMouseButton(0))
+        {
+            // Release held
+            if (hovered != null && hovered.Open)
+            {
+                hovered.Set(held);
+                runes.Remove(held);
             }
             else
             {
-                // Drag held
-
-                Vector3 targetPos = planePoint - (held.transform.rotation * grabOffset);
-                Quaternion targetRot = Quaternion.identity;
-                float moveSmoothing = RuneMoveSmoothing;
-                float rotationSpeed = RotationSpeed;
-                if (hovered != null && hovered.Open)
-                {
-                    targetPos = hovered.transform.position;
-                    targetRot = hovered.transform.localRotation;
-                    moveSmoothing = PentagramMoveSmoothing;
-                    rotationSpeed = PentagramRotationSpeed;
-                }
-
-                held.transform.position = Vector3.SmoothDamp(held.transform.position, targetPos, ref runeVelocity, moveSmoothing * Time.deltaTime);
-                held.transform.localRotation = Quaternion.RotateTowards(held.transform.localRotation, targetRot, rotationSpeed * Time.deltaTime);
+                held.Rigidbody.isKinematic = false;
+                held.Rigidbody.velocity = runeVelocity;
             }
+            held = null;
         }
+        else
+        {
+            // Drag held
+
+            Vector3 targetPos = planePoint - (held.transform.rotation * grabOffset);
+            Quaternion targetRot = Quaternion.identity;
+            float moveSmoothing = RuneMoveSmoothing;
+            float rotationSpeed = RotationSpeed;
+            if (hovered != null && hovered.Open)
+            {
+                targetPos = hovered.transform.position;
+                targetRot = hovered.transform.localRotation;
+                moveSmoothing = PentagramMoveSmoothing;
+                rotationSpeed = PentagramRotationSpeed;
+            }
+
+            held.transform.position = Vector3.SmoothDamp(held.transform.position, targetPos, ref runeVelocity, moveSmoothing * Time.deltaTime);
+            held.transform.localRotation = Quaternion.RotateTowards(held.transform.localRotation, targetRot, rotationSpeed * Time.deltaTime);
+        }
+    }
+
+    private void UpdateInspect()
+    {
+
     }
 }
