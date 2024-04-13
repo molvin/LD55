@@ -14,10 +14,13 @@ public class RuneSlot : Slot
     {
         held = rune;
 
-        held.Rigidbody.isKinematic = true;
-        held.Collider.enabled = false;
-        held.transform.position = transform.position;
-        held.transform.localRotation = transform.localRotation;
+        if (held != null)
+        {
+            held.Rigidbody.isKinematic = true;
+            held.Collider.enabled = false;
+            held.transform.position = transform.position;
+            held.transform.localRotation = transform.localRotation;
+        }
     }
 
     public void Take()

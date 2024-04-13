@@ -119,6 +119,14 @@ public class Player : MonoBehaviour
         deckRef.Remove(circle[index]);
         circle[index] = null;
     }
+    public void Swap(int first, int second)
+    {
+        first = CircularIndex(first);
+        second = CircularIndex(second);
+
+        (circle[second], circle[first]) = (circle[first], circle[second]);
+        runeBoard.SwapSlot(first, second);
+    }
     public void Swap(Rune rune, int index)
     {
         index = CircularIndex(index);

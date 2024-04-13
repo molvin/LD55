@@ -57,9 +57,9 @@ public static class Runes
         },
     };
     // C
-    private static Rune Cutt => new()
+    private static Rune Cut => new()
     {
-        Name = "Cutt",
+        Name = "Cut",
         Power = 7,
         Rarity = Rarity.Starter,
         Text = "On Play: Destroy neighbouring Shards",
@@ -332,5 +332,17 @@ public static class Runes
         Power = 10,
         Rarity = Rarity.Starter,
         Text  = "",
+    };
+    // T
+    private static Rune Tides => new()
+    {
+        Name  = "Tides",
+        Power = 7,
+        Rarity = Rarity.Common,
+        Text  = "On Play: Swap the next Shard with the previous Shard",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            player.Swap(selfIndex - 1, selfIndex + 1);
+        },
     };
 }
