@@ -34,10 +34,10 @@ public static class Runes
     {
         Name  = "Fehu",
         Power = 1,
-        OnEnter = (int selfIndex, SummonCircle circle) =>
+        OnEnter = (int selfIndex, Player player) =>
         {
-            Rune left = circle.GetRune(selfIndex - 1);
-            Rune right = circle.GetRune(selfIndex + 1);
+            Rune left = player.GetRuneInCircle(selfIndex - 1);
+            Rune right = player.GetRuneInCircle(selfIndex + 1);
             
             if (left != null)
                 left.Power += 1;

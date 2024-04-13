@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public delegate void EventTrigger(int selfIndex, SummonCircle circle);
-public delegate bool AuraPredicate(Rune other, SummonCircle circle);
+public delegate void EventTrigger(int selfIndex, Player player);
+public delegate bool AuraPredicate(Rune other, Player player);
 
 public struct Aura
 {
@@ -15,6 +15,7 @@ public struct Aura
     public readonly bool IsValid => (Power != 0 || Keyword != null) && Application != null;
 }
 
+[System.Serializable]
 public class Rune : ICloneable
 {
     public string Name;

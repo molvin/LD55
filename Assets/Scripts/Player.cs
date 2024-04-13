@@ -2,30 +2,105 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
+
+public enum Location
+{
+    None,
+    Bag,
+    Hand,
+    Circle,
+}
 
 public class Player : MonoBehaviour
 {
-    public List<RuneRef> Hand;
+    const int NumSlots = 5;
+    const int HandSize = 5;
+    public static int CircularIndex(int index) => index < 0 ? NumSlots + index : index >= NumSlots ? index - NumSlots : index;
 
-    private SummonCircle circle = new();
+    public List<RuneRef> BaseDeck;
+
+    private List<Rune> bag = new();
+    [SerializeField]
+    private List<Rune> hand = new();
+    private List<Rune> circle = new(new Rune[NumSlots]);
 
 
+    public bool CircleIsFull => circle.All(rune => rune != null);
+    public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
+    public void ForEach(Location location, Action<Rune> action) {
+        List<Rune> collection = new();
+        switch (location)
+        {
+            case Location.None:
+                return;
+            case Location.Bag:
+                collection = bag;
+                break;
+            case Location.Hand:
+                collection = hand;
+                break;
+            case Location.Circle:
+                collection = circle;
+                break;
+        }
+
+        foreach (Rune rune in collection)
+            if (rune != null)
+                action(rune);
+    }
     private void TryPlace(int runeIndex)
     {
-        if (circle.IsFull || runeIndex < 0 || runeIndex >= Hand.Count || Hand[runeIndex].Get() == null)
+        if (CircleIsFull || runeIndex < 0 || runeIndex >= hand.Count)
             return;
 
-        Rune rune = Hand[runeIndex].Get();
-        circle.Place(rune);
+        Rune rune = hand[runeIndex];
+        hand.Remove(rune);
+        Place(rune);
 
         DebugPrint();
+    }
+
+    public void Place(Rune rune, int? slot = null)
+    {
+        if (slot == null)
+        {
+            for (int i = 0; i < NumSlots; i++)
+            {
+                if (circle[i] == null)
+                {
+                    slot = i;
+                    break;
+                }
+            }
+        }
+
+        circle[slot.Value] = rune;
+        rune.OnEnter?.Invoke(slot.Value, this);
     }
 
     void DebugPrint()
     {
         Debug.Log("SUMMON CIRCLE");
-        circle.ForEach(rune => Debug.Log($"{rune.Name}: {rune.Power}"));
+        ForEach(Location.Circle, rune => Debug.Log($"{rune.Name}: {rune.Power}"));
         Debug.Log("------------");
+    }
+
+    private void Start()
+    {
+        foreach (RuneRef runeRef in BaseDeck)
+        {
+            Rune rune = runeRef.Get();
+            bag.Add(rune);
+        }
+
+        bag.Shuffle();
+
+        for (int i = 0; i < HandSize && bag.Count > 0; i++)
+        {
+            hand.Add(bag[0]);
+            bag.RemoveAt(0);
+        }
     }
 
     private void Update()
