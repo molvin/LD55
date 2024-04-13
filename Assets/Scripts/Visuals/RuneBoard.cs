@@ -229,9 +229,9 @@ public class RuneBoard : MonoBehaviour
             {
                 int index = System.Array.IndexOf(slots, hovered);
                 var vis = (RuneVisuals)held;
-                Player.Instance?.Place(vis.Rune, index);
                 ((RuneSlot)hovered).Set(vis);
                 runes.Remove(vis);
+                Player.Instance?.Place(vis.Rune, index);
             }
             else
             {
@@ -293,10 +293,15 @@ public class RuneBoard : MonoBehaviour
         inspect = null;
     }
 
-    public IEnumerator Resolve(int i, int power, int circlePower)
+    public IEnumerator Resolve(int circlePower)
+    {
+        UpdateScore(circlePower);
+        yield return new WaitForSeconds(1.0f);
+    }
+
+    public void UpdateScore(int circlePower)
     {
         ScoreText.text = $"{circlePower}";
-        yield return new WaitForSeconds(1.0f);
     }
 
     public void DestroySlot(int index)

@@ -36,5 +36,6 @@ public class Rune
 
     public EventTrigger OnEnter;
     public EventTrigger OnActivate;
+    public EventTrigger OnDestroy;
     public List<Aura> Aura;
 }

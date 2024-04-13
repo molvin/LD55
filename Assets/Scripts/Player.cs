@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
 
     public RuneVisuals RuneVisualPrefab;
     public List<RuneRef> BaseDeck;
+    private int health;
 
     private List<Rune> deckRef = new();
     private List<Rune> bag = new();
@@ -46,6 +47,7 @@ public class Player : MonoBehaviour
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
     public int GetCirclePower() => circlePower;
     public int GetIndexOfRune(Rune rune) => circle.IndexOf(rune);
+    public int RunesInCircle() => circle.Sum(r => r != null ? 1 : 0);
     public int GetRunePower(int runeIndex)
     {
         runeIndex = CircularIndex(runeIndex);
@@ -82,8 +84,13 @@ public class Player : MonoBehaviour
     public void AddCirclePower(int value)
     {
         circlePower += value;
+        runeBoard.UpdateScore(circlePower);
     }
-
+    public void AddLife(int value)
+    {
+        health += value;
+        HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
+    }
     public void Place(Rune rune, int slot)
     {
         hand.Remove(rune);
@@ -97,8 +104,19 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return;
 
+        circle[index]?.OnDestroy(index, this);
         runeBoard.DestroySlot(index);
         Discard(circle[index]);
+        circle[index] = null;
+    }
+    public void Exile(int index)
+    {
+        index = CircularIndex(index);
+        if (circle[index] == null)
+            return;
+
+        runeBoard.DestroySlot(index);
+        deckRef.Remove(circle[index]);
         circle[index] = null;
     }
     public void Swap(Rune rune, int index)
@@ -170,7 +188,7 @@ public class Player : MonoBehaviour
     private IEnumerator Game()
     {
         int currentRound = 0;
-        int health = Settings.PlayerMaxHealth;
+        health = Settings.PlayerMaxHealth;
         int opponentHealth = Settings.GetOpponentHealth(currentRound);
         int set = 0;
 
@@ -190,7 +208,7 @@ public class Player : MonoBehaviour
 
                 Activate(i);
 
-                yield return runeBoard.Resolve(i, GetRunePower(i), circlePower);
+                yield return runeBoard.Resolve(circlePower);
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
