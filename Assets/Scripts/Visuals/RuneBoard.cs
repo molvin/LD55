@@ -31,7 +31,7 @@ public class RuneBoard : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);    
-            slots[i].transform.localRotation = Quaternion.Euler(0, 72 * i, 0);
+            slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * i, 0);
         }
 
         runes = FindObjectsOfType<RuneVisuals>().ToList();
@@ -45,6 +45,7 @@ public class RuneBoard : MonoBehaviour
 
         if (held == null)
         {
+            runeVelocity = Vector3.zero;
             RuneVisuals hovered = null;
             foreach(RuneVisuals vis in runes)
             {
@@ -83,7 +84,6 @@ public class RuneBoard : MonoBehaviour
                 {
                     hovered.Set(held);
                     runes.Remove(held);
-                    held.Collider.enabled = false;
                 }
                 else
                 {
