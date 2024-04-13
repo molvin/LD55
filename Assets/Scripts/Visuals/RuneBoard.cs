@@ -9,6 +9,7 @@ public class RuneBoard : MonoBehaviour
 {
     public RuneVisuals RunePrefab;
     public RuneSlot SlotPrefab;
+    public GameObject JointPrefab;
     public float RuneMoveSmoothing;
     public float RotationSpeed;
 
@@ -26,6 +27,7 @@ public class RuneBoard : MonoBehaviour
     private List<RuneVisuals> runes = new();
     private RuneVisuals held;
     private RuneVisuals inspect;
+    private SpringJoint joint;
     public float PlaneHeight;
     private Plane playSpace;
     private Vector3 runeVelocity;
@@ -39,8 +41,6 @@ public class RuneBoard : MonoBehaviour
         {
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);
             slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i * 2), 0);
-            slots[i].transform.position += slots[i].transform.forward * 0.2f;
-
         }
 
         runes = FindObjectsOfType<RuneVisuals>().ToList();
@@ -62,21 +62,10 @@ public class RuneBoard : MonoBehaviour
                 if(vis.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
                 {
                     hovered = vis;
-                    grabOffset = hit.point - vis.transform.position;
+                    grabOffset = vis.transform.InverseTransformPoint(hit.point);
                     grabOffset.y = 0.0f;
                 }
             }
-            foreach(RuneSlot slot in slots)
-            {
-                if (slot.Held != null && slot.Held.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
-                {
-                    hovered = slot.Held;
-                    hoveredSlot = slot;
-                    grabOffset = hit.point - slot.Held.transform.position;
-                    grabOffset.y = 0.0f;
-                }
-            }
-
 
             if (hovered != null)
             {
@@ -128,7 +117,7 @@ public class RuneBoard : MonoBehaviour
             if (hovered != null && hovered.Open)
             {
                 int index = Array.IndexOf(slots, hovered);
-                Player.Instance.Place(held.Rune, index);
+                Player.Instance?.Place(held.Rune, index);
                 hovered.Set(held);
                 runes.Remove(held);
             }
@@ -143,7 +132,7 @@ public class RuneBoard : MonoBehaviour
         {
             // Drag held
 
-            Vector3 targetPos = planePoint - (held.transform.rotation * grabOffset);
+            Vector3 targetPos = planePoint - grabOffset;
             Quaternion targetRot = Quaternion.identity;
             float moveSmoothing = RuneMoveSmoothing;
             float rotationSpeed = RotationSpeed;
@@ -157,6 +146,7 @@ public class RuneBoard : MonoBehaviour
 
             held.transform.position = Vector3.SmoothDamp(held.transform.position, targetPos, ref runeVelocity, moveSmoothing * Time.deltaTime);
             held.transform.localRotation = Quaternion.RotateTowards(held.transform.localRotation, targetRot, rotationSpeed * Time.deltaTime);
+
         }
     }
 
