@@ -1,30 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using UnityEngine;
 
 public class RuneBoard : MonoBehaviour
 {
     public RuneVisuals RunePrefab;
     public RuneSlot SlotPrefab;
-    public Vector3 Offset;
+    public float RuneMoveSmoothing;
     public float RotationSpeed;
+
+    public float PentagramMoveSmoothing;
+    public float PentagramRotationSpeed;
+
     public Transform PentagramOrigin;
 
     private RuneSlot[] slots;
-    private RuneVisuals[] runes;
+    private List<RuneVisuals> runes;
     private RuneVisuals held;
-    private Plane playSpace = new (Vector3.up, Vector3.up * 0.1f);
+    public float PlaneHeight;
+    private Plane playSpace;
+    private Vector3 runeVelocity;
+    private Vector3 grabOffset;
 
     private void Start()
     {
+        playSpace = new(Vector3.up, Vector3.up * PlaneHeight);
         slots = new RuneSlot[5];
         for (int i = 0; i < 5; i++)
         {
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);    
-            slots[i].Rotator.localRotation = Quaternion.Euler(0, 0, 72 * i);
+            slots[i].transform.localRotation = Quaternion.Euler(0, 72 * i, 0);
         }
 
-        runes = FindObjectsOfType<RuneVisuals>();
+        runes = FindObjectsOfType<RuneVisuals>().ToList();
     }
 
     private void Update()
@@ -38,9 +48,11 @@ public class RuneBoard : MonoBehaviour
             RuneVisuals hovered = null;
             foreach(RuneVisuals vis in runes)
             {
-                if(vis.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
+                if(vis.Collider.Raycast(ray, out RaycastHit hit, 1000.0f))
                 {
                     hovered = vis;
+                    grabOffset = hit.point - vis.transform.position;
+                    grabOffset.y = 0.0f;
                 }
             }
 
@@ -55,55 +67,50 @@ public class RuneBoard : MonoBehaviour
         }
         else
         {
-            if(!Input.GetMouseButton(0))
+            RuneSlot hovered = null;
+            foreach (RuneSlot slot in slots)
             {
-                held.Rigidbody.useGravity = true;
+                if (slot.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
+                {
+                    hovered = slot;
+                }
+            }
+
+            if (!Input.GetMouseButton(0))
+            {
+                // Release held
+                if (hovered != null && hovered.Open)
+                {
+                    hovered.Set(held);
+                    runes.Remove(held);
+                    held.Collider.enabled = false;
+                }
+                else
+                {
+                    held.Rigidbody.useGravity = true;
+                    held.Rigidbody.velocity = runeVelocity;
+                }
                 held = null;
             }
             else
             {
-                // TODO: check if you are hovering a slot, if so rotate
-                RuneSlot hovered = null;
-                foreach (RuneSlot slot in slots)
-                {
-                    if (slot.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
-                    {
-                        hovered = slot;
-                    }
-                }
+                // Drag held
 
+                Vector3 targetPos = planePoint - (held.transform.rotation * grabOffset);
                 Quaternion targetRot = Quaternion.identity;
+                float moveSmoothing = RuneMoveSmoothing;
+                float rotationSpeed = RotationSpeed;
                 if (hovered != null && hovered.Open)
                 {
-                    targetRot = hovered.Rotator.localRotation;
+                    targetPos = hovered.transform.position;
+                    targetRot = hovered.transform.localRotation;
+                    moveSmoothing = PentagramMoveSmoothing;
+                    rotationSpeed = PentagramRotationSpeed;
                 }
 
-                //held.Rotator.localRotation = Quaternion.RotateTowards(held.Rotator.localRotation, targetRot, RotationSpeed * Time.deltaTime);
-                //held.transform.position = planePoint + (held.Rotator.rotation * Offset);
-
-                if (hovered != null)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        if (Place(held, hovered))
-                        {
-                            held = null;
-                        }
-                    }
-                }
+                held.transform.position = Vector3.SmoothDamp(held.transform.position, targetPos, ref runeVelocity, moveSmoothing * Time.deltaTime);
+                held.transform.localRotation = Quaternion.RotateTowards(held.transform.localRotation, targetRot, rotationSpeed * Time.deltaTime);
             }
         }
     }
-
-    private bool Place(RuneVisuals rune, RuneSlot slot)
-    {
-        if(slot.Open)
-        {
-            slot.Set(rune);
-            return true;
-        }
-
-        return false;
-    }
-
 }

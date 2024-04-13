@@ -5,7 +5,6 @@ using UnityEngine;
 public class RuneSlot : MonoBehaviour
 {
     public BoxCollider Collider;
-    public Transform Rotator;
 
     private RuneVisuals held;
 
@@ -15,7 +14,7 @@ public class RuneSlot : MonoBehaviour
     {
         held = rune;
         rune.transform.position = transform.position;
-        //rune.Rotator.localRotation = Rotator.localRotation;
+        rune.transform.localRotation = transform.localRotation;
     }
 
 }

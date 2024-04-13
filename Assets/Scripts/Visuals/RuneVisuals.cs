@@ -12,9 +12,12 @@ public class RuneVisuals : MonoBehaviour
     public MeshCollider Collider;
     public Rigidbody Rigidbody;
 
-    public void Init()
+    private Rune rune;
+
+    public void Init(Rune rune)
     {
-        // TODO: take rune info and setup visuals
+        this.rune = rune;
+        // TODO: init
     }
 
 }
