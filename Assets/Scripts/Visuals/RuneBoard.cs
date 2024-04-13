@@ -248,8 +248,13 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator Resolve(int i, int power, int circlePower)
     {
         ScoreText.text = $"{circlePower}";
-        Destroy(slots[i].Held.gameObject); // TODO: visuals
+        DestroySlot(i);
         yield return new WaitForSeconds(1.0f);
+    }
+
+    public void DestroySlot(int index)
+    {
+        Destroy(slots[index].Held.gameObject); // TODO: visuals
     }
 
     public IEnumerator EndRound()

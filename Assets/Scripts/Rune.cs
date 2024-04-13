@@ -35,5 +35,6 @@ public class Rune
     public string Text;
 
     public EventTrigger OnEnter;
+    public EventTrigger OnActivate;
     public Aura Aura;
 }
