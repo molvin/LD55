@@ -15,9 +15,7 @@ public enum Location
 
 public class Player : MonoBehaviour
 {
-    const int NumSlots = 5;
-    const int HandSize = 5;
-    public static int CircularIndex(int index) => index < 0 ? NumSlots + index : index >= NumSlots ? index - NumSlots : index;
+    public static int CircularIndex(int index) => index < 0 ? Settings.NumSlots + index : index >= Settings.NumSlots ? index - Settings.NumSlots : index;
     public static Player Instance;
 
     public RuneVisuals RuneVisualPrefab;
@@ -25,9 +23,10 @@ public class Player : MonoBehaviour
 
     private List<Rune> bag = new();
     private List<Rune> hand = new();
-    private List<Rune> circle = new(new Rune[NumSlots]);
+    private List<Rune> circle = new(new Rune[Settings.NumSlots]);
     private List<Rune> discardPile = new();
     private int circlePower;
+    private int health = Settings.PlayerMaxHealth;
 
     private RuneBoard runeBoard;
 
@@ -42,7 +41,7 @@ public class Player : MonoBehaviour
         Rune rune = circle[runeIndex];
         int runePower = rune.Power;
 
-        for (int i = 0; i < NumSlots; i++)
+        for (int i = 0; i < Settings.NumSlots; i++)
         {
             Rune other = circle[i];
             if (other != null && other.Aura.IsValid)
@@ -120,12 +119,12 @@ public class Player : MonoBehaviour
 
     private IEnumerator DrawHand()
     {
-        while (bag.Count > 0 && hand.Count < HandSize)
+        while (bag.Count > 0 && hand.Count < Settings.HandSize)
         {
             Rune rune = bag[0];
             hand.Add(rune);
             bag.RemoveAt(0);
-
+            /*
             RuneVisuals runeVisual = Instantiate(RuneVisualPrefab);
             runeVisual.Init(rune, this);
             runeBoard.AddRune(runeVisual);
@@ -136,7 +135,7 @@ public class Player : MonoBehaviour
                 UnityEngine.Random.Range(-2.5f, -1.5f));
             var rigidBody = runeVisual.GetComponent<Rigidbody>();
             rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
-
+            */
             yield return new WaitForSeconds(0.2f);
         }
     }
@@ -156,7 +155,49 @@ public class Player : MonoBehaviour
         }
 
         bag.Shuffle();
-        StartCoroutine(DrawHand());
+        StartCoroutine(Game());
+    }
+
+    private IEnumerator Game()
+    {
+        while(health > 0)
+        {
+            List<Rune> hand = Draw();
+            yield return runeBoard.Draw(hand);
+            yield return runeBoard.Play();
+
+            for (int i = 0; i < circle.Count; i++)
+            {
+                if (circle[i] == null)
+                    continue;
+
+                int power = GetRunePower(i);
+                circlePower += power;
+
+                yield return runeBoard.Resolve(i, power, circlePower);
+            }
+
+            Debug.Log($"DEALING DAMAGE: {circlePower}");
+            ClearCircle();
+
+            // TODO: Discard
+        }
+
+        Debug.Log("You lose");
+
+        yield return null;
+    }
+
+    private List<Rune> Draw()
+    {
+        List<Rune> temp = new();
+        while (bag.Count > 0 && temp.Count < Settings.HandSize)
+        {
+            Rune rune = bag[0];
+            temp.Add(rune);
+            bag.RemoveAt(0);
+        }
+        return temp;
     }
 
     private void Update()

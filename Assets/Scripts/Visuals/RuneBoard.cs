@@ -41,68 +41,11 @@ public class RuneBoard : MonoBehaviour
         {
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);
             slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i + 2), 0);
-            slots[i].transform.position += slots[i].transform.forward * 0.2f;
-
         }
 
         runes = FindObjectsOfType<RuneVisuals>().ToList();
     }
 
-    private void Update()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        playSpace.Raycast(ray, out float enter);
-        Vector3 planePoint = ray.GetPoint(enter);
-
-        if (held == null && inspect == null)
-        {
-            runeVelocity = Vector3.zero;
-            RuneVisuals hovered = null;
-            RuneSlot hoveredSlot = null;
-            foreach (RuneVisuals vis in runes)
-            {
-                if(vis.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
-                {
-                    hovered = vis;
-                    grabOffset = vis.transform.InverseTransformPoint(hit.point);
-                    grabOffset.y = 0.0f;
-                }
-            }
-
-            if (hovered != null)
-            {
-                if(Input.GetMouseButtonDown(0))
-                {
-                    // Drag
-                    held = hovered;
-                    held.Rigidbody.isKinematic = true;
-                    if(hoveredSlot != null)
-                    {
-                        hoveredSlot.Take();
-                        runes.Add(held);
-                    }
-                }
-                else if(Input.GetMouseButtonDown(1))
-                {
-                    // Inspect
-                    inspect = hovered;
-                    inspect.Rigidbody.isKinematic = true;
-                    StartCoroutine(Inspect());
-                }
-            }
-        }
-        else if(held != null)
-        {
-            UpdateDrag(ray, planePoint);
-        }
-
-        ScoreText.text = $"{Player.Instance.GetCirclePower()}";
-    }
-
-    public void AddRune(RuneVisuals rune)
-    {
-        runes.Add(rune);
-    }
     public void RemoveRune(Rune rune)
     {
         RuneVisuals visual = null;
@@ -129,7 +72,100 @@ public class RuneBoard : MonoBehaviour
         Destroy(visual.gameObject);
     }
 
-    private void UpdateDrag(Ray ray, Vector3 planePoint)
+
+    public IEnumerator Draw(List<Rune> hand)
+    {
+        foreach(Rune rune in hand)
+        {
+            RuneVisuals vis = Instantiate(RunePrefab);
+            vis.Init(rune, Player.Instance);
+            runes.Add(vis);
+
+            vis.transform.position = new Vector3(
+                UnityEngine.Random.Range(-0.5f, 0.5f),
+                1.0f,
+                UnityEngine.Random.Range(-2.5f, -1.5f));
+            var rigidBody = vis.GetComponent<Rigidbody>();
+            rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
+
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        yield return null;
+    }
+
+    public IEnumerator Play()
+    {
+        bool running = true;
+        HUD.Instance.EndTurnButton.onClick.AddListener(() => running = false);
+        HUD.Instance.EndTurnButton.interactable = true;
+
+        while (running)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (held == null && inspect == null)
+            {
+                UpdateHover(ray);
+            }
+            else if(inspect != null)
+            {
+                yield return Inspect();
+            }
+            else
+            {
+                UpdateDrag(ray);
+            }
+
+            yield return null;
+        }
+
+        HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
+        HUD.Instance.EndTurnButton.interactable = false;
+
+        // TODO: destroy all runes
+    }
+
+    private void UpdateHover(Ray ray)
+    {
+        runeVelocity = Vector3.zero;
+        RuneVisuals hovered = null;
+        RuneSlot hoveredSlot = null;
+
+        foreach (RuneVisuals vis in runes)
+        {
+            if (vis.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
+            {
+                hovered = vis;
+                grabOffset = vis.transform.InverseTransformPoint(hit.point);
+                grabOffset.y = 0.0f;
+            }
+        }
+
+        if (hovered != null)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                // Drag
+                held = hovered;
+                held.Rigidbody.isKinematic = true;
+                if (hoveredSlot != null)
+                {
+                    hoveredSlot.Take();
+                    runes.Add(held);
+                }
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                // Inspect
+                inspect = hovered;
+                inspect.Rigidbody.isKinematic = true;
+                //StartCoroutine(Inspect());
+            }
+        }
+    }
+
+    private void UpdateDrag(Ray ray)
     {
         RuneSlot hovered = null;
         foreach (RuneSlot slot in slots)
@@ -160,6 +196,8 @@ public class RuneBoard : MonoBehaviour
         else
         {
             // Drag held
+            playSpace.Raycast(ray, out float enter);
+            Vector3 planePoint = ray.GetPoint(enter);
 
             Vector3 targetPos = planePoint - grabOffset;
             Quaternion targetRot = Quaternion.identity;
@@ -185,7 +223,7 @@ public class RuneBoard : MonoBehaviour
 
         Vector3 cachedPos = inspect.transform.position;
         Quaternion cachedRot = inspect.transform.rotation;
-        while(!Input.GetMouseButtonDown(1))
+        while (!Input.GetMouseButtonDown(1))
         {
             Transform target = CameraController.Instance.InspectPoint;
             inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, target.position, ref runeVelocity, InspectMoveSmoothing * Time.deltaTime);
@@ -193,7 +231,7 @@ public class RuneBoard : MonoBehaviour
             yield return null;
         }
 
-        while(Vector3.Distance(inspect.transform.position, cachedPos) > 0.1f || Quaternion.Angle(inspect.transform.localRotation, cachedRot) > 1)
+        while (Vector3.Distance(inspect.transform.position, cachedPos) > 0.1f || Quaternion.Angle(inspect.transform.localRotation, cachedRot) > 1)
         {
             inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, cachedPos, ref runeVelocity, InspectMoveSmoothing * Time.deltaTime);
             inspect.transform.localRotation = Quaternion.RotateTowards(inspect.transform.localRotation, cachedRot, InspectRotationSpeed * Time.deltaTime);
@@ -205,5 +243,12 @@ public class RuneBoard : MonoBehaviour
         inspect.transform.localRotation = cachedRot;
 
         inspect = null;
+    }
+
+    public IEnumerator Resolve(int i, int power, int circlePower)
+    {
+        ScoreText.text = $"{circlePower}";
+        Destroy(slots[i].Held.gameObject); // TODO: visuals
+        yield return new WaitForSeconds(1.0f);
     }
 }
