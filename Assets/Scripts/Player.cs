@@ -31,7 +31,6 @@ public class Player : MonoBehaviour
     private List<Rune> discardPile = new();
     private Dictionary<Rune, TempStats> temporaryStats = new();
     private int circlePower;
-    private int health = Settings.PlayerMaxHealth;
 
     private RuneBoard runeBoard;
 
@@ -129,8 +128,16 @@ public class Player : MonoBehaviour
 
     private IEnumerator Game()
     {
-        while(health > 0)
+        int currentRound = 0;
+        int health = Settings.PlayerMaxHealth;
+        int opponentHealth = Settings.GetOpponentHealth(currentRound);
+        int set = 0;
+
+        while (health > 0)
         {
+            HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
+            HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+
             Draw();
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
@@ -147,12 +154,36 @@ public class Player : MonoBehaviour
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
+            opponentHealth -= circlePower;
+            HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+            yield return new WaitForSeconds(1.0f);
+
             ClearCircle();
 
             yield return runeBoard.EndRound();
 
-            // TODO: check if opponent died, if so do shopping round, else continue
-            //       if opponent is still alive he should do damage to the player
+            if (opponentHealth <= 0)
+            {
+                set = 0;
+                currentRound++;
+                Debug.Log("You defeated opponent!");
+                yield return new WaitForSeconds(1.0f);
+
+                // TODO: shopping
+
+                opponentHealth = Settings.GetOpponentHealth(currentRound);
+                HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+            }
+            else
+            {
+                int damage = Settings.GetOpponentDamage(set);
+                health -= damage;
+                set++;
+                HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
+                Debug.Log($"TAKING DAMAGE: {damage}");
+
+                yield return new WaitForSeconds(1.0f);
+            }
         }
 
         Debug.Log("You lose");

@@ -255,7 +255,6 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator EndRound()
     {
         // TODO: visuals
-        yield return new WaitForSeconds(1.0f);
 
         ScoreText.text = "0";
 
