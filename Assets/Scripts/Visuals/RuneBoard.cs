@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -218,14 +217,17 @@ public class RuneBoard : MonoBehaviour
                 }
                 else if (held is CardPack cardPack)
                 {
-                    // Discover 3 new cards, pick one
+                    Vector3 origin = cardPack.transform.position;
+                    shopObjects.Remove(cardPack);
+                    Destroy(cardPack.gameObject);
+                    yield return ShopRunes(origin);
                 }
                 doneShopping = true;
 
             }
             else if(hovered != null && ((RuneSlot)hovered).Open)
             {
-                int index = Array.IndexOf(slots, hovered);
+                int index = System.Array.IndexOf(slots, hovered);
                 var vis = (RuneVisuals)held;
                 Player.Instance?.Place(vis.Rune, index);
                 ((RuneSlot)hovered).Set(vis);
@@ -286,7 +288,8 @@ public class RuneBoard : MonoBehaviour
 
         inspect.transform.position = cachedPos;
         inspect.transform.localRotation = cachedRot;
-
+        inspect.Rigidbody.isKinematic = false;
+        inspect.Rigidbody.velocity = runeVelocity;
         inspect = null;
     }
 
@@ -365,5 +368,62 @@ public class RuneBoard : MonoBehaviour
 
         PentagramObject.SetActive(true);
         ShopObject.SetActive(false);
+    }
+
+    public IEnumerator ShopRunes(Vector3 origin)
+    {
+        List<Rune> allRunes = Runes.GetAllRunes();
+        List<Rune> runes = new List<Rune>();
+        for (int i = 0; i < 3; i++)
+            runes.Add(allRunes[Random.Range(0, allRunes.Count)]);
+
+        List<RuneVisuals> shopRunes = new();
+        foreach (Rune rune in runes)
+        {
+            RuneVisuals vis = Instantiate(RunePrefab, origin, Quaternion.identity);
+            vis.Init(rune, Player.Instance);
+            vis.Rigidbody.isKinematic = true;
+            shopRunes.Add(vis);
+        }
+
+        float t = 0.0f;
+        float duration = 1.0f;
+        while(t < duration)
+        {
+            for(int i = 0; i < shopRunes.Count; i++)
+            {
+                RuneVisuals vis = shopRunes[i];
+                Transform target = CameraController.Instance.ShopPoint;
+                Vector3 offset = Vector3.left * 0.5f + Vector3.right * 0.5f * i;
+                vis.transform.position = Vector3.Lerp(origin, target.position + offset, t / duration);
+                vis.transform.rotation = Quaternion.Slerp(Quaternion.identity, target.rotation, t / duration);
+            }
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        bool buying = true;
+        while(buying)
+        {
+            foreach(RuneVisuals vis in shopRunes)
+            {
+                if(vis.Collider.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit _, 1000.0f))
+                {
+                    if(Input.GetMouseButtonDown(0))
+                    {
+                        Player.Instance.Buy(vis.Rune);
+                        buying = false;
+                    }
+                }
+            }
+            yield return null;
+        }
+
+        foreach (RuneVisuals vis in shopRunes)
+        {
+            Destroy(vis.gameObject);
+        }
+
+        yield return null;
     }
 }

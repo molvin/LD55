@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 
 public struct TempStats
 {
@@ -175,8 +176,6 @@ public class Player : MonoBehaviour
 
         while (health > 0)
         {
-            Restart();
-
             HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
             HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
@@ -303,5 +302,10 @@ public class Player : MonoBehaviour
         {
             discardPile.Add(rune);
         }
+    }
+
+    public void Buy(Rune rune)
+    {
+        deckRef.Add(rune);
     }
 }
