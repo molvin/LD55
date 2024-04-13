@@ -16,7 +16,7 @@ public struct Aura
 }
 
 [System.Serializable]
-public class Rune : ICloneable
+public class Rune
 {
     public string Name;
     public int Cost;

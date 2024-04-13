@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
-using TMPro;
 
-public enum Location
+public struct TempStats
 {
-    None,
-    Bag,
-    Hand,
-    Circle,
+    public int Power;
+
+    public static TempStats operator+(TempStats first, TempStats second)
+    {
+        TempStats stats;
+        stats.Power = first.Power + second.Power;
+        return stats;
+    }
 }
 
 public class Player : MonoBehaviour
@@ -28,6 +31,7 @@ public class Player : MonoBehaviour
     private List<Rune> hand = new();
     private List<Rune> circle = new(new Rune[NumSlots]);
     private List<Rune> discardPile = new();
+    private Dictionary<Rune, TempStats> temporaryStats = new();
     private int circlePower;
 
     private RuneBoard runeBoard;
@@ -41,7 +45,8 @@ public class Player : MonoBehaviour
     {
         runeIndex = CircularIndex(runeIndex);
         Rune rune = circle[runeIndex];
-        int runePower = rune.Power;
+        TempStats stats = temporaryStats[rune];
+        int runePower = rune.Power + stats.Power;
 
         for (int i = 0; i < NumSlots; i++)
         {
@@ -58,26 +63,11 @@ public class Player : MonoBehaviour
         return runePower;
     }
 
-    public void ForEach(Location location, Action<Rune> action) {
-        List<Rune> collection = new();
-        switch (location)
-        {
-            case Location.None:
-                return;
-            case Location.Bag:
-                collection = bag;
-                break;
-            case Location.Hand:
-                collection = hand;
-                break;
-            case Location.Circle:
-                collection = circle;
-                break;
-        }
-
-        foreach (Rune rune in collection)
-            if (rune != null)
-                action(rune);
+    public void AddStats(Rune rune, TempStats stats)
+    {
+        TempStats current = temporaryStats[rune];
+        current += stats;
+        temporaryStats[rune] = current;
     }
 
     public void Place(Rune rune, int slot)
@@ -121,8 +111,18 @@ public class Player : MonoBehaviour
 
     private IEnumerator DrawHand()
     {
-        while (bag.Count > 0 && hand.Count < HandSize)
+        while (hand.Count < HandSize)
         {
+            if (bag.Count == 0)
+            {
+                foreach (Rune r in discardPile)
+                {
+                    bag.Add(r);
+                }
+                discardPile.Clear();
+                bag.Shuffle();
+            }
+
             Rune rune = bag[0];
             hand.Add(rune);
             bag.RemoveAt(0);
@@ -146,12 +146,16 @@ public class Player : MonoBehaviour
     {
         bag.Clear();
         hand.Clear();
-        circle.Clear();
+        circle = new(new Rune[NumSlots]);
         discardPile.Clear();
+        temporaryStats.Clear();
+
+        circlePower = 0;
 
         foreach (Rune rune in deckRef)
         {
             bag.Add(rune);
+            temporaryStats.Add(rune, new());
         }
 
         bag.Shuffle();
@@ -169,10 +173,9 @@ public class Player : MonoBehaviour
         {
             Rune rune = runeRef.Get();
             deckRef.Add(rune);
-            bag.Add(rune);
         }
 
-        bag.Shuffle();
+        Restart();
         StartCoroutine(DrawHand());
     }
 
@@ -183,11 +186,17 @@ public class Player : MonoBehaviour
             foreach (Rune rune in hand)
             {
                 runeBoard.RemoveRune(rune);
+                discardPile.Add(rune);
             }
             hand.Clear();
 
-            StartCoroutine(ResolveCircle());
-            StartCoroutine(DrawHand());
+            StartCoroutine(EndStep());
         }
+    }
+
+    private IEnumerator EndStep()
+    {
+        yield return ResolveCircle();
+        yield return DrawHand();
     }
 }
