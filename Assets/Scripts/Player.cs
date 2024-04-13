@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public struct TempStats
 {
@@ -37,7 +38,10 @@ public class Player : MonoBehaviour
     private RuneBoard runeBoard;
 
 
+    public bool AreNeighbours(int first, int second) => CircularIndex(first + 1) == second || CircularIndex(first - 1) == second;
+    public bool AreOpposites(int first, int second) => first != second && !AreNeighbours(first, second);
     public bool CircleIsFull => circle.All(rune => rune != null);
+    public bool HasRuneAtIndex(int index) => circle[CircularIndex(index)] != null;
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
     public int GetCirclePower() => circlePower;
     public int GetIndexOfRune(Rune rune) => circle.IndexOf(rune);
@@ -52,12 +56,15 @@ public class Player : MonoBehaviour
         for (int i = 0; i < Settings.NumSlots; i++)
         {
             Rune other = circle[i];
-            if (other != null && other.Aura.IsValid)
+            if (other != null && other.Aura != null && other.Aura.Count > 0)
             {
-                if (other.Aura.Application.Invoke(runeIndex, i, this))
+                foreach (Aura aura in other.Aura)
                 {
-                    runePower += other.Aura.Power;
-                    runeMultiplier += other.Aura.Multiplier;
+                    if (aura.Application.Invoke(runeIndex, i, this))
+                    {
+                        runePower += aura.Power;
+                        runeMultiplier += aura.Multiplier;
+                    }
                 }
             }
         }
@@ -70,6 +77,10 @@ public class Player : MonoBehaviour
         TempStats current = temporaryStats[rune];
         current += stats;
         temporaryStats[rune] = current;
+    }
+    public void AddCirclePower(int value)
+    {
+        circlePower += value;
     }
 
     public void Place(Rune rune, int slot)
@@ -86,8 +97,16 @@ public class Player : MonoBehaviour
             return;
 
         runeBoard.DestroySlot(index);
-        discardPile.Add(circle[index]);
+        Discard(circle[index]);
         circle[index] = null;
+    }
+    public void Swap(Rune rune, int index)
+    {
+        index = CircularIndex(index);
+        temporaryStats.Add(rune, new());
+        Discard(GetRuneInCircle(index));
+        runeBoard.SwapSlot(rune, index);
+        circle[index] = rune;
     }
 
     private void ClearCircle()
@@ -96,7 +115,7 @@ public class Player : MonoBehaviour
         {
             if (circle[i] != null)
             {
-                discardPile.Add(circle[i]);
+                Discard(circle[i]);
                 circle[i] = null;
             }
         }
@@ -153,7 +172,7 @@ public class Player : MonoBehaviour
             HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
             HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
-            Draw();
+            Draw(true);
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
 
@@ -162,15 +181,21 @@ public class Player : MonoBehaviour
                 if (circle[i] == null)
                     continue;
 
-                int power = GetRunePower(i);
-                circlePower += power;
+                Activate(i);
 
-                yield return runeBoard.Resolve(i, power, circlePower);
+                yield return runeBoard.Resolve(i, GetRunePower(i), circlePower);
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
             opponentHealth -= circlePower;
             HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+
+            for (int i = 0; i < circle.Count; i++)
+            {
+                if (circle[i] != null)
+                    runeBoard.DestroySlot(i);
+            }
+
             yield return new WaitForSeconds(1.0f);
 
             ClearCircle();
@@ -207,9 +232,34 @@ public class Player : MonoBehaviour
 
         yield return null;
     }
-
-    private void Draw()
+    public void Activate(int index)
     {
+        index = CircularIndex(index);
+        if (circle[index] == null)
+            return;
+
+        int power = GetRunePower(index);
+        circlePower += power;
+
+        circle[index].OnActivate?.Invoke(index, this);
+    }
+    public void AddNewRuneToHand(Rune rune)
+    {
+        temporaryStats.Add(rune, new());
+        hand.Add(rune);
+        // TODO: Put in the main routine!
+        StartCoroutine(runeBoard.Draw(rune));
+    }
+    private void Draw(bool discard)
+    {
+        if (discard)
+        {
+            foreach (Rune rune in hand)
+            {
+                Discard(rune);
+            }
+            hand.Clear();
+        }
         Draw(Settings.HandSize - hand.Count);
     }
     public void Draw(int count)
@@ -229,6 +279,13 @@ public class Player : MonoBehaviour
             Rune rune = bag[0];
             hand.Add(rune);
             bag.RemoveAt(0);
+        }
+    }
+    private void Discard(Rune rune)
+    {
+        if (rune.Rarity != Rarity.None)
+        {
+            discardPile.Add(rune);
         }
     }
 }

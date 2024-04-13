@@ -90,21 +90,25 @@ public class RuneBoard : MonoBehaviour
     {
         foreach(Rune rune in hand)
         {
-            RuneVisuals vis = Instantiate(RunePrefab);
-            vis.Init(rune, Player.Instance);
-            runes.Add(vis);
-
-            vis.transform.position = new Vector3(
-                UnityEngine.Random.Range(-0.5f, 0.5f),
-                1.0f,
-                UnityEngine.Random.Range(-2.5f, -1.5f));
-            var rigidBody = vis.GetComponent<Rigidbody>();
-            rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
-
-            yield return new WaitForSeconds(0.2f);
+            yield return Draw(rune);
         }
 
         yield return null;
+    }
+    public IEnumerator Draw(Rune rune)
+    {
+        RuneVisuals vis = Instantiate(RunePrefab);
+        vis.Init(rune, Player.Instance);
+        runes.Add(vis);
+
+        vis.transform.position = new Vector3(
+            UnityEngine.Random.Range(-0.5f, 0.5f),
+            1.0f,
+            UnityEngine.Random.Range(-2.5f, -1.5f));
+        var rigidBody = vis.GetComponent<Rigidbody>();
+        rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
+
+        yield return new WaitForSeconds(0.2f);
     }
 
     public IEnumerator Play()
@@ -271,13 +275,17 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator Resolve(int i, int power, int circlePower)
     {
         ScoreText.text = $"{circlePower}";
-        DestroySlot(i);
         yield return new WaitForSeconds(1.0f);
     }
 
     public void DestroySlot(int index)
     {
         Destroy(slots[index].Held.gameObject); // TODO: visuals
+    }
+
+    public void SwapSlot(Rune rune, int index)
+    {
+        slots[index].Held.Init(rune, Player.Instance);
     }
 
     public IEnumerator EndRound()
