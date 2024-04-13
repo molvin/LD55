@@ -15,7 +15,7 @@ public class RuneSlot : MonoBehaviour
     {
         held = rune;
         rune.transform.position = transform.position;
-        rune.Rotator.localRotation = Rotator.localRotation;
+        //rune.Rotator.localRotation = Rotator.localRotation;
     }
 
 }

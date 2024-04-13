@@ -78,8 +78,8 @@ public class RuneBoard : MonoBehaviour
                     targetRot = hovered.Rotator.localRotation;
                 }
 
-                held.Rotator.localRotation = Quaternion.RotateTowards(held.Rotator.localRotation, targetRot, RotationSpeed * Time.deltaTime);
-                held.transform.position = planePoint + (held.Rotator.rotation * Offset);
+                //held.Rotator.localRotation = Quaternion.RotateTowards(held.Rotator.localRotation, targetRot, RotationSpeed * Time.deltaTime);
+                //held.transform.position = planePoint + (held.Rotator.rotation * Offset);
 
                 if (hovered != null)
                 {
