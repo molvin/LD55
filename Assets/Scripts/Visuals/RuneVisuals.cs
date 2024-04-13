@@ -10,6 +10,7 @@ public class RuneVisuals : MonoBehaviour
     public TextMeshProUGUI Power;
     public Image Icon;
     public MeshCollider Collider;
+    public BoxCollider HoverCollider;
     public Rigidbody Rigidbody;
 
     private Rune rune;

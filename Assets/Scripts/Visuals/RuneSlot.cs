@@ -7,6 +7,7 @@ public class RuneSlot : MonoBehaviour
     public BoxCollider Collider;
 
     private RuneVisuals held;
+    public RuneVisuals Held => held;
 
     public bool Open => held == null;
 
@@ -18,6 +19,12 @@ public class RuneSlot : MonoBehaviour
         held.Collider.enabled = false;
         held.transform.position = transform.position;
         held.transform.localRotation = transform.localRotation;
+    }
+
+    public void Take()
+    {
+        held.Collider.enabled = true;
+        held = null;
     }
 
 }

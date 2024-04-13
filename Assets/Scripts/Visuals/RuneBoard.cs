@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 
@@ -14,11 +13,15 @@ public class RuneBoard : MonoBehaviour
     public float PentagramMoveSmoothing;
     public float PentagramRotationSpeed;
 
+    public float InspectMoveSmoothing;
+    public float InspectRotationSpeed;
+
     public Transform PentagramOrigin;
 
     private RuneSlot[] slots;
     private List<RuneVisuals> runes;
     private RuneVisuals held;
+    private RuneVisuals inspect;
     public float PlaneHeight;
     private Plane playSpace;
     private Vector3 runeVelocity;
@@ -43,19 +46,31 @@ public class RuneBoard : MonoBehaviour
         playSpace.Raycast(ray, out float enter);
         Vector3 planePoint = ray.GetPoint(enter);
 
-        if (held == null)
+        if (held == null && inspect == null)
         {
             runeVelocity = Vector3.zero;
             RuneVisuals hovered = null;
-            foreach(RuneVisuals vis in runes)
+            RuneSlot hoveredSlot = null;
+            foreach (RuneVisuals vis in runes)
             {
-                if(vis.Collider.Raycast(ray, out RaycastHit hit, 1000.0f))
+                if(vis.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
                 {
                     hovered = vis;
                     grabOffset = hit.point - vis.transform.position;
                     grabOffset.y = 0.0f;
                 }
             }
+            foreach(RuneSlot slot in slots)
+            {
+                if (slot.Held != null && slot.Held.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
+                {
+                    hovered = slot.Held;
+                    hoveredSlot = slot;
+                    grabOffset = hit.point - slot.Held.transform.position;
+                    grabOffset.y = 0.0f;
+                }
+            }
+
 
             if (hovered != null)
             {
@@ -64,18 +79,24 @@ public class RuneBoard : MonoBehaviour
                     // Drag
                     held = hovered;
                     held.Rigidbody.isKinematic = true;
+                    if(hoveredSlot != null)
+                    {
+                        hoveredSlot.Take();
+                        runes.Add(held);
+                    }
                 }
                 else if(Input.GetMouseButtonDown(1))
                 {
                     // Inspect
-
+                    inspect = hovered;
+                    inspect.Rigidbody.isKinematic = true;
+                    StartCoroutine(Inspect());
                 }
             }
         }
-        else
+        else if(held != null)
         {
             UpdateDrag(ray, planePoint);
-            UpdateInspect();
         }
     }
 
@@ -126,8 +147,31 @@ public class RuneBoard : MonoBehaviour
         }
     }
 
-    private void UpdateInspect()
+    private IEnumerator Inspect()
     {
+        yield return null;
 
+        Vector3 cachedPos = inspect.transform.position;
+        Quaternion cachedRot = inspect.transform.rotation;
+        while(!Input.GetMouseButtonDown(1))
+        {
+            Transform target = CameraController.Instance.InspectPoint;
+            inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, target.position, ref runeVelocity, InspectMoveSmoothing * Time.deltaTime);
+            inspect.transform.localRotation = Quaternion.RotateTowards(inspect.transform.localRotation, target.rotation, InspectRotationSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        while(Vector3.Distance(inspect.transform.position, cachedPos) > 0.1f || Quaternion.Angle(inspect.transform.localRotation, cachedRot) > 1)
+        {
+            inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, cachedPos, ref runeVelocity, InspectMoveSmoothing * Time.deltaTime);
+            inspect.transform.localRotation = Quaternion.RotateTowards(inspect.transform.localRotation, cachedRot, InspectRotationSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        inspect.transform.position = cachedPos;
+        inspect.transform.localRotation = cachedRot;
+
+        inspect = null;
     }
 }
