@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class RuneBoard : MonoBehaviour
@@ -18,6 +19,8 @@ public class RuneBoard : MonoBehaviour
 
     public Transform PentagramOrigin;
 
+    public TextMeshProUGUI ScoreText;
+
     private RuneSlot[] slots;
     private List<RuneVisuals> runes;
     private RuneVisuals held;
@@ -33,8 +36,10 @@ public class RuneBoard : MonoBehaviour
         slots = new RuneSlot[5];
         for (int i = 0; i < 5; i++)
         {
-            slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);    
+            slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);
             slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * i, 0);
+            slots[i].transform.position += slots[i].transform.forward * 0.2f;
+
         }
 
         runes = FindObjectsOfType<RuneVisuals>().ToList();
