@@ -40,7 +40,9 @@ public class RuneBoard : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);
-            slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i * 2), 0);
+            slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i + 2), 0);
+            slots[i].transform.position += slots[i].transform.forward * 0.2f;
+
         }
 
         runes = FindObjectsOfType<RuneVisuals>().ToList();
@@ -93,11 +95,38 @@ public class RuneBoard : MonoBehaviour
         {
             UpdateDrag(ray, planePoint);
         }
+
+        ScoreText.text = $"{Player.Instance.GetCirclePower()}";
     }
 
     public void AddRune(RuneVisuals rune)
     {
         runes.Add(rune);
+    }
+    public void RemoveRune(Rune rune)
+    {
+        RuneVisuals visual = null;
+        foreach (var v in runes)
+        {
+            if (rune == v.Rune)
+            {
+                visual = v;
+                break;
+            }
+        }
+
+        foreach (var s in slots)
+        {
+            if (s.Held != null && s.Held.Rune == rune)
+            {
+                visual = s.Held;
+                s.Take();
+                break;
+            }
+        }
+
+        runes.Remove(visual);
+        Destroy(visual.gameObject);
     }
 
     private void UpdateDrag(Ray ray, Vector3 planePoint)

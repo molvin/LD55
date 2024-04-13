@@ -24,16 +24,17 @@ public class Player : MonoBehaviour
     public List<RuneRef> BaseDeck;
 
     private List<Rune> bag = new();
-    [SerializeField]
     private List<Rune> hand = new();
     private List<Rune> circle = new(new Rune[NumSlots]);
     private List<Rune> discardPile = new();
+    private int circlePower;
 
     private RuneBoard runeBoard;
 
 
     public bool CircleIsFull => circle.All(rune => rune != null);
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
+    public int GetCirclePower() => circlePower;
     public int GetIndexOfRune(Rune rune) => circle.IndexOf(rune);
     public int GetRunePower(int runeIndex)
     {
@@ -77,34 +78,28 @@ public class Player : MonoBehaviour
             if (rune != null)
                 action(rune);
     }
-    private void TryPlace(int runeIndex, int slot)
-    {
-        if (CircleIsFull || runeIndex < 0 || runeIndex >= hand.Count || circle[slot] != null)
-            return;
-
-        Rune rune = hand[runeIndex];
-        hand.Remove(rune);
-        Place(rune, slot);
-    }
 
     public void Place(Rune rune, int slot)
     {
+        hand.Remove(rune);
         circle[slot] = rune;
         rune.OnEnter?.Invoke(slot, this);
     }
 
-    private void ResolveCircle()
+    private IEnumerator ResolveCircle()
     {
-        int power = 0;
         for (int i = 0; i < circle.Count; i++)
         {
             if (circle[i] == null)
                 continue;
 
-            power += GetRunePower(i);
+            circlePower += GetRunePower(i);
+            yield return new WaitForSeconds(0.3f);
+            runeBoard.RemoveRune(circle[i]);
+            yield return new WaitForSeconds(0.3f);
         }
 
-        Debug.Log($"DEALING DAMAGE: {power}");
+        Debug.Log($"DEALING DAMAGE: {circlePower}");
 
         ClearCircle();
     }
@@ -119,6 +114,8 @@ public class Player : MonoBehaviour
                 circle[i] = null;
             }
         }
+
+        circlePower = 0;
     }
 
     private IEnumerator DrawHand()
@@ -162,72 +159,17 @@ public class Player : MonoBehaviour
         StartCoroutine(DrawHand());
     }
 
-    private int? state = null;
-    public List<TextMeshProUGUI> SlotTexts;
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            if (state == null)
-                state = 0;
-            else
-            {
-                TryPlace(state.Value, 0);
-                state = null;
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            if (state == null)
-                state = 1;
-            else
-            {
-                TryPlace(state.Value, 1);
-                state = null;
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            if (state == null)
-                state = 2;
-            else
-            {
-                TryPlace(state.Value, 2);
-                state = null;
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            if (state == null)
-                state = 3;
-            else
-            {
-                TryPlace(state.Value, 3);
-                state = null;
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            if (state == null)
-                state = 4;
-            else
-            {
-                TryPlace(state.Value, 4);
-                state = null;
-            }
-        }
-
-        for (int i = 0; i < SlotTexts.Count; i++)
-        {
-            if (circle[i] != null)
-                SlotTexts[i].text = $"{circle[i].Name}: {GetRunePower(i)}";
-            else
-                SlotTexts[i].text = "...";
-        }
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ResolveCircle();
+            foreach (Rune rune in hand)
+            {
+                runeBoard.RemoveRune(rune);
+            }
+            hand.Clear();
+
+            StartCoroutine(ResolveCircle());
             StartCoroutine(DrawHand());
         }
     }
