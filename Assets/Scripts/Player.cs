@@ -76,24 +76,6 @@ public class Player : MonoBehaviour
         rune.OnEnter?.Invoke(slot, this);
     }
 
-    private IEnumerator ResolveCircle()
-    {
-        for (int i = 0; i < circle.Count; i++)
-        {
-            if (circle[i] == null)
-                continue;
-
-            circlePower += GetRunePower(i);
-            yield return new WaitForSeconds(0.3f);
-            runeBoard.RemoveRune(circle[i]);
-            yield return new WaitForSeconds(0.3f);
-        }
-
-        Debug.Log($"DEALING DAMAGE: {circlePower}");
-
-        ClearCircle();
-    }
-
     private void ClearCircle()
     {
         for (int i = 0; i < circle.Count; i++)
@@ -108,44 +90,11 @@ public class Player : MonoBehaviour
         circlePower = 0;
     }
 
-    private IEnumerator DrawHand()
-    {
-        while (hand.Count < HandSize)
-        {
-            if (bag.Count == 0)
-            {
-                foreach (Rune r in discardPile)
-                {
-                    bag.Add(r);
-                }
-                discardPile.Clear();
-                bag.Shuffle();
-            }
-
-            Rune rune = bag[0];
-            hand.Add(rune);
-            bag.RemoveAt(0);
-            /*
-            RuneVisuals runeVisual = Instantiate(RuneVisualPrefab);
-            runeVisual.Init(rune, this);
-            runeBoard.AddRune(runeVisual);
-
-            runeVisual.transform.position = new Vector3(
-                UnityEngine.Random.Range(-0.5f, 0.5f),
-                1.0f,
-                UnityEngine.Random.Range(-2.5f, -1.5f));
-            var rigidBody = runeVisual.GetComponent<Rigidbody>();
-            rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
-            */
-            yield return new WaitForSeconds(0.2f);
-        }
-    }
-
     public void Restart()
     {
         bag.Clear();
         hand.Clear();
-        circle = new(new Rune[NumSlots]);
+        circle = new(new Rune[Settings.NumSlots]);
         discardPile.Clear();
         temporaryStats.Clear();
 
@@ -182,7 +131,7 @@ public class Player : MonoBehaviour
     {
         while(health > 0)
         {
-            List<Rune> hand = Draw();
+            Draw();
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
 
@@ -200,7 +149,10 @@ public class Player : MonoBehaviour
             Debug.Log($"DEALING DAMAGE: {circlePower}");
             ClearCircle();
 
-            // TODO: Discard
+            yield return runeBoard.EndRound();
+
+            // TODO: check if opponent died, if so do shopping round, else continue
+            //       if opponent is still alive he should do damage to the player
         }
 
         Debug.Log("You lose");
@@ -208,36 +160,23 @@ public class Player : MonoBehaviour
         yield return null;
     }
 
-    private List<Rune> Draw()
+    private void Draw()
     {
-        List<Rune> temp = new();
-        while (bag.Count > 0 && temp.Count < Settings.HandSize)
+        while (hand.Count < Settings.HandSize)
         {
+            if (bag.Count == 0)
+            {
+                foreach (Rune r in discardPile)
+                {
+                    bag.Add(r);
+                }
+                discardPile.Clear();
+                bag.Shuffle();
+            }
+
             Rune rune = bag[0];
-            temp.Add(rune);
+            hand.Add(rune);
             bag.RemoveAt(0);
         }
-        return temp;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            foreach (Rune rune in hand)
-            {
-                runeBoard.RemoveRune(rune);
-                discardPile.Add(rune);
-            }
-            hand.Clear();
-
-            StartCoroutine(EndStep());
-        }
-    }
-
-    private IEnumerator EndStep()
-    {
-        yield return ResolveCircle();
-        yield return DrawHand();
     }
 }

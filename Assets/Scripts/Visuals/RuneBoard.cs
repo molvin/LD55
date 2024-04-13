@@ -251,4 +251,20 @@ public class RuneBoard : MonoBehaviour
         Destroy(slots[i].Held.gameObject); // TODO: visuals
         yield return new WaitForSeconds(1.0f);
     }
+
+    public IEnumerator EndRound()
+    {
+        // TODO: visuals
+        yield return new WaitForSeconds(1.0f);
+
+        ScoreText.text = "0";
+
+        foreach(RuneVisuals vis in runes)
+        {
+            Destroy(vis.gameObject);
+        }
+        runes.Clear();
+
+        yield return new WaitForSeconds(1.0f);
+    }
 }
