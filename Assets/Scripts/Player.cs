@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     public RuneVisuals RuneVisualPrefab;
     public List<RuneRef> BaseDeck;
 
+    private List<Rune> deckRef = new();
     private List<Rune> bag = new();
     private List<Rune> hand = new();
     private List<Rune> circle = new(new Rune[NumSlots]);
@@ -141,6 +142,21 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void Restart()
+    {
+        bag.Clear();
+        hand.Clear();
+        circle.Clear();
+        discardPile.Clear();
+
+        foreach (Rune rune in deckRef)
+        {
+            bag.Add(rune);
+        }
+
+        bag.Shuffle();
+    }
+
     private void Awake()
     {
         Instance = this;
@@ -152,6 +168,7 @@ public class Player : MonoBehaviour
         foreach (RuneRef runeRef in BaseDeck)
         {
             Rune rune = runeRef.Get();
+            deckRef.Add(rune);
             bag.Add(rune);
         }
 
