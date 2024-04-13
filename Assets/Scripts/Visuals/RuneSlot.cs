@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RuneSlot : MonoBehaviour
+public class RuneSlot : Slot
 {
-    public BoxCollider Collider;
 
     private RuneVisuals held;
     public RuneVisuals Held => held;

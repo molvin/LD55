@@ -8,8 +8,8 @@ public class RuneVisuals : Draggable
 {
     public TextMeshProUGUI Name;
     public TextMeshProUGUI Power;
+    public TextMeshProUGUI Description;
     public Image Icon;
-
 
     private Rune rune;
     private Player player;
@@ -19,7 +19,7 @@ public class RuneVisuals : Draggable
     {
         this.rune = rune;
         this.player = player;
-        // TODO: init
+
     }
 
     private void Update()
@@ -30,6 +30,7 @@ public class RuneVisuals : Draggable
             int index = player.GetIndexOfRune(rune);
             int power = index >= 0 ? player.GetRunePower(index) : rune.Power;
             Power.text = $"{power}";
+            Description.text = rune.Text;
         }
     }
 }

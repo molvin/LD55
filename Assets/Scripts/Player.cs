@@ -89,6 +89,11 @@ public class Player : MonoBehaviour
         discardPile.Add(circle[index]);
         circle[index] = null;
     }
+    
+    public void RemoveFromDeck(Rune rune)
+    {
+        deckRef.Remove(rune);
+    }
 
     private void ClearCircle()
     {
@@ -150,6 +155,8 @@ public class Player : MonoBehaviour
 
         while (health > 0)
         {
+            Restart();
+
             HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
             HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
@@ -183,7 +190,8 @@ public class Player : MonoBehaviour
                 currentRound++;
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
-                
+
+                Restart();
                 yield return runeBoard.Draw(deckRef);
                 yield return runeBoard.Shop();
                 yield return runeBoard.EndRound();
@@ -226,9 +234,16 @@ public class Player : MonoBehaviour
                 bag.Shuffle();
             }
 
-            Rune rune = bag[0];
-            hand.Add(rune);
-            bag.RemoveAt(0);
+            if(bag.Count > 0)
+            {
+                Rune rune = bag[0];
+                hand.Add(rune);
+                bag.RemoveAt(0);
+            }
+            else
+            {
+                Debug.LogWarning("Your deck is too small");
+            }
         }
     }
 }

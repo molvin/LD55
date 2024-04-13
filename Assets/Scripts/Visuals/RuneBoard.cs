@@ -23,19 +23,25 @@ public class RuneBoard : MonoBehaviour
 
     public GameObject PentagramObject;
     public GameObject ShopObject;
+    public Transform ShopObjectOrigin;
+    public CardPack CardPackPrefab;
+    public Slot[] ShopSlots;
 
     public TextMeshProUGUI ScoreText;
 
     private RuneSlot[] slots;
     private List<RuneVisuals> runes = new();
     private List<Draggable> shopObjects = new();
-    private List<Draggable> allDragables => shopObjects.Union(runes.Select(x => x as Draggable)).ToList();
     private Draggable held;
     private Draggable inspect;
     public float PlaneHeight;
     private Plane playSpace;
     private Vector3 runeVelocity;
     private Vector3 grabOffset;
+    private bool doneShopping;
+
+    private List<Draggable> allDragables => shopObjects.Union(runes.Select(x => x as Draggable)).ToList();
+    private List<Slot> allSlots => slots.Union(ShopSlots).ToList();
 
     private void Start()
     {
@@ -129,7 +135,7 @@ public class RuneBoard : MonoBehaviour
             }
             else
             {
-                UpdateDrag(ray, false);
+                yield return UpdateDrag(ray, false);
             }
 
             yield return null;
@@ -179,34 +185,46 @@ public class RuneBoard : MonoBehaviour
         }
     }
 
-    private void UpdateDrag(Ray ray, bool shopping)
+    private IEnumerator UpdateDrag(Ray ray, bool shopping)
     {
-        RuneSlot hovered = null;
-        if (shopping)
+        Slot hovered = null;
+        foreach (Slot slot in allSlots)
         {
-            // TODO: check if youre selling a shard, or buying something
-        
-        }
-        else
-        {
-            foreach (RuneSlot slot in slots)
+            if (slot.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
             {
-                if (slot.Collider.Raycast(ray, out RaycastHit _, 1000.0f))
-                {
-                    hovered = slot;
-                }
+                hovered = slot;
             }
         }
 
         if (!Input.GetMouseButton(0))
         {
             // Release held
-            if (hovered != null && hovered.Open)
+            if(shopping && hovered is BuySellSlot)
+            {
+                // Sell held shard or buy held shop item
+                Debug.Log("Buying and selling");
+                held.transform.position = hovered.transform.position + held.SlotOffset;
+                held.transform.rotation = hovered.transform.localRotation;
+                if (held is RuneVisuals vis)
+                {
+                    Player.Instance.RemoveFromDeck(vis.Rune);
+                    yield return new WaitForSeconds(1.0f);
+                    runes.Remove(vis);
+                    Destroy(vis.gameObject);
+                }
+                else if (held is CardPack cardPack)
+                {
+                    // Discover 3 new cards, pick one
+                }
+                doneShopping = true;
+
+            }
+            else if(hovered != null && ((RuneSlot)hovered).Open)
             {
                 int index = Array.IndexOf(slots, hovered);
                 var vis = (RuneVisuals)held;
                 Player.Instance?.Place(vis.Rune, index);
-                hovered.Set(vis);
+                ((RuneSlot)hovered).Set(vis);
                 runes.Remove(vis);
             }
             else
@@ -226,9 +244,9 @@ public class RuneBoard : MonoBehaviour
             Quaternion targetRot = Quaternion.identity;
             float moveSmoothing = RuneMoveSmoothing;
             float rotationSpeed = RotationSpeed;
-            if (hovered != null && hovered.Open)
+            if (hovered != null && (hovered is not RuneSlot || ((RuneSlot)hovered).Open))
             {
-                targetPos = hovered.transform.position;
+                targetPos = hovered.transform.position + held.SlotOffset;
                 targetRot = hovered.transform.localRotation;
                 moveSmoothing = PentagramMoveSmoothing;
                 rotationSpeed = PentagramRotationSpeed;
@@ -236,8 +254,8 @@ public class RuneBoard : MonoBehaviour
 
             held.transform.position = Vector3.SmoothDamp(held.transform.position, targetPos, ref runeVelocity, moveSmoothing * Time.deltaTime);
             held.transform.localRotation = Quaternion.RotateTowards(held.transform.localRotation, targetRot, rotationSpeed * Time.deltaTime);
-
         }
+        yield return null;
     }
 
     private IEnumerator Inspect()
@@ -249,7 +267,7 @@ public class RuneBoard : MonoBehaviour
         while (!Input.GetMouseButtonDown(1))
         {
             Transform target = CameraController.Instance.InspectPoint;
-            inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, target.position, ref runeVelocity, InspectMoveSmoothing * Time.deltaTime);
+            inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, target.position + inspect.InspectOffset, ref runeVelocity, InspectMoveSmoothing * Time.deltaTime);
             inspect.transform.localRotation = Quaternion.RotateTowards(inspect.transform.localRotation, target.rotation, InspectRotationSpeed * Time.deltaTime);
             yield return null;
         }
@@ -297,14 +315,18 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Shop()
     {
+        doneShopping = false;
         PentagramObject.SetActive(false);
         ShopObject.SetActive(true);
 
-        bool running = true;
-        HUD.Instance.EndTurnButton.onClick.AddListener(() => running = false);
+        // Instantiate Shop Objects
+        Draggable cardPack = Instantiate(CardPackPrefab, ShopObjectOrigin.transform.position, Quaternion.identity);
+        shopObjects.Add(cardPack);
+
+        HUD.Instance.EndTurnButton.onClick.AddListener(() => doneShopping = true);
         HUD.Instance.EndTurnButton.interactable = true;
 
-        while (running)
+        while (!doneShopping)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -318,11 +340,17 @@ public class RuneBoard : MonoBehaviour
             }
             else
             {
-                UpdateDrag(ray, true);
+                yield return UpdateDrag(ray, true);
             }
 
             yield return null;
         }
+
+        foreach(Draggable obj in shopObjects)
+        {
+            Destroy(obj.gameObject);
+        }
+        shopObjects.Clear();
 
         HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
         HUD.Instance.EndTurnButton.interactable = false;
