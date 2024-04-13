@@ -7,11 +7,13 @@ using System;
 public struct TempStats
 {
     public int Power;
+    public int Multiplier;
 
     public static TempStats operator+(TempStats first, TempStats second)
     {
         TempStats stats;
         stats.Power = first.Power + second.Power;
+        stats.Multiplier = first.Multiplier + second.Multiplier;
         return stats;
     }
 }
@@ -45,6 +47,7 @@ public class Player : MonoBehaviour
         Rune rune = circle[runeIndex];
         TempStats stats = temporaryStats[rune];
         int runePower = rune.Power + stats.Power;
+        int runeMultiplier = stats.Multiplier;
 
         for (int i = 0; i < Settings.NumSlots; i++)
         {
@@ -54,11 +57,12 @@ public class Player : MonoBehaviour
                 if (other.Aura.Application.Invoke(runeIndex, i, this))
                 {
                     runePower += other.Aura.Power;
+                    runeMultiplier += other.Aura.Multiplier;
                 }
             }
         }
 
-        return runePower;
+        return runePower * Mathf.Max(runeMultiplier, 1);
     }
 
     public void AddStats(Rune rune, TempStats stats)
