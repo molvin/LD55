@@ -35,6 +35,7 @@ public static class Runes
     {
         Name = "Cutt",
         Power = 7,
+        Rarity = Rarity.Starter,
         Text = "On Play: Destroy neighbouring shards",
         OnEnter = (int selfIndex, Player player) =>
         {
@@ -42,12 +43,81 @@ public static class Runes
             player.Remove(selfIndex + 1);
         },
     };
-    // Growth
+    // D
+    private static Rune Drain => new()
+    {
+        Name = "Drain",
+        Power = 16,
+        Rarity = Rarity.Common,
+        Text = "On Activate: Subtract half the power of all other shards",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                if (i == selfIndex)
+                    continue;
+
+                Rune rune = player.GetRuneInCircle(i);
+                if (rune != null)
+                {
+                    int currentPower = player.GetRunePower(i);
+                    player.AddStats(rune, new() { Power = -(currentPower / 2) });
+                }
+            }
+        },
+    };
+    // F
+    private static Rune Fake => new()
+    {
+        Name = "Fake",
+        Power = 8,
+        Rarity = Rarity.Common,
+        Text = "On Activate: Transform next shard to a random shard",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            int index = selfIndex + 1;
+            Rune otherRune = player.GetRuneInCircle(index);
+            if (otherRune != null)
+            {
+                List<Rune> allRunes = GetAllRunes();
+                Rune rune = null;
+                while (rune == null)
+                {
+                    Rune r = allRunes[UnityEngine.Random.Range(0, allRunes.Count - 1)];
+                    if (r.Name != otherRune.Name)
+                        rune = r;
+                }
+                rune.Rarity = Rarity.None;
+
+                player.Swap(rune, index);
+            }
+        },
+    };
+    private static Rune Focus => new()
+    {
+        Name  = "Focus",
+        Power = 2,
+        Rarity = Rarity.Common,
+        Text  = "Power is multiplied by 3",
+        Aura = new()
+        {
+            new()
+            {
+                Multiplier = 3,
+                Application = (int selfIndex, int other, Player player) =>
+                {
+                    return selfIndex == other;
+                },
+            },
+        },
+    };
+    // G
     private static Rune Growth => new()
     {
         Name = "Growth",
         Power = 5,
-        Text = "On Play: Permanently add +1 Power to the shard before",
+        Rarity = Rarity.Common,
+        Text = "On Play: Permanently add +1 Power to the previous shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             Rune prev = player.GetRuneInCircle(selfIndex - 1);
@@ -59,18 +129,41 @@ public static class Runes
         },
     };
     // I
+    private static Rune Inspire => new()
+    {
+        Name = "Inspire",
+        Power = 8,
+        Rarity = Rarity.Common,
+        Text = "On Activate: Add +7 to the summon if the previous shard is of higher rarity",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            Rune self = player.GetRuneInCircle(selfIndex);
+            Rune rune = player.GetRuneInCircle(selfIndex - 1);
+            if (rune != null)
+            {
+                if (rune.Rarity != Rarity.None && (int)rune.Rarity < (int)self.Rarity)
+                {
+                    player.AddCirclePower(7);
+                }
+            }
+        },
+    };
     private static Rune Iron => new()
     {
         Name  = "Iron",
         Power = 2,
+        Rarity = Rarity.Starter,
         Text  = "Neighbouring shards has +5 Power",
-        Aura =
+        Aura = new()
         {
-            Power = 5,
-            Application = (int selfIndex, int other, Player player) =>
+            new()
             {
-                return Player.CircularIndex(selfIndex + 1) == other
-                    || Player.CircularIndex(selfIndex - 1) == other;
+                Power = 5,
+                Application = (int selfIndex, int other, Player player) =>
+                {
+                    return Player.CircularIndex(selfIndex + 1) == other
+                        || Player.CircularIndex(selfIndex - 1) == other;
+                },
             },
         },
     };
@@ -91,14 +184,68 @@ public static class Runes
         Name  = "Prysm",
         Power = 3,
         Rarity = Rarity.Starter,
-        Text  = "My Power is multiplied by 2",
-        Aura =
+        Text  = "Power is multiplied by 2",
+        Aura = new()
         {
-            Multiplier = 2,
-            Application = (int selfIndex, int other, Player player) =>
+            new()
             {
-                return selfIndex == other;
+                Multiplier = 2,
+                Application = (int selfIndex, int other, Player player) =>
+                {
+                    return selfIndex == other;
+                },
             },
+        },
+    };
+    // R
+    private static Rune Ravage => new()
+    {
+        Name = "Ravage",
+        Power = 4,
+        Rarity = Rarity.Common,
+        Text = "On Activate: Activate the shard two steps prior to this one",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            player.Activate(selfIndex - 2);
+        },
+    };
+    private static Rune Rebellious => new()
+    {
+        Name = "Rebellious",
+        Power = 5,
+        Rarity = Rarity.Common,
+        Text = "Neighbours has +5 and Opposites has -5",
+        Aura = new()
+        {
+            new()
+            {
+                Power = 5,
+                Application = (int selfIndex, int other, Player player) =>
+                {
+                    return player.AreNeighbours(selfIndex, other);
+                },
+            },
+            new()
+            {
+                Power = -5,
+                Application = (int selfIndex, int other, Player player) =>
+                {
+                    return player.AreOpposites(selfIndex, other);
+                },
+            }
+        },
+    };
+    private static Rune Rescue => new()
+    {
+        Name = "Rescue",
+        Power = 7,
+        Rarity = Rarity.Common,
+        Text = "On Play: Conjure a Pool to your hand",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            Rune pool = Pool;
+            pool.Rarity = Rarity.None;
+            player.AddNewRuneToHand(pool);
         },
     };
     // S
@@ -106,7 +253,8 @@ public static class Runes
     {
         Name = "Shore",
         Power = 0,
-        Text = "On Activate: Permanently add +2 Power to the shard before",
+        Rarity = Rarity.Common,
+        Text = "On Activate: Permanently add +2 Power to the previous shard",
         OnActivate = (int selfIndex, Player player) =>
         {
             Rune prev = player.GetRuneInCircle(selfIndex - 1);
@@ -117,6 +265,17 @@ public static class Runes
             }
         },
     };
+    private static Rune Start => new()
+    {
+        Name = "Start",
+        Power = 5,
+        Rarity = Rarity.Common,
+        Text = "On Play: Add +5 to the summon",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            player.AddCirclePower(5);
+        },
+    };
     private static Rune Strike => new()
     {
         Name  = "Strike",
@@ -124,74 +283,4 @@ public static class Runes
         Rarity = Rarity.Starter,
         Text  = "",
     };
-
-    // Fehu
-    private static Rune Fehu => new()
-    {
-        Name  = "Fehu",
-        Power = 1,
-        Text  = "Gives runes to the side +1 power when placed",
-        OnEnter = (int selfIndex, Player player) =>
-        {
-            Rune prev = player.GetRuneInCircle(selfIndex - 1);
-            Rune next = player.GetRuneInCircle(selfIndex + 1);
-
-            TempStats stats = new() { Power = 1, Multiplier = 1 };
-            if (prev != null)
-                player.AddStats(prev, stats);
-
-            if (next != null)
-                player.AddStats(next, stats);
-        },
-    };
-    // Uruz
-    private static Rune Uruz => new()
-    {
-        Name  = "Uruz",
-        Power = 2,
-    };
-    // Thurisaz
-    private static Rune Thurisaz => new()
-    {
-        Name  = "Thurisaz",
-        Power = 3,
-    };
-    // Ansuz
-    private static Rune Ansuz => new()
-    {
-        Name  = "Ansuz",
-        Power = 4,
-    };
-    private static Rune Raidho => new()
-    {
-        Name  = "Raidho",
-        Power = 1,
-        Text  = "Runes opposite to this has +1 Power",
-        Aura =
-        {
-            Power = 1,
-            Application = (int selfIndex, int other, Player player) =>
-            {
-                return Player.CircularIndex(selfIndex + 2) == other
-                    || Player.CircularIndex(selfIndex - 2) == other;
-            },
-        },
-    };
-    // Raidho
-    // Kenaz
-    // Gebo
-    // Wunjo
-    // Hagal
-    // Naudiz
-    // Isa
-    // Eiwaz
-    // Pertho
-    // Algiz
-    // Sowilo
-    // Tyr
-    // Ehwaz
-    // Mannaz
-    // Laguz
-    // Ingwaz
-    // Dagaz
 }

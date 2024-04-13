@@ -18,7 +18,7 @@ public struct Aura
 
 public enum Rarity
 {
-    None,
+    None, // Temporary cards & tokens
     Starter,
     Common,
     Rare,
@@ -36,5 +36,5 @@ public class Rune
 
     public EventTrigger OnEnter;
     public EventTrigger OnActivate;
-    public Aura Aura;
+    public List<Aura> Aura;
 }
