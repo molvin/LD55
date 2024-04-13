@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2206665484986091122
 Transform:
   m_ObjectHideFlags: 0
@@ -450,8 +450,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RunePrefab: {fileID: 1420245527118480796, guid: 753dd122e791f8643931c5a1ae9a4df6, type: 3}
   SlotPrefab: {fileID: 5706262028073016692, guid: 9fc2c07272829154cbe0c6a6a4837280, type: 3}
+  JointPrefab: {fileID: 0}
   RuneMoveSmoothing: 20
-  RotationSpeed: 270
+  RotationSpeed: 350
   PentagramMoveSmoothing: 50
   PentagramRotationSpeed: 500
   InspectMoveSmoothing: 25
