@@ -30,6 +30,34 @@ public static class Runes
     // Implemented Runes
     // ---------------------------------------------------------------------------------------------------------
 
+    // C
+    private static Rune Cutt => new()
+    {
+        Name = "Cutt",
+        Power = 7,
+        Text = "On Play: Destroy neighbouring shards",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            player.Remove(selfIndex - 1);
+            player.Remove(selfIndex + 1);
+        },
+    };
+    // Growth
+    private static Rune Growth => new()
+    {
+        Name = "Growth",
+        Power = 5,
+        Text = "On Play: Permanently add +1 Power to the shard before",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            Rune prev = player.GetRuneInCircle(selfIndex - 1);
+            if (prev != null)
+            {
+                // Permanent
+                prev.Power += 1;
+            }
+        },
+    };
     // I
     private static Rune Iron => new()
     {
@@ -47,12 +75,23 @@ public static class Runes
         },
     };
     // P
+    private static Rune Pool => new()
+    {
+        Name  = "Pool",
+        Power = 5,
+        Rarity = Rarity.Starter,
+        Text  = "On Play: Draw 2 shards",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            player.Draw(2);
+        },
+    };
     private static Rune Prysm => new()
     {
         Name  = "Prysm",
         Power = 3,
         Rarity = Rarity.Starter,
-        Text  = "",
+        Text  = "My Power is multiplied by 2",
         Aura =
         {
             Multiplier = 2,
@@ -63,6 +102,21 @@ public static class Runes
         },
     };
     // S
+    private static Rune Shore => new()
+    {
+        Name = "Shore",
+        Power = 0,
+        Text = "On Activate: Permanently add +2 Power to the shard before",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            Rune prev = player.GetRuneInCircle(selfIndex - 1);
+            if (prev != null)
+            {
+                // Permanent
+                prev.Power += 2;
+            }
+        },
+    };
     private static Rune Strike => new()
     {
         Name  = "Strike",

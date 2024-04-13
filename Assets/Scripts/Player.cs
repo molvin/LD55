@@ -79,6 +79,17 @@ public class Player : MonoBehaviour
         rune.OnEnter?.Invoke(slot, this);
     }
 
+    public void Remove(int index)
+    {
+        index = CircularIndex(index);
+        if (circle[index] == null)
+            return;
+
+        runeBoard.DestroySlot(index);
+        discardPile.Add(circle[index]);
+        circle[index] = null;
+    }
+
     private void ClearCircle()
     {
         for (int i = 0; i < circle.Count; i++)
@@ -199,7 +210,11 @@ public class Player : MonoBehaviour
 
     private void Draw()
     {
-        while (hand.Count < Settings.HandSize)
+        Draw(Settings.HandSize - hand.Count);
+    }
+    public void Draw(int count)
+    {
+        for (int i = 0; i < count; i++)
         {
             if (bag.Count == 0)
             {
