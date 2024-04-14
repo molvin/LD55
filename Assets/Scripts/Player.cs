@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using Unity.VisualScripting;
 
 public struct TempStats
 {
@@ -37,11 +38,15 @@ public class Player : MonoBehaviour
 
     private RuneBoard runeBoard;
 
+    public List<Rune> Bag => bag;
+    public List<Rune> DiscardPile => discardPile;
+
 
     public bool AreNeighbours(int first, int second) => CircularIndex(first + 1) == second || CircularIndex(first - 1) == second;
     public bool AreOpposites(int first, int second) => first != second && !AreNeighbours(first, second);
     public bool CircleIsFull => circle.All(rune => rune != null);
     public int HandSize => hand.Count;
+    public int MaxHandSize = Settings.HandSize;
     public bool HasRuneAtIndex(int index) => circle[CircularIndex(index)] != null;
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
     public int GetCirclePower() => circlePower;
@@ -73,6 +78,7 @@ public class Player : MonoBehaviour
         return runePower;
     }
 
+    public TempStats GetTempStats(int index) => temporaryStats[GetRuneInCircle(index)];
     public void AddStats(int index, TempStats stats)
     {
         Rune rune = circle[index];
@@ -130,24 +136,33 @@ public class Player : MonoBehaviour
         }
         return Trigger(TriggerType.OnEnter, slot);
     }
-    public bool Remove(int index)
+    public List<EventHistory> Remove(int index, bool silentRemove = false)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return false;
+            return new();
 
         if (circle[index].Aura != null)
         {
             runeBoard.ForceUpdateVisuals();
         }
 
-        Trigger(TriggerType.OnDestroy, index);
+        List<EventHistory> history = new();
+        if (!silentRemove)
+        {
+            history = Trigger(TriggerType.OnDestroy, index);
+        }
+        else
+        {
+            runeBoard.ForceDestroyVisuals(circle[index]);
+        }
+
         if (circle[index] != null)
         {
             Discard(circle[index]);
         }
         circle[index] = null;
-        return true;
+        return history;
     }
     public void ReturnToHand(int index)
     {
@@ -163,43 +178,48 @@ public class Player : MonoBehaviour
         hand.Add(circle[index]);
         circle[index] = null;
     }
-    public bool Exile(int index)
+    public List<EventHistory> Exile(int index)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return false;
+            return new();
 
         if (circle[index].Aura != null)
         {
             runeBoard.ForceUpdateVisuals();
         }
 
-        Trigger(TriggerType.OnExile, index);
+        List<EventHistory> history = Trigger(TriggerType.OnExile, index);
         deckRef.Remove(circle[index]);
         circle[index] = null;
-        return true;
+        return history;
     }
     public List<EventHistory> Trigger(TriggerType trigger, int index)
     {
         List<EventHistory> history = new();
+        List<EventHistory> hist = null;
         switch (trigger)
         {
             case TriggerType.OnEnter:
             {
-                history = circle[index].OnEnter?.Invoke(index, this);
+                hist = circle[index].OnEnter?.Invoke(index, this);
             } break;
             case TriggerType.OnActivate:
             {
-                history = circle[index].OnActivate?.Invoke(index, this);
+                hist = circle[index].OnActivate?.Invoke(index, this);
             } break;
             case TriggerType.OnDestroy:
             {
-                history = circle[index].OnDestroy?.Invoke(index, this);
+                hist = circle[index].OnDestroy?.Invoke(index, this);
             } break;
             case TriggerType.OnExile:
             { 
-                history = circle[index].OnExile?.Invoke(index, this);
+                hist = circle[index].OnExile?.Invoke(index, this);
             } break;
+        }
+        if (hist != null)
+        {
+            history.AddRange(hist);
         }
 
         for (int i = 0; i < 5; i++)
@@ -208,7 +228,11 @@ public class Player : MonoBehaviour
             {
                 if (circle[i].OnOtherRuneTrigger != null)
                 {
-                    history.AddRange(circle[i].OnOtherRuneTrigger.Invoke(trigger, i, this));
+                    List<EventHistory> h = circle[i].OnOtherRuneTrigger.Invoke(trigger, i, index, this);
+                    if (h != null && h.Count > 0)
+                    {
+                        history.AddRange(h);
+                    }
                 }
             }
         }
@@ -275,6 +299,7 @@ public class Player : MonoBehaviour
     {
         Instance = this;
         runeBoard = FindObjectOfType<RuneBoard>();
+        RuneIcons.Init();
     }
 
     private void Start()
@@ -376,7 +401,7 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return null;
 
-        var events = circle[index].OnActivate?.Invoke(index, this);
+        var events = Trigger(TriggerType.OnActivate, index);
 
         if (HasRuneAtIndex(index))
         {
@@ -400,14 +425,20 @@ public class Player : MonoBehaviour
     {
         if (discard)
         {
-            foreach (Rune rune in hand)
-            {
-                Discard(rune);
-            }
-            hand.Clear();
+            DiscardHand();
         }
-        return Draw(count.HasValue ? count.Value : Settings.HandSize - hand.Count);
+        return Draw(count.HasValue ? count.Value : MaxHandSize - hand.Count);
     }
+
+    public void DiscardHand()
+    {
+        foreach (Rune rune in hand)
+        {
+            Discard(rune);
+        }
+        hand.Clear();
+    }
+
     public List<Rune> Draw(int count)
     {
         List<Rune> result = new();
