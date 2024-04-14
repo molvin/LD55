@@ -41,6 +41,7 @@ public class Player : MonoBehaviour
     public bool AreNeighbours(int first, int second) => CircularIndex(first + 1) == second || CircularIndex(first - 1) == second;
     public bool AreOpposites(int first, int second) => first != second && !AreNeighbours(first, second);
     public bool CircleIsFull => circle.All(rune => rune != null);
+    public int HandSize => hand.Count;
     public bool HasRuneAtIndex(int index) => circle[CircularIndex(index)] != null;
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
     public int GetCirclePower() => circlePower;
@@ -361,6 +362,11 @@ public class Player : MonoBehaviour
         }
 
         return events;
+    }
+    public void AddNewRuneToBag(Rune rune)
+    {
+        temporaryStats.Add(rune, new());
+        bag.Add(rune);
     }
     public void AddNewRuneToHand(Rune rune)
     {
