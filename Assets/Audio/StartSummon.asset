@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc02903647b24794981184b6992edb5a, type: 3}
+  m_Name: StartSummon
+  m_EditorClassIdentifier: 
+  clips:
+  - {fileID: 8300000, guid: f88fbca8ae2f5c44cb58712049338ac1, type: 3}
+  - {fileID: 8300000, guid: 1b4dc413cf949144ba92f738903fcbc0, type: 3}
+  - {fileID: 8300000, guid: 446df245e7c1a5d438a5efd36acf41ee, type: 3}
+  - {fileID: 8300000, guid: 9fb9e807c4963944da36eb8cddef5b31, type: 3}
+  - {fileID: 8300000, guid: 514f5afaa81724e47aa8190f6327a887, type: 3}
+  mixer: {fileID: 2256661945905420150, guid: b5ae5806a793eee458f3f1ac68c6cf0a, type: 2}
+  vol_min: 0.5
+  vol_max: 1
+  pitch_min: 0.9
+  pitch_max: 1

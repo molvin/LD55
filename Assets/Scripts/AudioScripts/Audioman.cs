@@ -45,6 +45,7 @@ public class Audioman : MonoBehaviour
         audioSource.volume = UnityEngine.Random.Range(loop.vol_min, loop.vol_max);
         audioSource.pitch = UnityEngine.Random.Range(loop.pitch_min, loop.pitch_max);
         audioSource.loop = true;
+        audioSource.outputAudioMixerGroup = loop.mixer;
         audioSource.transform.position = world_pos;
 
         audioSource.Play();
@@ -87,10 +88,12 @@ public class Audioman : MonoBehaviour
         audioSource.volume = UnityEngine.Random.Range(conf.vol_min, conf.vol_max);
         audioSource.pitch = UnityEngine.Random.Range(conf.pitch_min, conf.pitch_max);
         audioSource.loop = false;
+        audioSource.outputAudioMixerGroup = conf.mixer;
+
         StartCoroutine(PlayAndWaitForFinish(audioSource, conf.clips[UnityEngine.Random.Range(0, conf.clips.Length)]));
     }
 
-    public IEnumerator PlayAndWaitForFinish(AudioSource source, AudioClip clip)
+    private IEnumerator PlayAndWaitForFinish(AudioSource source, AudioClip clip)
     {
         float time = 0;
         source.PlayOneShot(clip);

@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc02903647b24794981184b6992edb5a, type: 3}
-  m_Name: PlacementClip
+  m_Name: DropShard
   m_EditorClassIdentifier: 
   clips:
   - {fileID: 8300000, guid: 9b051f67c812bd641a65c88e883e1846, type: 3}
   - {fileID: 8300000, guid: 4942ac35ff350f34e858384a1f89d05e, type: 3}
   - {fileID: 8300000, guid: 9276d240a69884e4caddedca1d90b446, type: 3}
-  mixer: {fileID: 0}
-  vol_min: 0.8
+  mixer: {fileID: -5984567718812411759, guid: b5ae5806a793eee458f3f1ac68c6cf0a, type: 2}
+  vol_min: 0.5
   vol_max: 1
-  pitch_min: 1.1
-  pitch_max: 0.9
+  pitch_min: 0.9
+  pitch_max: 1
