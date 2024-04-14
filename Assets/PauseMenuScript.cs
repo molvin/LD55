@@ -30,6 +30,11 @@ public class PauseMenuScript : MonoBehaviour
         public float min_scale_factor;
         public float original_scale;
         public GameObject button_group_main;
+
+        public Image image_fade;
+        public AnimationCurve curve_fade;
+        [Range(0f, 1f)]
+        public float max_alpha_fade;
     }
 
     public TransitionAnimationConfig transitionConfig;
@@ -45,6 +50,7 @@ public class PauseMenuScript : MonoBehaviour
         public GameObject button_group_settings;
         public GameObject button_group_main;
     }
+
 
     [Range(0f, 1f)]
     public float floatRange;
@@ -80,16 +86,6 @@ public class PauseMenuScript : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(0))
-        {
-            RaycastHit2D hit;
-            Debug.Log(Camera.main.name);
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (hit = Physics2D.Raycast(ray.origin, new Vector2(0, 0)))
-                Debug.Log(hit.collider.name);
-            else
-                Debug.Log("miss");
-        }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -165,6 +161,10 @@ public class PauseMenuScript : MonoBehaviour
         appearanceAnimationConfig.transform.localScale = new Vector3(
             scale, scale, scale
         );
+        appearanceAnimationConfig.image_fade.raycastTarget = floatRange > 0.2f;
+        Color c = appearanceAnimationConfig.image_fade.color;
+        c.a = appearanceAnimationConfig.curve_fade.Evaluate(floatRange) * appearanceAnimationConfig.max_alpha_fade;
+        appearanceAnimationConfig.image_fade.color = c;
     }
 
     public void toggleAppear()
