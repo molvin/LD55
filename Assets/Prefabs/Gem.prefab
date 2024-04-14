@@ -82,7 +82,12 @@ MonoBehaviour:
   Colors:
   - Name: Malechite
     Color: {r: 0, g: 0.6320754, b: 0, a: 1}
+  - Name: Acanthite
+    Color: {r: 0.9056604, g: 0.5211171, b: 0, a: 1}
   Renderer: {fileID: 3144813096552825740}
+  Artifact:
+    Name: 
+    Text: 
 --- !u!65 &4847765858614642454
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -35,7 +35,9 @@ public class Player : MonoBehaviour
     private Dictionary<Rune, TempStats> temporaryStats = new();
     private int circlePower;
     private int circlePowerPromise;
-
+    private int currentRound;
+    public int CurrentRound => currentRound;
+    public int ShopActions = Settings.ShopActions;
     private RuneBoard runeBoard;
 
     public List<Rune> Bag => bag;
@@ -332,7 +334,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator Game()
     {
-        int currentRound = 0;
+        currentRound = 0;
         health = Settings.PlayerMaxHealth;
         int opponentHealth = Settings.GetOpponentHealth(currentRound);
         int set = 0;
@@ -372,12 +374,13 @@ public class Player : MonoBehaviour
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
 
+                currentRound += 1;
+
                 yield return runeBoard.Shop();
                 Restart();
 
                 opponentHealth = Settings.GetOpponentHealth(currentRound);
                 HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
-
             }
             else
             {

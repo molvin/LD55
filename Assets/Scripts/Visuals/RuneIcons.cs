@@ -5,11 +5,13 @@ using UnityEngine;
 public static class RuneIcons
 {
     private static Dictionary<string, Texture2D> textures;
+    private static Texture2D defaultTexture;
 
     public static void Init()
     {
         textures = new();
         Texture2D[] resources = Resources.LoadAll<Texture2D>("RuneIcons");
+        defaultTexture = resources[0];
 
         foreach(Texture2D tex in resources)
         {
@@ -23,6 +25,6 @@ public static class RuneIcons
         {
             Init();
         }
-        return textures.GetValueOrDefault(name, null);
+        return textures.GetValueOrDefault(name, defaultTexture);
     }
 }
