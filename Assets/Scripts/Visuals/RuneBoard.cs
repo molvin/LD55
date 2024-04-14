@@ -724,7 +724,9 @@ public class RuneBoard : MonoBehaviour
                 : rare
                     ? Runes.GetAllRunes(r => r.Rarity != Rarity.None && r.Rarity <= Rarity.Rare)
                     : Runes.GetAllRunes(r => r.Rarity != Rarity.None && r.Rarity <= Rarity.Common);
-            allRunes = allRunes.Where(r => r.Name != Runes.GetRestore().Name && r.Name != Runes.GetPrune().Name).ToList();
+
+            List<string> names = runes.Select(r => r.Name).ToList();
+            allRunes = allRunes.Where(r => !names.Contains(r.Name) && r.Name != Runes.GetRestore().Name && r.Name != Runes.GetPrune().Name).ToList();
 
             runes.Add(allRunes[Random.Range(0, allRunes.Count)]);
         }
