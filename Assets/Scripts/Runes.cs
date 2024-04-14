@@ -179,6 +179,24 @@ public static class Runes
             return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
         },
     };
+    private static Rune Bounce => new()
+    {
+        Name = "Bounce",
+        Power = 6,
+        Rarity = Rarity.Common,
+        Text = "On Play: Return the previous Shard to hand",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            int prev = Player.CircularIndex(selfIndex - 1);
+            if (player.HasRuneAtIndex(prev))
+            {
+                player.ReturnToHand(prev);
+                return new() { EventHistory.ReturnToHand(prev) };
+            }
+
+            return new();
+        },
+    };
     // C
     private static Rune Cut => new()
     {
@@ -309,6 +327,27 @@ public static class Runes
             int circlePower = player.GetCirclePower();
             player.AddStats(player.GetRuneInCircle(selfIndex), new() { Power = circlePower * 5 });
             return new() { EventHistory.PowerToRune(selfIndex, circlePower * 5) };
+        },
+    };
+    private static Rune Flow => new()
+    {
+        Name  = "Flow",
+        Power = 0,
+        Rarity = Rarity.None,
+        Text  = "On Play: Draw a Shards. Exile this Shard",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            List<Rune> drawn = player.Draw(1);
+            if (drawn.Count > 0)
+            {
+                history.Add(EventHistory.Draw(drawn.ToArray()));
+            }
+
+            player.Exile(selfIndex);
+            history.Add(EventHistory.Exile(selfIndex));
+
+            return history;
         },
     };
     private static Rune Focus => new()
@@ -799,6 +838,26 @@ public static class Runes
             }
 
             return new();
+        },
+    };
+    private static Rune Slow => new()
+    {
+        Name  = "Slow",
+        Power = 5,
+        Rarity = Rarity.Common,
+        Text  = "On Play: Conjure 2 Flow to hand",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<Rune> drawn = new();
+            for (int i = 0; i < 2; i++)
+            {
+                Rune flow = Flow;
+                flow.Token = true;
+                player.AddNewRuneToHand(flow);
+                drawn.Add(flow);
+            }
+
+            return new() { EventHistory.Draw(drawn.ToArray()) };
         },
     };
     private static Rune Start => new()
