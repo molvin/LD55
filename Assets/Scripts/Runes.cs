@@ -1524,6 +1524,30 @@ public static class Runes
         Keywords = { Keywords.Energy },
     };
     // W
+
+    private static Rune Well => new()
+    {
+        Name = "Well",
+        Power = 23,
+        Rarity = Rarity.Legendary,
+        Text = "On Play: discard hand, then conjur 5 random Shards",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new List<EventHistory> { EventHistory.Discard(player.GetRunesInHand()) };
+            player.DiscardHand();
+            List<Rune> allRunes = GetAllRunes();
+            Rune[] newRunes = Enumerable.Range(0, 5).Select((e) =>
+            {
+                Rune r = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                r.Token = true;
+                player.AddNewRuneToHand(r);
+                return r;
+            }).ToArray();
+            history.Add(EventHistory.Draw(newRunes));
+            return history;
+        }
+    };
+
     private static Rune Wound => new()
     {
         Name = "Wound",

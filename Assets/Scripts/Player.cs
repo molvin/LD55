@@ -414,14 +414,20 @@ public class Player : MonoBehaviour
     {
         if (discard)
         {
-            foreach (Rune rune in hand)
-            {
-                Discard(rune);
-            }
-            hand.Clear();
+            DiscardHand();
         }
         return Draw(count.HasValue ? count.Value : MaxHandSize - hand.Count);
     }
+
+    public void DiscardHand()
+    {
+        foreach (Rune rune in hand)
+        {
+            Discard(rune);
+        }
+        hand.Clear();
+    }
+
     public List<Rune> Draw(int count)
     {
         List<Rune> result = new();
