@@ -48,7 +48,7 @@ public class RuneVisuals : Draggable
                 SurfaceRenderer.material = Surfaces[3];
                 break;
         }
-        Icon.sprite = RuneIcons.Get(rune.Name);
+        Icon.sprite = Sprite.Create(RuneIcons.Get(rune.Name), Icon.sprite.rect, Icon.sprite.pivot);
         UpdateStats();
     }
 
