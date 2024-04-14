@@ -1060,7 +1060,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
     m_Mesh: {fileID: 0}
-    m_MeshRenderer: {fileID: 0}
+    m_MeshRenderer: {fileID: 3927210260528420937}
     m_SkinnedMeshRenderer: {fileID: 0}
     m_Sprite: {fileID: 0}
     m_SpriteRenderer: {fileID: 0}
@@ -1197,7 +1197,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 150
+      scalar: 25
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -5347,7 +5347,6 @@ MonoBehaviour:
   Rigidbody: {fileID: 8826767862864762015}
   SlotOffset: {x: 0, y: 0, z: 0}
   InspectOffset: {x: 0, y: 0, z: 0}
-  Name: {fileID: 0}
   Power: {fileID: 8597786555992850285}
   Description: {fileID: 1419742937521937932}
   Icon: {fileID: 9126180257228466855}
