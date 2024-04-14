@@ -37,6 +37,9 @@ public class Player : MonoBehaviour
 
     private RuneBoard runeBoard;
 
+    public List<Rune> Bag => bag;
+    public List<Rune> DiscardPile => discardPile;
+
 
     public bool AreNeighbours(int first, int second) => CircularIndex(first + 1) == second || CircularIndex(first - 1) == second;
     public bool AreOpposites(int first, int second) => first != second && !AreNeighbours(first, second);

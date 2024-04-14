@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -10,9 +8,11 @@ public class RuneVisuals : Draggable
     public TextMeshProUGUI Power;
     public TextMeshProUGUI Description;
     public Image Icon;
+    public ParticleSystem HoverParticles;
 
     private Rune rune;
     private Player player;
+
     public Rune Rune => rune;
 
     public bool InSlot;

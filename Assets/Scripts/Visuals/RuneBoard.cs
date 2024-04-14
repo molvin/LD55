@@ -35,6 +35,12 @@ public class RuneBoard : MonoBehaviour
     public Transform DiscardPile;
     public Transform ExilePile;
 
+    public BoxCollider InspectDeck;
+    public BoxCollider InspectDiscard;
+
+    public StartGem Gem;
+    public StartSlot StartSlot;
+
     public TextMeshProUGUI ScoreText;
 
     private RuneSlot[] slots;
@@ -47,9 +53,11 @@ public class RuneBoard : MonoBehaviour
     private Vector3 grabOffset;
     private int boughtCount;
     private Vector3 mouseDragStartPoint;
+    bool running;
+    private Draggable previousHover;
 
-    private List<Draggable> allDragables => shopObjects.Union(runes.Select(x => x as Draggable)).ToList();
-    private List<Slot> allSlots => slots.Select(s => s as Slot).ToList(); //slots.Union(ShopSlots).ToList();
+    private List<Draggable> allDragables => shopObjects.Union(runes).Union(new[] {Gem}).ToList();
+    private List<Slot> allSlots => slots.Select(s => s as Slot).Union(new[] {StartSlot}).ToList(); //slots.Union(ShopSlots).ToList();
 
     private void Start()
     {
@@ -66,7 +74,7 @@ public class RuneBoard : MonoBehaviour
         var draggables = FindObjectsOfType<Draggable>();
         foreach(Draggable draggable in draggables)
         {
-            if (draggable is not RuneVisuals)
+            if (draggable is not RuneVisuals && draggable is not StartGem)
                 shopObjects.Add(draggable);
         }
 
@@ -74,64 +82,15 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
     }
 
-    public void RemoveRune(Rune rune)
-    {
-        RuneVisuals visual = null;
-        foreach (var v in runes)
-        {
-            if (rune == v.Rune)
-            {
-                visual = v;
-                break;
-            }
-        }
-
-        foreach (var s in slots)
-        {
-            if (s.Held != null && s.Held.Rune == rune)
-            {
-                visual = s.Held;
-                s.Take();
-                break;
-            }
-        }
-
-        runes.Remove(visual);
-        Destroy(visual.gameObject);
-    }
-
-    public IEnumerator Draw(List<Rune> hand)
-    {
-        foreach(Rune rune in hand)
-        {
-            yield return Draw(rune);
-        }
-
-        yield return null;
-    }
-    public IEnumerator Draw(Rune rune)
-    {
-        RuneVisuals vis = Instantiate(RunePrefab);
-        vis.Init(rune, Player.Instance);
-        runes.Add(vis);
-
-        vis.transform.position = new Vector3(
-            UnityEngine.Random.Range(-0.5f, 0.5f),
-            1.0f,
-            UnityEngine.Random.Range(-2.5f, -1.5f));
-        var rigidBody = vis.GetComponent<Rigidbody>();
-        rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
-
-        yield return new WaitForSeconds(0.2f);
-    }
-
     public IEnumerator Play()
     {
         PentagramObject.SetActive(true);
 
-        bool running = true;
-        HUD.Instance.EndTurnButton.onClick.AddListener(() => running = false);
-        HUD.Instance.EndTurnButton.interactable = true;
+        running = true;
+        Gem.Rigidbody.isKinematic = false;
+        Gem.Rigidbody.AddForce(Random.onUnitSphere * 1 + Vector3.up * 1, ForceMode.VelocityChange);
+
+        HUD.Instance.EndTurnButton.gameObject.SetActive(false);
 
         while (running)
         {
@@ -170,6 +129,17 @@ public class RuneBoard : MonoBehaviour
             }
         }
 
+        {
+            if (hovered != previousHover && previousHover != null && previousHover is RuneVisuals vis)
+            {
+                if (vis.HoverParticles.isPlaying)
+                {
+                    vis.HoverParticles.Stop();
+                }
+            }
+            previousHover = hovered;
+        }
+
         if (hovered != null)
         {
             if (Input.GetMouseButtonDown(0))
@@ -190,9 +160,17 @@ public class RuneBoard : MonoBehaviour
                 yield return Inspect(hovered, true, Quaternion.identity);
                 HUD.Instance.EndTurnButton.interactable = true;
             }
+            else
+            {
+                if(hovered is RuneVisuals vis && !vis.HoverParticles.isPlaying)
+                {
+                    vis.HoverParticles.Play();
+                }
+            }
         }
         else
         {
+            // Check inspect circle
             foreach(RuneSlot slot in slots)
             {
                 if(slot.Held != null && slot.Held.HoverCollider.Raycast(ray, out RaycastHit hit, 1000.0f))
@@ -205,11 +183,34 @@ public class RuneBoard : MonoBehaviour
                     }
                 }
             }
+
+            // Check inspect deck
+            if(InspectDeck.Raycast(ray, out RaycastHit _, 1000.0f) && Input.GetMouseButtonDown(1))
+            {
+                yield return InspectMany(Player.Instance.Bag, InspectDeck.transform);
+            }
+
+            // Check inspect discard
+            if (InspectDiscard.Raycast(ray, out RaycastHit _, 1000.0f) && Input.GetMouseButtonDown(1))
+            {
+                yield return InspectMany(Player.Instance.DiscardPile, InspectDiscard.transform);
+            }
         }
     }
 
     private IEnumerator UpdateDrag(Ray ray, bool shopping)
     {
+        {
+            if (previousHover != null && previousHover is RuneVisuals vis)
+            {
+                if (vis.HoverParticles.isPlaying)
+                {
+                    vis.HoverParticles.Stop();
+                }
+            }
+            previousHover = null;
+        }
+
         Slot hovered = null;
         bool shopHovered = false;
         foreach (Slot slot in allSlots)
@@ -252,14 +253,20 @@ public class RuneBoard : MonoBehaviour
                 }
                 boughtCount++;
             }
-            else if(hovered != null && ((RuneSlot)hovered).Open)
+            else if(hovered != null && held is RuneVisuals vis && hovered is RuneSlot slot && slot.Open)
             {
                 int index = System.Array.IndexOf(slots, hovered);
-                var vis = (RuneVisuals)held;
-                ((RuneSlot)hovered).Set(vis);
+                slot.Set(vis);
                 runes.Remove(vis);
                 var events = Player.Instance.Place(vis.Rune, index);
                 yield return Resolve(index, events);
+            }
+            else if(hovered != null && held is StartGem && hovered is StartSlot)
+            {
+                held.transform.position = hovered.transform.position;
+                held.transform.rotation = Quaternion.identity;
+                held.Rigidbody.isKinematic = true;
+                running = false;
             }
             else
             {
@@ -287,7 +294,7 @@ public class RuneBoard : MonoBehaviour
             Quaternion targetRot = Quaternion.identity;
             float moveSmoothing = RuneMoveSmoothing;
             float rotationSpeed = RotationSpeed;
-            if (hovered != null && (hovered is not RuneSlot || ((RuneSlot)hovered).Open))
+            if (hovered != null && (hovered is RuneSlot slot && held is RuneVisuals && slot.Open) || (held is StartGem && hovered is StartSlot))
             {
                 targetPos = hovered.transform.position + held.SlotOffset;
                 targetRot = hovered.transform.localRotation;
@@ -303,6 +310,12 @@ public class RuneBoard : MonoBehaviour
     private IEnumerator Inspect(Draggable inspect, bool enablePhysicsWhenDone, Quaternion cachedRot)
     {
         inspect.Rigidbody.isKinematic = true;
+
+        if(inspect is RuneVisuals vis)
+        {
+            if (vis.HoverParticles.isPlaying)
+                vis.HoverParticles.Stop();
+        }
 
         yield return null;
 
@@ -392,6 +405,20 @@ public class RuneBoard : MonoBehaviour
                             yield return new WaitForSeconds(1.0f);
                         }
                         break;
+                    case EventType.Discard:
+                        List<RuneVisuals> vises = new();
+                        List<IEnumerator> routines = new();
+                        foreach(Rune rune in e.Others)
+                        {
+                            RuneVisuals vis = runes.Find(vis => vis.Rune == rune);
+                            routines.Add(DestroyRune(vis, false));
+                            vises.Add(vis);
+                        }
+                        yield return RunConcurently(0.1f, routines.ToArray());
+                        foreach (RuneVisuals vis in vises)
+                            runes.Remove(vis);
+
+                        break;
                     case EventType.DiceRoll:
                         // TODO:
                         break;
@@ -401,6 +428,7 @@ public class RuneBoard : MonoBehaviour
             slots[index].Active.Stop();
         }
     }
+
     public IEnumerator FinishResolve(int index, int circlePower)
     {
         slots[index].Active.Play();
@@ -410,8 +438,6 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator EndSummon()
     {
-        // TODO: visuals
-
         foreach (RuneVisuals vis in runes)
         {
             Destroy(vis.gameObject);
@@ -459,22 +485,27 @@ public class RuneBoard : MonoBehaviour
 
     private IEnumerator DestroySlot(int index, bool exile)
     {
-        yield return new WaitForSeconds(0.25f);
         RuneVisuals vis = slots[index].Held;
+        yield return DestroyRune(vis, exile);
+    }
+
+    private IEnumerator DestroyRune(RuneVisuals vis, bool exile)
+    {
+        yield return new WaitForSeconds(0.5f);
         float t = 0;
         float duration = 0.5f;
         Vector3 startPos = vis.transform.position;
         Quaternion startRot = vis.transform.rotation;
         Vector3 endPos = exile ? ExilePile.position : DiscardPile.position;
-        while(t < duration)
+        while (t < duration)
         {
             vis.transform.position = Vector3.Lerp(startPos, endPos, t / duration);
             vis.transform.rotation = Quaternion.Slerp(startRot, Quaternion.identity, t / duration);
             t += Time.deltaTime;
             yield return null;
         }
-        Destroy(slots[index].Held.gameObject); 
-        yield return new WaitForSeconds(0.25f);
+        Destroy(vis.gameObject);
+        yield return new WaitForSeconds(0.5f);
     }
 
     private IEnumerator SwapSlot(int first, int second)
@@ -541,9 +572,12 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Shop()
     {
+        HUD.Instance.EndTurnButton.gameObject.SetActive(true);
+
         boughtCount = 0;
         PentagramObject.SetActive(false);
         ShopObject.SetActive(true);
+        Gem.gameObject.SetActive(false);
 
         // Instantiate Shop Objects
         foreach(Transform origin in CardPackSlots)
@@ -603,9 +637,11 @@ public class RuneBoard : MonoBehaviour
 
         PentagramObject.SetActive(true);
         ShopObject.SetActive(false);
+        Gem.gameObject.SetActive(true);
+        HUD.Instance.EndTurnButton.gameObject.SetActive(false);
     }
 
-    public IEnumerator ShopRunes(Vector3 origin)
+    private IEnumerator ShopRunes(Vector3 origin)
     {
         if(ShopFeedback.isPlaying)
             ShopFeedback.Stop();
@@ -676,4 +712,41 @@ public class RuneBoard : MonoBehaviour
 
         yield return null;
     }
+
+    public IEnumerator Draw(List<Rune> hand)
+    {
+        foreach (Rune rune in hand)
+        {
+            yield return Draw(rune);
+        }
+
+        yield return null;
+    }
+    
+    private IEnumerator Draw(Rune rune)
+    {
+        RuneVisuals vis = Instantiate(RunePrefab);
+        vis.Init(rune, Player.Instance);
+        runes.Add(vis);
+
+        vis.transform.position = new Vector3(
+            UnityEngine.Random.Range(-0.5f, 0.5f),
+            1.0f,
+            UnityEngine.Random.Range(-2.5f, -1.5f));
+        var rigidBody = vis.GetComponent<Rigidbody>();
+        rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
+
+        yield return new WaitForSeconds(0.2f);
+    }
+
+    private IEnumerator InspectMany(List<Rune> runes, Transform origin)
+    {
+        Debug.Log("Inspect many");
+
+        if (runes.Count == 0)
+            yield break;
+        
+        yield return null;
+    }
+
 }
