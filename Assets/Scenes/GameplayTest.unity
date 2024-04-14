@@ -193,12 +193,8 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: HealRune.Index
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: SellRune.Index
-      value: 15
+      propertyPath: InspectRotationSpeed
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 2188590060883278622, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_Name

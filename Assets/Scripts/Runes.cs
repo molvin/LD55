@@ -205,7 +205,7 @@ public static class Runes
         Text  = "On Play: Draw 2 Shards",
         OnEnter = (int selfIndex, Player player) =>
         {
-            player.Draw(2);
+            player.Draw(2, true);
         },
     };
     private static Rune Prysm => new()

@@ -262,9 +262,8 @@ public class Player : MonoBehaviour
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
 
-                Restart();
-
                 yield return runeBoard.Shop();
+                Restart();
 
                 opponentHealth = Settings.GetOpponentHealth(currentRound);
                 HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
@@ -314,9 +313,9 @@ public class Player : MonoBehaviour
             }
             hand.Clear();
         }
-        Draw(Settings.HandSize - hand.Count);
+        Draw(Settings.HandSize - hand.Count, false);
     }
-    public void Draw(int count)
+    public void Draw(int count, bool spawnVisuals)
     {
         for (int i = 0; i < count; i++)
         {
@@ -335,6 +334,8 @@ public class Player : MonoBehaviour
                 Rune rune = bag[0];
                 hand.Add(rune);
                 bag.RemoveAt(0);
+                if(spawnVisuals)
+                    StartCoroutine(runeBoard.Draw(rune));
             }
             else
             {
