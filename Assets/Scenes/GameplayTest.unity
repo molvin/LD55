@@ -135,6 +135,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pause_menu
       objectReference: {fileID: 0}
+    - target: {fileID: 3275115089422513609, guid: c407cc551cdaa4a4388896efb833f7bf, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8440675695484718850, guid: c407cc551cdaa4a4388896efb833f7bf, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -356,19 +360,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: BaseDeck.Array.data[0].Index
-      value: 9
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: BaseDeck.Array.data[1].Index
-      value: 9
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: BaseDeck.Array.data[2].Index
-      value: 4
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: BaseDeck.Array.data[3].Index
-      value: 41
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: BaseDeck.Array.data[4].Index
