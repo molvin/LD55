@@ -641,12 +641,12 @@ public class RuneBoard : MonoBehaviour
         }
         {
             RuneVisuals vis = Instantiate(RunePrefab, HealSlot.position, Quaternion.identity);
-            vis.Init(Runes.Restore, Player.Instance);
+            vis.Init(Runes.GetRestore(), Player.Instance);
             shopObjects.Add(vis);
         }
         {
             RuneVisuals vis = Instantiate(RunePrefab, SellSlot.position, Quaternion.identity);
-            vis.Init(Runes.Prune, Player.Instance);
+            vis.Init(Runes.GetPrune(), Player.Instance);
             shopObjects.Add(vis);
         }
 
