@@ -124,7 +124,6 @@ public class Player : MonoBehaviour
         circle[slot] = rune;
         return Trigger(TriggerType.OnEnter, slot);
     }
-
     public bool Remove(int index)
     {
         index = CircularIndex(index);
@@ -135,6 +134,15 @@ public class Player : MonoBehaviour
         Discard(circle[index]);
         circle[index] = null;
         return true;
+    }
+    public void ReturnToHand(int index)
+    {
+        index = CircularIndex(index);
+        if (circle[index] == null)
+            return;
+
+        hand.Add(circle[index]);
+        circle[index] = null;
     }
     public bool Exile(int index)
     {
@@ -296,7 +304,8 @@ public class Player : MonoBehaviour
 
                 var events = Activate(i);
 
-                yield return runeBoard.Resolve(i, events, circlePower);
+                yield return runeBoard.Resolve(i, events);
+                yield return runeBoard.FinishResolve(i, circlePower);
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");

@@ -22,6 +22,7 @@ public enum EventType
     Draw,
     AddLife,
     DiceRoll,
+    ReturnToHand,
 }
 public class EventHistory
 {
@@ -40,6 +41,7 @@ public class EventHistory
     public static EventHistory Draw(params Rune[] runes) => new() { Type = EventType.Draw, Others = runes };
     public static EventHistory AddLife(int life) => new() { Type = EventType.AddLife, Power = life };
     public static EventHistory DiceRoll(bool success) => new() { Type = EventType.DiceRoll, Power = success ? 1 : 0 };
+    public static EventHistory ReturnToHand(int actor) => new() { Type = EventType.ReturnToHand, Actor = actor };
 }
 
 public delegate List<EventHistory> EventTrigger(int selfIndex, Player player);
