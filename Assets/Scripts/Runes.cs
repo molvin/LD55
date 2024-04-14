@@ -57,9 +57,9 @@ public static class Runes
         },
     };
     // C
-    private static Rune Cutt => new()
+    private static Rune Cut => new()
     {
-        Name = "Cutt",
+        Name = "Cut",
         Power = 7,
         Rarity = Rarity.Starter,
         Text = "On Play: Destroy neighbouring Shards",
@@ -75,7 +75,7 @@ public static class Runes
         Name = "Drain",
         Power = 16,
         Rarity = Rarity.Common,
-        Text = "On Activate: Subtract half the power of all other Shards",
+        Text = "On Activate: Divide the Power of all other Shards by 2",
         OnActivate = (int selfIndex, Player player) =>
         {
             for (int i = 0; i < 5; i++)
@@ -83,11 +83,9 @@ public static class Runes
                 if (i == selfIndex)
                     continue;
 
-                Rune rune = player.GetRuneInCircle(i);
-                if (rune != null)
+                if (player.HasRuneAtIndex(i))
                 {
-                    int currentPower = player.GetRunePower(i);
-                    player.AddStats(rune, new() { Power = -(currentPower / 2) });
+                    player.MultiplyPower(i, 0.5f);
                 }
             }
         },
@@ -136,17 +134,10 @@ public static class Runes
         Name  = "Focus",
         Power = 2,
         Rarity = Rarity.Common,
-        Text  = "Power is multiplied by 3",
-        Aura = new()
+        Text  = "On Activate: Power is multiplied by 3",
+        OnActivate = (int selfIndex, Player player) =>
         {
-            new()
-            {
-                Multiplier = 3,
-                Application = (int selfIndex, int other, Player player) =>
-                {
-                    return selfIndex == other;
-                },
-            },
+            player.MultiplyPower(selfIndex, 3);
         },
     };
     // G
@@ -222,17 +213,10 @@ public static class Runes
         Name  = "Prysm",
         Power = 3,
         Rarity = Rarity.Starter,
-        Text  = "Power is multiplied by 2",
-        Aura = new()
+        Text  = "On Activate: Power is multiplied by 2",
+        OnActivate = (int selfIndex, Player player) =>
         {
-            new()
-            {
-                Multiplier = 2,
-                Application = (int selfIndex, int other, Player player) =>
-                {
-                    return selfIndex == other;
-                },
-            },
+            player.MultiplyPower(selfIndex, 2);
         },
     };
     // R
@@ -332,5 +316,17 @@ public static class Runes
         Power = 10,
         Rarity = Rarity.Starter,
         Text  = "",
+    };
+    // T
+    private static Rune Tides => new()
+    {
+        Name  = "Tides",
+        Power = 7,
+        Rarity = Rarity.Common,
+        Text  = "On Play: Swap the next Shard with the previous Shard",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            player.Swap(selfIndex - 1, selfIndex + 1);
+        },
     };
 }

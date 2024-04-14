@@ -314,6 +314,12 @@ public class RuneBoard : MonoBehaviour
         Destroy(slots[index].Held.gameObject); // TODO: visuals
     }
 
+    public void SwapSlot(int first, int second)
+    {
+        RuneVisuals temp = slots[first].Held;
+        slots[first].Set(slots[second].Held);
+        slots[second].Set(temp);
+    }
     public void SwapSlot(Rune rune, int index)
     {
         slots[index].Held.Init(rune, Player.Instance);
