@@ -23,7 +23,7 @@ public class VolumeSettings : MonoBehaviour
         {
             float v;
             AudioMixer.GetFloat(sc.mixer_value, out v);
-            sc.slider.value = Mathf.Pow(10, v) * 20;
+            sc.slider.value = Mathf.Pow(10, v);
             sc.slider.onValueChanged.AddListener(delegate { setMixerValue(sc); });
 
         }
@@ -31,14 +31,10 @@ public class VolumeSettings : MonoBehaviour
 
     public void setMixerValue(SliderConfiguration sc)
     {
-        AudioMixer.SetFloat(sc.mixer_value, sc.slider.value);
+        Debug.Log("Setting " + sc.mixer_value + " to " + sc.slider.value);
+        AudioMixer.SetFloat(sc.mixer_value, Mathf.Log10(sc.slider.value) * 20);
 
     }
 
-
-    public void SetMasterVolume(Slider slider)
-    {
-        AudioMixer.SetFloat("master", Mathf.Log10(slider.value) * 20);
-    }
 
 }
