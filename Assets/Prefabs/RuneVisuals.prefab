@@ -647,6 +647,7 @@ GameObject:
   - component: {fileID: 6820710021384576630}
   - component: {fileID: 1420245527118480796}
   - component: {fileID: 8826767862864762015}
+  - component: {fileID: -8638098842936993189}
   m_Layer: 0
   m_Name: RuneVisuals
   m_TagString: Untagged
@@ -694,6 +695,7 @@ MonoBehaviour:
   Power: {fileID: 8597786555992850285}
   Description: {fileID: 1419742937521937932}
   Icon: {fileID: 9126180257228466855}
+  InSlot: 0
 --- !u!54 &8826767862864762015
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -721,6 +723,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &-8638098842936993189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6415316939845821887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f4515dab02414e40995910baba5c496, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShardTransform: {fileID: 6820710021384576630}
 --- !u!1 &6687953046193973971
 GameObject:
   m_ObjectHideFlags: 0
