@@ -868,6 +868,7 @@ public class RuneBoard : MonoBehaviour
     private IEnumerator PlaceArtifact(Gem gem, GemSlot slot)
     {
         int index = Gems.IndexOf(gem);
+        //var events = Player.Instance.PlaceArtifact(index, gem.Artifact);
         var events = gem.Artifact.OnEnter(index, Player.Instance);
         slot.ActiveParticles.Play();
         yield return null;
@@ -875,6 +876,7 @@ public class RuneBoard : MonoBehaviour
 
     private void TakeArtifact(Gem gem, GemSlot slot)
     {
+        Player.Instance.TakeArtifact(Gems.IndexOf(gem));
         gem.Artifact.OnExit(0, Player.Instance);
         slot.ActiveParticles.Stop();
     }

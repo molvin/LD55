@@ -36,6 +36,9 @@ public class Player : MonoBehaviour
     private int circlePower;
     private int circlePowerPromise;
     private int currentRound;
+
+    private List<Artifact> artifacts = new(new Artifact[4]);
+
     public int CurrentRound => currentRound;
     public int ShopActions = Settings.ShopActions;
     private RuneBoard runeBoard;
@@ -127,6 +130,14 @@ public class Player : MonoBehaviour
     public void AddLife(int value)
     {
         health += value;
+    }
+    public List<EventHistory> PlaceArtifact(int index, Artifact artifact)
+    {
+        return new();
+    }
+    public void TakeArtifact(int index)
+    {
+
     }
     public List<EventHistory> Place(Rune rune, int slot)
     {
