@@ -120,28 +120,30 @@ public class Player : MonoBehaviour
         rune.OnEnter?.Invoke(slot, this);
     }
 
-    public void Remove(int index)
+    public bool Remove(int index)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return;
+            return false;
 
         if (circle[index].OnDestroy != null)
             circle[index]?.OnDestroy(index, this);
         runeBoard.DestroySlot(index);
         Discard(circle[index]);
         circle[index] = null;
+        return true;
     }
-    public void Exile(int index)
+    public bool Exile(int index)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return;
+            return false;
 
         circle[index].OnExile?.Invoke(index, this);
         runeBoard.DestroySlot(index);
         deckRef.Remove(circle[index]);
         circle[index] = null;
+        return true;
     }
     public void Swap(int first, int second)
     {
@@ -318,7 +320,7 @@ public class Player : MonoBehaviour
         // TODO: Put in the main routine!
         StartCoroutine(runeBoard.Draw(rune));
     }
-    private void Draw(bool discard)
+    private List<Rune> Draw(bool discard)
     {
         if (discard)
         {
@@ -328,10 +330,12 @@ public class Player : MonoBehaviour
             }
             hand.Clear();
         }
-        Draw(Settings.HandSize - hand.Count, false);
+        return Draw(Settings.HandSize - hand.Count, false);
     }
-    public void Draw(int count, bool spawnVisuals)
+    public List<Rune> Draw(int count, bool spawnVisuals)
     {
+        List<Rune> result = new();
+
         for (int i = 0; i < count; i++)
         {
             if (bag.Count == 0)
@@ -349,6 +353,7 @@ public class Player : MonoBehaviour
                 Rune rune = bag[0];
                 hand.Add(rune);
                 bag.RemoveAt(0);
+                result.Add(rune);
                 if(spawnVisuals)
                     StartCoroutine(runeBoard.Draw(rune));
             }
@@ -357,6 +362,8 @@ public class Player : MonoBehaviour
                 Debug.LogWarning("Your deck is too small");
             }
         }
+
+        return result;
     }
     private void Discard(Rune rune)
     {
