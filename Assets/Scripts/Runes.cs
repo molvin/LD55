@@ -342,7 +342,23 @@ public static class Runes
             return null;
         },
     };
+    private static Rune Discovery => new()
+    {
+        Name  = "Discovery",
+        Power = -5,
+        Rarity = Rarity.Common,
+        Text  = "On Play: Draw 3 Shards",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<Rune> drawn = player.Draw(3);
+            if (drawn.Count > 0)
+            {
+                return new() { EventHistory.Draw(drawn.ToArray()) };
+            }
 
+            return new();
+        },
+    };
     private static Rune Divinity => new()
     {
         Name = "Divinity",
@@ -833,6 +849,27 @@ public static class Runes
             return new();
         },
     };
+    // K
+    private static Rune Kill => new()
+    {
+        Name  = "Kill",
+        Power = -20,
+        Rarity = Rarity.Legendary,
+        Text  = "On Activate: Exile next Shard",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            int next = Player.CircularIndex(selfIndex + 1);
+
+            if (player.HasRuneAtIndex(next))
+            {
+                history.Add(EventHistory.Exile(next));
+                history.AddRange(player.Exile(next));
+            }
+
+            return history;
+        },
+    };
     // L
     private static Rune Light => new()
     {
@@ -894,7 +931,6 @@ public static class Runes
         },
     };
     // N
-
     private static Rune Next => new()
     {
         Name = "Next",
