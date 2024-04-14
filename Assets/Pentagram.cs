@@ -26,10 +26,13 @@ public class Pentagram : MonoBehaviour
     {
         foreach (GemSlot slot in Slots)
         {
-            if (isPlaying[slot])
-                slot.ActiveParticles.Play();
-            else
-                slot.ActiveParticles.Stop();
+            if (isPlaying.ContainsKey(slot))
+            {
+                if (isPlaying[slot])
+                    slot.ActiveParticles.Play();
+                else
+                    slot.ActiveParticles.Stop();
+            }
         }
     }
 }
