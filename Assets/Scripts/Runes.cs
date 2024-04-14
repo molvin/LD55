@@ -5,7 +5,7 @@ using UnityEditor;
 
 public static class Runes
 {
-    public static List<Rune> GetAllRunes()
+    public static List<Rune> GetAllRunes(Func<Rune, bool> Predicate = null)
     {
         var runeImpls = typeof(Runes).GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
@@ -17,7 +17,10 @@ public static class Runes
                 Rune rune = impl.Invoke(null, null) as Rune;
                 if (rune.Name != null && !rune.Name.StartsWith('_'))
                 {
-                    runes.Add(rune);
+                    if (Predicate == null || Predicate(rune))
+                    {
+                        runes.Add(rune);
+                    }
                 }
             }
         }
@@ -30,6 +33,19 @@ public static class Runes
     // Implemented Runes
     // ---------------------------------------------------------------------------------------------------------
 
+    // A
+    private static Rune Avarice => new()
+    {
+        Name = "Avarice",
+        Power = -20,
+        Rarity = Rarity.Common,
+        Text = "On Activate: The summon power is multiplied by 3",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            int circlePower = player.GetCirclePower();
+            player.AddCirclePower(circlePower * 2);
+        },
+    };
     // B
     private static Rune Banish => new()
     {
@@ -54,6 +70,25 @@ public static class Runes
                     rand--;
                 }
             }
+        },
+    };
+    private static Rune Bonfire => new()
+    {
+        Name = "Bonfire",
+        Power = -5,
+        Rarity = Rarity.Common,
+        Text = "On Activate: For each Shard with greater than 10 Power, add +5 to the summon",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            int activations = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                if (player.HasRuneAtIndex(i) && player.GetRunePower(i) > 10)
+                {
+                    activations++;
+                }
+            }
+            player.AddCirclePower(5 * activations);
         },
     };
     // C
@@ -91,6 +126,13 @@ public static class Runes
         },
     };
     // E
+    private static Rune Energy => new()
+    {
+        Name  = "Energy",
+        Power = 10,
+        Rarity = Rarity.Starter,
+        Text  = "",
+    };
     private static Rune Explosive => new()
     {
         Name = "Explosive",
@@ -129,6 +171,34 @@ public static class Runes
             }
         },
     };
+    private static Rune Fetch => new()
+    {
+        Name  = "Fetch",
+        Power = 8,
+        Rarity = Rarity.Common,
+        Text  = "On Play: Conjure 2 Energy to hand",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Rune energy = Energy;
+                energy.Token = true;
+                player.AddNewRuneToHand(energy);
+            }
+        },
+    };
+    private static Rune Flash => new()
+    {
+        Name  = "Flash",
+        Power = 5,
+        Rarity = Rarity.Common,
+        Text  = "On Play: Add Power equal to 5 times the summon Power",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            int circlePower = player.GetCirclePower();
+            player.AddStats(player.GetRuneInCircle(selfIndex), new() { Power = circlePower * 5 });
+        },
+    };
     private static Rune Focus => new()
     {
         Name  = "Focus",
@@ -141,6 +211,28 @@ public static class Runes
         },
     };
     // G
+    private static Rune Generosity => new()
+    {
+        Name = "Generosity",
+        Power = 0,
+        Rarity = Rarity.Common,
+        Text = "On Play: Permanently add +1 Power to opposite Shards",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            Rune leftOp = player.GetRuneInCircle(selfIndex - 2);
+            if (leftOp != null)
+            {
+                // Permanent
+                leftOp.Power += 1;
+            }
+            Rune rightOp = player.GetRuneInCircle(selfIndex + 2);
+            if (rightOp != null)
+            {
+                // Permanent
+                rightOp.Power += 1;
+            }
+        },
+    };
     private static Rune Growth => new()
     {
         Name = "Growth",
@@ -155,6 +247,18 @@ public static class Runes
                 // Permanent
                 prev.Power += 1;
             }
+        },
+    };
+    // H
+    private static Rune Help => new()
+    {
+        Name = "Help",
+        Power = 5,
+        Rarity = Rarity.Common,
+        Text = "On Play: Next Shards Power is multiplied by 2",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            player.MultiplyPower(selfIndex + 1, 2);
         },
     };
     // I
@@ -196,6 +300,23 @@ public static class Runes
             },
         },
     };
+    // M
+    private static Rune Martyre => new()
+    {
+        Name  = "Martyre",
+        Power = 8,
+        Rarity = Rarity.Common,
+        Text  = "On Exile: Permanently add +10 Power to the previous Shard",
+        OnExile = (int selfIndex, Player player) =>
+        {
+            Rune prev = player.GetRuneInCircle(selfIndex - 1);
+            if (prev != null)
+            {
+                // Permanent
+                prev.Power += 10;
+            }
+        },
+    };
     // P
     private static Rune Pool => new()
     {
@@ -205,7 +326,7 @@ public static class Runes
         Text  = "On Play: Draw 2 Shards",
         OnEnter = (int selfIndex, Player player) =>
         {
-            player.Draw(2);
+            player.Draw(2, true);
         },
     };
     private static Rune Prune => new()
@@ -213,7 +334,7 @@ public static class Runes
         Name  = "Prune",
         Power = 0,
         Rarity = Rarity.None,
-        Text  = "On Activate: Exile previous Shard, then Exile this",
+        Text  = "On Activate: Exile previous Shard then Exile this",
         OnActivate = (int selfIndex, Player player) =>
         {
             player.Exile(selfIndex - 1);
@@ -248,7 +369,7 @@ public static class Runes
         Name = "Rebellious",
         Power = 5,
         Rarity = Rarity.Common,
-        Text = "Neighbours has +5 and Opposites has -5",
+        Text = "Neighbours has +5 and opposite shards has -5",
         Aura = new()
         {
             new()
@@ -267,6 +388,24 @@ public static class Runes
                     return player.AreOpposites(selfIndex, other);
                 },
             }
+        },
+    };
+    private static Rune Repeat => new()
+    {
+        Name = "Repeat",
+        Power = 10,
+        Rarity = Rarity.Common,
+        Text = "Has +10 Power if there is no Shard in the next slot",
+        Aura = new()
+        {
+            new()
+            {
+                Power = 10,
+                Application = (int selfIndex, int other, Player player) =>
+                {
+                    return selfIndex == other && !player.HasRuneAtIndex(selfIndex + 1);
+                },
+            },
         },
     };
     private static Rune Rescue => new()
@@ -294,7 +433,38 @@ public static class Runes
             player.Exile(selfIndex);
         },
     };
+    private static Rune Run => new()
+    {
+        Name = "Run",
+        Power = 4,
+        Rarity = Rarity.Common,
+        Text = "On Play: Flip a coin; if successful, permanently conjure a Rare or Legendary Shard. Exile this Shard",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            float rand = UnityEngine.Random.value;
+            if (rand >= 0.5f)
+            {
+                List<Rune> runes = GetAllRunes((rune) => rune.Rarity >= Rarity.Rare);
+                int idx = UnityEngine.Random.Range(0, runes.Count);
+                Rune rune = runes[idx];
+                player.Buy(rune);
+                player.AddNewRuneToHand(rune);
+            }
+            player.Exile(selfIndex);
+        },
+    };
     // S
+    private static Rune Sacrifice => new()
+    {
+        Name = "Sacrifice",
+        Power = -10,
+        Rarity = Rarity.Common,
+        Text = "On Activate: Next Shards Power is multiplied by 3",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            player.MultiplyPower(selfIndex + 1, 3);
+        },
+    };
     private static Rune Shore => new()
     {
         Name = "Shore",
@@ -322,12 +492,37 @@ public static class Runes
             player.AddCirclePower(5);
         },
     };
-    private static Rune Strike => new()
+    private static Rune Supporter => new()
     {
-        Name  = "Strike",
-        Power = 10,
-        Rarity = Rarity.Starter,
-        Text  = "",
+        Name = "Supporter",
+        Power = 6,
+        Rarity = Rarity.Common,
+        Text = "On Activate: If this Shard has the lowest Power, add +10 to the summon",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            bool lowest = true;
+            int power = player.GetRunePower(selfIndex);
+            for (int i = 0; i < 5; i++)
+            {
+                if (i == selfIndex)
+                    continue;
+
+                if (player.HasRuneAtIndex(i))
+                {
+                    int p = player.GetRunePower(i);
+                    if (p < power)
+                    {
+                        lowest = false;
+                        break;
+                    }
+                }
+            }
+
+            if (lowest)
+            {
+                player.AddCirclePower(10);
+            }
+        },
     };
     // T
     private static Rune Tides => new()

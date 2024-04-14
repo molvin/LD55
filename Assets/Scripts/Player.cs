@@ -136,6 +136,7 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return;
 
+        circle[index].OnExile?.Invoke(index, this);
         runeBoard.DestroySlot(index);
         deckRef.Remove(circle[index]);
         circle[index] = null;
@@ -263,13 +264,12 @@ public class Player : MonoBehaviour
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
 
-                Restart();
-                yield return runeBoard.Draw(deckRef);
                 yield return runeBoard.Shop();
-                yield return runeBoard.EndRound();
+                Restart();
 
                 opponentHealth = Settings.GetOpponentHealth(currentRound);
                 HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+
             }
             else
             {
@@ -318,9 +318,9 @@ public class Player : MonoBehaviour
             }
             hand.Clear();
         }
-        Draw(Settings.HandSize - hand.Count);
+        Draw(Settings.HandSize - hand.Count, false);
     }
-    public void Draw(int count)
+    public void Draw(int count, bool spawnVisuals)
     {
         for (int i = 0; i < count; i++)
         {
@@ -339,6 +339,8 @@ public class Player : MonoBehaviour
                 Rune rune = bag[0];
                 hand.Add(rune);
                 bag.RemoveAt(0);
+                if(spawnVisuals)
+                    StartCoroutine(runeBoard.Draw(rune));
             }
             else
             {
@@ -358,4 +360,5 @@ public class Player : MonoBehaviour
     {
         deckRef.Add(rune);
     }
+
 }
