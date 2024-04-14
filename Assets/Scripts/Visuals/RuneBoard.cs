@@ -91,7 +91,6 @@ public class RuneBoard : MonoBehaviour
         }
 
         PentagramObject.gameObject.SetActive(true);
-        PentagramObject.Pop();
 
         ShopObject.SetActive(false);
 
@@ -101,7 +100,11 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator Play()
     {
         PentagramObject.gameObject.SetActive(true);
-        PentagramObject.Pop();
+        foreach(GemSlot gemSlot in GemSlots)
+        {
+            if (gemSlot.Held)
+                gemSlot.ActiveParticles.Play();
+        }
 
         running = true;
         StartGem.Rigidbody.isKinematic = false;
@@ -650,7 +653,6 @@ public class RuneBoard : MonoBehaviour
 
         boughtCount = 0;
 
-        PentagramObject.Cache();
         PentagramObject.gameObject.SetActive(false);
         ShopObject.SetActive(true);
         StartGem.gameObject.SetActive(false);
@@ -724,7 +726,6 @@ public class RuneBoard : MonoBehaviour
         HUD.Instance.EndTurnButton.interactable = false;
 
         PentagramObject.gameObject.SetActive(true);
-        PentagramObject.Pop();
         ShopObject.SetActive(false);
         StartGem.gameObject.SetActive(true);
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
