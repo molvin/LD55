@@ -90,7 +90,7 @@ public class Audioman : MonoBehaviour
         StartCoroutine(PlayAndWaitForFinish(audioSource, conf.clips[UnityEngine.Random.Range(0, conf.clips.Length)]));
     }
 
-    public IEnumerator PlayAndWaitForFinish(AudioSource source, AudioClip clip)
+    private IEnumerator PlayAndWaitForFinish(AudioSource source, AudioClip clip)
     {
         float time = 0;
         source.PlayOneShot(clip);

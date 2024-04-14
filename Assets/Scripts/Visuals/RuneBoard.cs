@@ -62,6 +62,13 @@ public class RuneBoard : MonoBehaviour
     private List<Draggable> allDragables => shopObjects.Union(runes).Union(Gems).Union(new[] {StartGem}).ToList();
     private List<Slot> allSlots => new Slot[] { StartSlot }.Union(slots).Union(GemSlots).ToList(); //slots.Union(ShopSlots).ToList();
 
+
+    [Header("audio")]
+    public AudioOneShotClipConfiguration placeInSlotSound;
+    public AudioOneShotClipConfiguration dropShardSound;
+    public AudioOneShotClipConfiguration startSummonSound;
+
+
     private void Start()
     {
         playSpace = new(Vector3.up, Vector3.up * PlaneHeight);
@@ -287,6 +294,7 @@ public class RuneBoard : MonoBehaviour
                 runes.Remove(vis);
                 var events = Player.Instance.Place(vis.Rune, index);
                 vis.UpdateStats();
+                FindAnyObjectByType<Audioman>().PlaySound(placeInSlotSound, slot.transform.position);
                 yield return Resolve(index, events);
             }
             else if(hovered != null && held is Gem gem && hovered is GemSlot gemSlot && (gem == StartGem && gemSlot.IsStart || gem != StartGem && !gemSlot.IsStart))
@@ -299,6 +307,7 @@ public class RuneBoard : MonoBehaviour
                 {
                     running = false;
                     gemSlot.ActiveParticles.Play();
+                    FindAnyObjectByType<Audioman>().PlaySound(startSummonSound, gemSlot.transform.position);
                 }
                 else
                 {
@@ -318,6 +327,7 @@ public class RuneBoard : MonoBehaviour
                 {
                     held.Rigidbody.isKinematic = false;
                     held.Rigidbody.velocity = runeVelocity;
+                    FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, held.transform.position);
                 }
             }
             held = null;
@@ -736,7 +746,17 @@ public class RuneBoard : MonoBehaviour
         List<Rune> runes = new List<Rune>();
         for (int i = 0; i < 5; i++)
         {
-            List<Rune> allRunes = Runes.GetAllRunes();
+            bool rare = Random.value > 0.7f;
+            bool legendary = rare && Random.value > 0.7f;
+            List<Rune> allRunes = legendary
+                ? Runes.GetAllRunes(r => r.Rarity != Rarity.None)
+                : rare
+                    ? Runes.GetAllRunes(r => r.Rarity != Rarity.None && r.Rarity <= Rarity.Rare)
+                    : Runes.GetAllRunes(r => r.Rarity != Rarity.None && r.Rarity <= Rarity.Common);
+
+            List<string> names = runes.Select(r => r.Name).ToList();
+            allRunes = allRunes.Where(r => !names.Contains(r.Name) && r.Name != Runes.GetRestore().Name && r.Name != Runes.GetPrune().Name).ToList();
+
             runes.Add(allRunes[Random.Range(0, allRunes.Count)]);
         }
 
