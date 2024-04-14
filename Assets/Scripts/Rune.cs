@@ -29,7 +29,7 @@ public class EventHistory
     public static EventHistory Exile(int actor) => new() { Type = EventType.Exile, Actor = actor };
     public static EventHistory Destroy(int actor) => new() { Type = EventType.Destroy, Actor = actor };
     public static EventHistory Swap(int actor, int target) => new() { Type = EventType.Swap, Actor = actor, Target = target };
-    public static EventHistory Replace(int actor) => new() { Type = EventType.Replace, Actor = actor };
+    public static EventHistory Replace(int actor, params Rune[] runes) => new() { Type = EventType.Replace, Actor = actor, Others = runes };
     public static EventHistory Draw(params Rune[] runes) => new() { Type = EventType.Draw, Others = runes };
     public static EventHistory AddLife(int life) => new() { Type = EventType.AddLife, Power = life };
     public static EventHistory DiceRoll(bool success) => new() { Type = EventType.DiceRoll, Power = success ? 1 : 0 };

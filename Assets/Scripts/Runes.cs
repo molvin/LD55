@@ -190,8 +190,8 @@ public static class Runes
                 }
                 rune.Token = true;
 
-                player.Swap(rune, index);
-                return new() { EventHistory.Replace(index) };
+                player.Replace(rune, index);
+                return new() { EventHistory.Replace(index, rune) };
             }
 
             return new();

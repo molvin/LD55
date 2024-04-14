@@ -144,14 +144,13 @@ public class Player : MonoBehaviour
         second = CircularIndex(second);
 
         (circle[second], circle[first]) = (circle[first], circle[second]);
-        //runeBoard.SwapSlot(first, second);
     }
-    public void Swap(Rune rune, int index)
+    public void Replace(Rune rune, int index)
     {
         index = CircularIndex(index);
         temporaryStats.Add(rune, new());
         Discard(GetRuneInCircle(index));
-        runeBoard.SwapSlot(rune, index);
+        // runeBoard.ReplaceSlot(rune, index);
         circle[index] = rune;
     }
 
@@ -311,8 +310,6 @@ public class Player : MonoBehaviour
     {
         temporaryStats.Add(rune, new());
         hand.Add(rune);
-        // TODO: Put in the main routine!
-        StartCoroutine(runeBoard.Draw(rune));
     }
     private List<Rune> Draw(bool discard)
     {
