@@ -144,7 +144,7 @@ public class Player : MonoBehaviour
         second = CircularIndex(second);
 
         (circle[second], circle[first]) = (circle[first], circle[second]);
-        runeBoard.SwapSlot(first, second);
+        //runeBoard.SwapSlot(first, second);
     }
     public void Swap(Rune rune, int index)
     {

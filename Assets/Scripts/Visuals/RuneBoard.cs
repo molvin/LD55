@@ -454,11 +454,23 @@ public class RuneBoard : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
     }
 
-    public void SwapSlot(int first, int second)
+    private IEnumerator SwapSlot(int first, int second)
     {
-        RuneVisuals temp = slots[first].Held;
-        slots[first].Set(slots[second].Held);
-        slots[second].Set(temp);
+        RuneVisuals firstVis = slots[first].Held;
+        RuneVisuals secondVis = slots[second].Held;
+
+        float t = 0.0f;
+        float duration = 0.25f;
+        while (t < duration)
+        {
+
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+
+        slots[first].Set(secondVis);
+        slots[second].Set(firstVis);
     }
     public void SwapSlot(Rune rune, int index)
     {
