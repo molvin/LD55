@@ -47,7 +47,7 @@ public class EventHistory
 }
 
 public delegate List<EventHistory> EventTrigger(int selfIndex, Player player);
-public delegate List<EventHistory> TriggerTrigger(TriggerType trigger, int selfIndex, Player player);
+public delegate List<EventHistory> TriggerTrigger(TriggerType trigger, int selfIndex, int other, Player player);
 public delegate bool AuraPredicate(int selfIndex, int other, Player player);
 
 public static class Keywords
