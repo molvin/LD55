@@ -40,6 +40,8 @@ public class Player : MonoBehaviour
     public int ShopActions = Settings.ShopActions;
     private RuneBoard runeBoard;
 
+    public int Regen = 0;
+
     public List<Rune> Bag => bag;
     public List<Rune> DiscardPile => discardPile;
 
@@ -366,6 +368,8 @@ public class Player : MonoBehaviour
             ClearCircle();
             yield return runeBoard.EndSummon();
             yield return runeBoard.UpdateScore(circlePower);
+
+            health += Regen;
 
             if (opponentHealth <= 0)
             {

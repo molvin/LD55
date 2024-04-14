@@ -84,6 +84,8 @@ MonoBehaviour:
     Color: {r: 0, g: 0.6320754, b: 0, a: 1}
   - Name: Acanthite
     Color: {r: 0.9056604, g: 0.5211171, b: 0, a: 1}
+  - Name: Smoky Quartz
+    Color: {r: 0.764151, g: 0.081109405, b: 0.06127627, a: 1}
   Renderer: {fileID: 3144813096552825740}
   Artifact:
     Name: 

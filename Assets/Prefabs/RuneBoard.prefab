@@ -835,11 +835,11 @@ MonoBehaviour:
   RunePrefab: {fileID: 1420245527118480796, guid: 753dd122e791f8643931c5a1ae9a4df6, type: 3}
   SlotPrefab: {fileID: 5706262028073016692, guid: 9fc2c07272829154cbe0c6a6a4837280, type: 3}
   GemPrefab: {fileID: 2426167951513081066, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
-  RuneMoveSmoothing: 15
+  RuneMoveSmoothing: 0.24
   RotationSpeed: 440
-  PentagramMoveSmoothing: 35
+  PentagramMoveSmoothing: 0.56
   PentagramRotationSpeed: 600
-  InspectMoveSmoothing: 25
+  InspectMoveSmoothing: 0.4
   InspectRotationSpeed: 500
   PentagramOrigin: {fileID: 2302836321048753090}
   PentagramObject: {fileID: 5471611506491346824}

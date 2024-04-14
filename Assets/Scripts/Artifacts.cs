@@ -62,4 +62,21 @@ public static class Artifacts
             return new();
         },
     };
+
+    // S
+    private static Artifact SmokyQuartz => new()
+    {
+        Name = "Smoky Quartz",
+        Text = "Regenerate 1 Health at the start of a Round",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            player.Regen++;
+            return new();
+        },
+        OnExit = (int selfIndex, Player player) =>
+        {
+            player.Regen--;
+            return new();
+        },
+    };
 }
