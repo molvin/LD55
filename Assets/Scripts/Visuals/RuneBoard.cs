@@ -366,8 +366,10 @@ public class RuneBoard : MonoBehaviour
                         yield return DestroySlot(e.Actor, false);
                         break;
                     case EventType.Swap:
+                        yield return SwapSlot(e.Actor, e.Target);
                         break;
                     case EventType.Replace:
+                        yield return ReplaceSlot(e.Others[0], e.Actor);
                         break;
                     case EventType.Draw:
                         foreach (Rune rune in e.Others)
@@ -411,7 +413,7 @@ public class RuneBoard : MonoBehaviour
         ScoreText.text = "0";
     }
 
-    private IEnumerator UpdateScore(int circlePower)
+    public IEnumerator UpdateScore(int circlePower)
     {
         ScoreText.text = $"{circlePower}";
         yield return new WaitForSeconds(0.2f);
@@ -456,25 +458,64 @@ public class RuneBoard : MonoBehaviour
 
     private IEnumerator SwapSlot(int first, int second)
     {
-        RuneVisuals firstVis = slots[first].Held;
-        RuneVisuals secondVis = slots[second].Held;
+        RuneVisuals firstVis = slots[first].Open ? null : slots[first].Held;
+        RuneVisuals secondVis = slots[second].Open ? null : slots[second].Held;
+
+        Vector3 firstStartPos = firstVis == null ? slots[first].transform.position : firstVis.transform.position;
+        Vector3 secondStartPos = secondVis == null ? slots[second].transform.position : secondVis.transform.position;
+
+        Quaternion firstStartRotation = firstVis == null ? slots[first].transform.rotation : firstVis.transform.rotation;
+        Quaternion secondStartRotation = secondVis == null ? slots[second].transform.rotation : secondVis.transform.rotation;
 
         float t = 0.0f;
         float duration = 0.25f;
         while (t < duration)
         {
+            if(firstVis != null)
+            {
+                firstVis.transform.position = Vector3.Lerp(firstStartPos, secondStartPos, t / duration);
+                firstVis.transform.rotation = Quaternion.Slerp(firstStartRotation, secondStartRotation, t / duration);
+            }
+            if(secondVis != null)
+            {
+                secondVis.transform.position = Vector3.Lerp(secondStartPos, firstStartPos, t / duration);
+                secondVis.transform.rotation = Quaternion.Slerp(secondStartRotation, firstStartRotation, t / duration);
+            }
+
 
             t += Time.deltaTime;
             yield return null;
         }
 
-
         slots[first].Set(secondVis);
         slots[second].Set(firstVis);
     }
-    public void SwapSlot(Rune rune, int index)
+    
+    private IEnumerator ReplaceSlot(Rune rune, int index)
     {
+        RuneVisuals vis = slots[index].Held;
+        float t = 0.0f;
+        float duration = 0.25f;
+
+        Vector3 startEuler = vis.transform.rotation.eulerAngles;
+        bool done = false;
+        while(t < duration)
+        {
+            vis.transform.rotation = Quaternion.Euler(startEuler.x, startEuler.y, Mathf.Lerp(0, 360, t / duration));
+            t += Time.deltaTime;
+
+            if (!done && t >= duration / 2)
+            {
+                vis.Init(rune, Player.Instance);
+                done = true;
+            }
+
+            yield return null;
+        }
+        vis.transform.rotation = Quaternion.Euler(startEuler);
+
         slots[index].Held.Init(rune, Player.Instance);
+        yield return null;
     }
 
     public IEnumerator Shop()

@@ -251,7 +251,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: UseStarters
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
+      propertyPath: BaseDeck.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
+      propertyPath: BaseDeck.Array.data[0].Index
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
+      propertyPath: BaseDeck.Array.data[1].Index
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
+      propertyPath: BaseDeck.Array.data[2].Index
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
+      propertyPath: BaseDeck.Array.data[3].Index
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
+      propertyPath: BaseDeck.Array.data[4].Index
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4183897307495662369, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: m_LocalPosition.x

@@ -13,10 +13,10 @@ public class RuneSlot : Slot
     public void Set(RuneVisuals rune)
     {
         held = rune;
-        held.InSlot = true;
 
         if (held != null)
         {
+            held.InSlot = true;
             held.Rigidbody.isKinematic = true;
             held.Collider.enabled = false;
             held.transform.position = transform.position;
