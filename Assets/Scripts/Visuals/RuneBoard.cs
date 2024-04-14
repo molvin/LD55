@@ -259,6 +259,7 @@ public class RuneBoard : MonoBehaviour
                 slot.Set(vis);
                 runes.Remove(vis);
                 var events = Player.Instance.Place(vis.Rune, index);
+                vis.UpdateStats();
                 yield return Resolve(index, events);
             }
             else if(hovered != null && held is StartGem && hovered is StartSlot)
@@ -342,6 +343,17 @@ public class RuneBoard : MonoBehaviour
         {
             inspect.Rigidbody.isKinematic = false;
             inspect.Rigidbody.velocity = runeVelocity;
+        }
+    }
+
+    public void ForceUpdateVisuals()
+    {
+        foreach (var slot in slots)
+        {
+            if (slot.Held != null)
+            {
+                slot.Held.UpdateStats();
+            }
         }
     }
 
