@@ -248,6 +248,20 @@ public static class Runes
             return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
         },
     };
+
+    private static Rune Experiment => new()
+    {
+        Name = "Experiment",
+        Power = 15,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Discard hand and draw 5",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new List<EventHistory> { EventHistory.Discard(player.GetRunesInHand()), EventHistory.Draw(player.Draw(true, 5).ToArray()) };
+            return history;
+        },
+    };
+
     // F
     private static Rune Fake => new()
     {
