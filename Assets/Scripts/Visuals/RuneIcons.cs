@@ -9,7 +9,7 @@ public static class RuneIcons
     public static void Init()
     {
         textures = new();
-        Texture2D[] resources = Resources.LoadAll<Texture2D>("CardIcons");
+        Texture2D[] resources = Resources.LoadAll<Texture2D>("RuneIcons");
 
         foreach(Texture2D tex in resources)
         {
