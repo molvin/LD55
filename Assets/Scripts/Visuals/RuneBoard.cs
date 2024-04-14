@@ -259,7 +259,7 @@ public class RuneBoard : MonoBehaviour
                 ((RuneSlot)hovered).Set(vis);
                 runes.Remove(vis);
                 var events = Player.Instance.Place(vis.Rune, index);
-                yield return Resolve(index, events, Player.Instance.GetCirclePower());
+                yield return Resolve(index, events);
             }
             else
             {
@@ -389,7 +389,9 @@ public class RuneBoard : MonoBehaviour
     }
     public IEnumerator FinishResolve(int index, int circlePower)
     {
+        slots[index].Active.Play();
         yield return UpdateScore(circlePower);
+        slots[index].Active.Stop();
     }
 
     public IEnumerator EndSummon()
@@ -420,7 +422,7 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator UpdateScore(int circlePower)
     {
         ScoreText.text = $"{circlePower}";
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
     }
     
     private IEnumerator RunConcurently(float delay, params IEnumerator[] corouties)
@@ -443,9 +445,10 @@ public class RuneBoard : MonoBehaviour
 
     private IEnumerator DestroySlot(int index, bool exile)
     {
+        yield return new WaitForSeconds(0.25f);
         RuneVisuals vis = slots[index].Held;
         float t = 0;
-        float duration = 0.3f;
+        float duration = 0.5f;
         Vector3 startPos = vis.transform.position;
         Quaternion startRot = vis.transform.rotation;
         Vector3 endPos = exile ? ExilePile.position : DiscardPile.position;
@@ -456,8 +459,8 @@ public class RuneBoard : MonoBehaviour
             t += Time.deltaTime;
             yield return null;
         }
-        Destroy(slots[index].Held.gameObject); // TODO: visuals
-        yield return new WaitForSeconds(0.15f);
+        Destroy(slots[index].Held.gameObject); 
+        yield return new WaitForSeconds(0.25f);
     }
 
     private IEnumerator SwapSlot(int first, int second)
@@ -472,7 +475,7 @@ public class RuneBoard : MonoBehaviour
         Quaternion secondStartRotation = secondVis == null ? slots[second].transform.rotation : secondVis.transform.rotation;
 
         float t = 0.0f;
-        float duration = 0.25f;
+        float duration = 0.55f;
         while (t < duration)
         {
             if(firstVis != null)
