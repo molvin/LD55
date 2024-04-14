@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class RuneVisuals : Draggable
 {
-    public TextMeshProUGUI Name;
     public TextMeshProUGUI Power;
     public TextMeshProUGUI Description;
     public Image Icon;
@@ -26,8 +25,6 @@ public class RuneVisuals : Draggable
     {
         this.rune = rune;
         this.player = player;
-
-        Name.text = rune.Name;
         Description.text = rune.Text;
 
         //Set material based on rarity
@@ -51,7 +48,7 @@ public class RuneVisuals : Draggable
                 SurfaceRenderer.material = Surfaces[3];
                 break;
         }
-        //TODO: SET THE ICON
+        Icon.sprite = RuneIcons.Get(rune.Name);
         UpdateStats();
     }
 
