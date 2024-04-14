@@ -2,10 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
-using System.Threading;
 
 public struct TempStats
 {
@@ -24,7 +20,6 @@ public class Player : MonoBehaviour
     public static int CircularIndex(int index) => index < 0 ? Settings.NumSlots + index : index >= Settings.NumSlots ? index - Settings.NumSlots : index;
     public static Player Instance;
 
-    public RuneVisuals RuneVisualPrefab;
     public List<RuneRef> BaseDeck;
     public bool UseStarters;
     private int health;
@@ -209,7 +204,15 @@ public class Player : MonoBehaviour
     {
         if(UseStarters)
         {
-            Runes.GetAllRunes(r => r.Rarity == Rarity.Starter);
+            deckRef = new();
+            var runes = Runes.GetAllRunes(r => r.Rarity == Rarity.Starter);
+            foreach(Rune rune in runes)
+            {
+                for(int i = 0; i < rune.StartCount; i++)
+                {
+                    deckRef.Add(rune);
+                }
+            }
         }
         else
         {

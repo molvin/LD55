@@ -31,6 +31,7 @@ public class RuneBoard : MonoBehaviour
     public RuneRef HealRune;
     public Transform HealSlot;
     public BoxCollider ShopArea;
+    public ParticleSystem ShopFeedback;
 
     public TextMeshProUGUI ScoreText;
 
@@ -38,13 +39,11 @@ public class RuneBoard : MonoBehaviour
     private List<RuneVisuals> runes = new();
     private List<Draggable> shopObjects = new();
     private Draggable held;
-    private Draggable inspect;
     public float PlaneHeight;
     private Plane playSpace;
     private Vector3 runeVelocity;
     private Vector3 grabOffset;
     private int boughtCount;
-    private float dragTime;
     private Vector3 mouseDragStartPoint;
 
     private List<Draggable> allDragables => shopObjects.Union(runes.Select(x => x as Draggable)).ToList();
@@ -136,27 +135,21 @@ public class RuneBoard : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (held == null && inspect == null)
+            if (held == null)
             {
-                UpdateHover(ray);
-            }
-            else if(inspect != null)
-            {
-                yield return Inspect(true);
+                yield return UpdateHover(ray);
             }
             else
             {
                 yield return UpdateDrag(ray, false);
             }
-
-            yield return null;
         }
 
         HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
         HUD.Instance.EndTurnButton.interactable = false;
     }
 
-    private void UpdateHover(Ray ray)
+    private IEnumerator UpdateHover(Ray ray)
     {
         // TODO: we can also hover and inspect shop objects
 
@@ -171,7 +164,6 @@ public class RuneBoard : MonoBehaviour
                 hovered = drag;
                 grabOffset = drag.transform.InverseTransformPoint(hit.point);
                 grabOffset.y = 0.0f;
-                dragTime = Time.time;
                 mouseDragStartPoint = ray.origin;
             }
         }
@@ -192,8 +184,9 @@ public class RuneBoard : MonoBehaviour
             else if (Input.GetMouseButtonDown(1))
             {
                 // Inspect
-                inspect = hovered;
-                inspect.Rigidbody.isKinematic = true;
+                HUD.Instance.EndTurnButton.interactable = false;
+                yield return Inspect(hovered, true, Quaternion.identity);
+                HUD.Instance.EndTurnButton.interactable = true;
             }
         }
         else
@@ -204,8 +197,9 @@ public class RuneBoard : MonoBehaviour
                 {
                     if (Input.GetMouseButtonDown(1))
                     {
-                        inspect = slot.Held;
-                        inspect.Rigidbody.isKinematic = true;
+                        HUD.Instance.EndTurnButton.interactable = false;
+                        yield return Inspect(slot.Held, false, slot.Held.transform.rotation);
+                        HUD.Instance.EndTurnButton.interactable = true;
                     }
                 }
             }
@@ -223,9 +217,13 @@ public class RuneBoard : MonoBehaviour
                 hovered = slot;
             }
         }
-        if(shopping)
+        if (shopping)
         {
             shopHovered = ShopArea.Raycast(ray, out RaycastHit _, 1000.0f);
+            if (shopHovered && !ShopFeedback.isPlaying)
+                ShopFeedback.Play();
+            else if (!shopHovered && ShopFeedback.isPlaying)
+                ShopFeedback.Stop();
         }
 
         if (!Input.GetMouseButton(0))
@@ -251,7 +249,7 @@ public class RuneBoard : MonoBehaviour
                     yield return ShopRunes(origin);
                 }
                 boughtCount++;
-            }   
+            }
             else if(hovered != null && ((RuneSlot)hovered).Open)
             {
                 int index = System.Array.IndexOf(slots, hovered);
@@ -262,7 +260,7 @@ public class RuneBoard : MonoBehaviour
             }
             else
             {
-                if(Vector3.Distance(ray.origin, mouseDragStartPoint) < 0.01f)
+                if (Vector3.Distance(ray.origin, mouseDragStartPoint) < 0.01f)
                 {
                     held.ResetRot();
                     held.Rigidbody.isKinematic = false;
@@ -297,16 +295,15 @@ public class RuneBoard : MonoBehaviour
             held.transform.position = Vector3.SmoothDamp(held.transform.position, targetPos, ref runeVelocity, moveSmoothing * Time.deltaTime);
             held.transform.localRotation = Quaternion.RotateTowards(held.transform.localRotation, targetRot, rotationSpeed * Time.deltaTime);
         }
-        yield return null;
     }
 
-    private IEnumerator Inspect(bool enablePhysicsWhenDone)
+    private IEnumerator Inspect(Draggable inspect, bool enablePhysicsWhenDone, Quaternion cachedRot)
     {
+        inspect.Rigidbody.isKinematic = true;
 
         yield return null;
 
         Vector3 cachedPos = inspect.transform.position;
-        Quaternion cachedRot = Quaternion.identity; //inspect.transform.rotation;
         while (!Input.GetMouseButtonDown(1))
         {
             Transform target = CameraController.Instance.InspectPoint;
@@ -330,7 +327,6 @@ public class RuneBoard : MonoBehaviour
             inspect.Rigidbody.isKinematic = false;
             inspect.Rigidbody.velocity = runeVelocity;
         }
-        inspect = null;
     }
 
     public IEnumerator Resolve(int circlePower)
@@ -412,23 +408,23 @@ public class RuneBoard : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (held == null && inspect == null)
+            if (held == null)
             {
-                UpdateHover(ray);
-            }
-            else if (inspect != null)
-            {
-                yield return Inspect(true);
+                if (ShopFeedback.isPlaying)
+                    ShopFeedback.Stop();
+
+                yield return UpdateHover(ray);
             }
             else
             {
                 yield return UpdateDrag(ray, true);
             }
-
-            yield return null;
         }
 
-        foreach(Draggable obj in shopObjects)
+        if (ShopFeedback.isPlaying)
+            ShopFeedback.Stop();
+
+        foreach (Draggable obj in shopObjects)
         {
             Destroy(obj.gameObject);
         }
@@ -491,8 +487,7 @@ public class RuneBoard : MonoBehaviour
                     }
                     if(Input.GetMouseButtonDown(1))
                     {
-                        inspect = vis;
-                        yield return Inspect(false);
+                        yield return Inspect(vis, false, vis.transform.rotation);
                     }
                 }
             }
