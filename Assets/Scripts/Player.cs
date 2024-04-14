@@ -417,6 +417,23 @@ public class Player : MonoBehaviour
 
         return result;
     }
+
+    public Rune DiscardAtIndex(int? index = null)
+    {
+        if (HandSize == 0 || index.HasValue && index.Value >= HandSize)
+            return null;
+
+        int indexToRemove = -1;
+        if (index.HasValue)
+            indexToRemove = index.Value;
+        else
+            indexToRemove = UnityEngine.Random.Range(0, HandSize);
+
+        Rune rune = GetRunesInHand()[indexToRemove];
+        Discard(rune);
+        return rune;
+    }
+
     private void Discard(Rune rune)
     {
         if (!rune.Token)

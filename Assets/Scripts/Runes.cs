@@ -269,6 +269,29 @@ public static class Runes
             return history;
         },
     };
+    private static Rune DevilsLuck => new()
+    {
+        Name = "Devils Luck",
+        Power = 0,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Transform into a random Legendary",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            Rune thisRune = player.GetRuneInCircle(selfIndex);
+            if (thisRune != null)
+            {
+                List<Rune> allRunes = GetAllRunes((rune) => { return rune.Rarity > Rarity.Rare; });
+                Rune rune = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                if(rune != null)
+                {
+                    player.Replace(rune, selfIndex);
+                    return new() { EventHistory.Replace(selfIndex, rune) };
+                }
+            }
+
+            return null;
+        },
+    };
     private static Rune Drain => new()
     {
         Name = "Drain",
@@ -943,6 +966,20 @@ public static class Runes
             }
 
             return new();
+        },
+    };
+    private static Rune Seeing => new()
+    {
+        Name = "Seeing",
+        Power = -10,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Draw 4 Shards then Discard a random one",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new List<EventHistory>();
+            history.Add(EventHistory.Draw(player.Draw(4).ToArray()));
+            history.Add(EventHistory.Discard(player.DiscardAtIndex()));
+            return history;
         },
     };
     private static Rune Shore => new()
