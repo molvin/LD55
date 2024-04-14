@@ -51,34 +51,6 @@ public class MainMenuAnimation : MonoBehaviour
         }
     }
 
-    public void spawnButtons()
-    {
-        spawnButtons("Start", 0);
-
-    }
-
-    public void spawnButtons(string text, int pos)
-    {
-        GameObject newButton = DefaultControls.CreateButton(new DefaultControls.Resources());
-        newButton.transform.SetParent(transform, false);
-        Color newColor = newButton.GetComponent<Image>().color;
-        newColor.a = 0;
-        newButton.GetComponent<Image>().color = newColor;
-        // newButton.GetComponentInChildren<Text>().text = text;
-        GameObject textObject =  newButton.GetComponentInChildren<Text>().gameObject;
-        Destroy(textObject.GetComponent<Text>());
-
-        textObject.AddComponent<TMPro.TextMeshProUGUI>();
-
-        foreach(Component c in textObject.GetComponents(typeof(Component))) {
-            Debug.Log(c.GetType().Name);
-        }
-        Text t = textObject.GetComponent<Text>();
-        t.enabled = true;
-        t.text = text;
-
-
-    }
 
     public void triggerSettingsAnim(bool show_settings)
     {
