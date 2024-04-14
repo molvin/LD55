@@ -14,17 +14,28 @@ public enum EventType
     Replace,
     Draw,
     AddLife,
+    DiceRoll,
 }
 public class EventHistory
 {
-    public EventType[] Types;
+    public EventType Type;
     public int Actor = -1;
     public int Target = -1;
     public int Power = 0;
     public Rune[] Others;
+
+    public static EventHistory PowerToSummon(int power) => new() { Type = EventType.PowerToSummon, Power = power };
+    public static EventHistory PowerToRune(int actor, int power) => new() { Type = EventType.PowerToRune, Actor = actor, Power = power };
+    public static EventHistory Exile(int actor) => new() { Type = EventType.Exile, Actor = actor };
+    public static EventHistory Destroy(int actor) => new() { Type = EventType.Destroy, Actor = actor };
+    public static EventHistory Swap(int actor, int target) => new() { Type = EventType.Swap, Actor = actor, Target = target };
+    public static EventHistory Replace(int actor) => new() { Type = EventType.Replace, Actor = actor };
+    public static EventHistory Draw(params Rune[] runes) => new() { Type = EventType.Draw, Others = runes };
+    public static EventHistory AddLife(int life) => new() { Type = EventType.AddLife, Power = life };
+    public static EventHistory DiceRoll(bool success) => new() { Type = EventType.DiceRoll, Power = success ? 1 : 0 };
 }
 
-public delegate void EventTrigger(int selfIndex, Player player);
+public delegate List<EventHistory> EventTrigger(int selfIndex, Player player);
 public delegate bool AuraPredicate(int selfIndex, int other, Player player);
 
 public struct Aura
