@@ -6,8 +6,9 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
-public class MainMenuAnimation : MonoBehaviour
+public class MainMenuScript : MonoBehaviour
 {
     // Start is called before the first frame update
     public Rotator[] rotators;
@@ -39,6 +40,15 @@ public class MainMenuAnimation : MonoBehaviour
     {
         //spawnButtons();
     }
+    public void Play()
+    {
+        SceneManager.LoadScene(1);
+    }
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -63,13 +73,19 @@ public class MainMenuAnimation : MonoBehaviour
         while (time < transitionConfig.duration)
         {
             time += Time.deltaTime;
-            float scale = transitionConfig.original_scale * transitionConfig.curve.Evaluate(time / transitionConfig.duration);
+            float progress = time / transitionConfig.duration;
+            float scale = transitionConfig.original_scale * transitionConfig.curve.Evaluate(progress);
             transitionConfig.image.rectTransform.localScale = new Vector3(
                 scale, scale, scale
             );
 
+            if (progress < 0.2)
+            {
+                transitionConfig.button_group_settings.SetActive(false);
+                transitionConfig.button_group_main.SetActive(false);
+            }
 
-            if (time > (transitionConfig.duration / 2))
+            if (progress > 0.8)
             {
                 transitionConfig.button_group_settings.SetActive(showSettings);
                 transitionConfig.button_group_main.SetActive(!showSettings);

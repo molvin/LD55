@@ -63,10 +63,7 @@ public class PauseMenuScript : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
-    public void Quit()
-    {
-        Application.Quit();
-    }
+
 
     public void QuitToMainMenu()
     {
@@ -177,11 +174,6 @@ public class PauseMenuScript : MonoBehaviour
 
 
 
-    public AudioMixer mixer;
-    public void SetMasterVolume(Slider slider)
-    {
-        mixer.SetFloat("master", Mathf.Log10(slider.value) * 20);
-    }
 
 
 }
