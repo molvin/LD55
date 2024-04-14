@@ -8,6 +8,7 @@ public class RuneBoard : MonoBehaviour
 {
     public RuneVisuals RunePrefab;
     public RuneSlot SlotPrefab;
+    public Gem GemPrefab;
     public float RuneMoveSmoothing;
     public float RotationSpeed;
 
@@ -36,8 +37,10 @@ public class RuneBoard : MonoBehaviour
     public BoxCollider InspectDeck;
     public BoxCollider InspectDiscard;
 
-    public StartGem Gem;
-    public StartSlot StartSlot;
+    public Gem StartGem;
+    public List<Gem> Gems = new();
+    public GemSlot StartSlot;
+    public GemSlot[] GemSlots;
 
     public TextMeshProUGUI ScoreText;
 
@@ -54,8 +57,8 @@ public class RuneBoard : MonoBehaviour
     bool running;
     private Draggable previousHover;
 
-    private List<Draggable> allDragables => shopObjects.Union(runes).Union(new[] {Gem}).ToList();
-    private List<Slot> allSlots => slots.Select(s => s as Slot).Union(new[] {StartSlot}).ToList(); //slots.Union(ShopSlots).ToList();
+    private List<Draggable> allDragables => shopObjects.Union(runes).Union(Gems).Union(new[] {StartGem}).ToList();
+    private List<Slot> allSlots => new Slot[] { StartSlot }.Union(slots).Union(GemSlots).ToList(); //slots.Union(ShopSlots).ToList();
 
     private void Start()
     {
@@ -68,16 +71,26 @@ public class RuneBoard : MonoBehaviour
             slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i + 2), 0);
         }
 
+        for(int i = 0; i < 4; i++)
+        {
+            Gem g = Instantiate(GemPrefab, Vector3.up, Quaternion.identity);
+            g.Init(Artifacts.GetAllArtifacts(a => a.Name == "Malechite")[0]);
+        }
+
         runes = FindObjectsOfType<RuneVisuals>().ToList();
         var draggables = FindObjectsOfType<Draggable>();
         foreach(Draggable draggable in draggables)
         {
-            if (draggable is not RuneVisuals && draggable is not StartGem)
+            if (draggable is not RuneVisuals && draggable is not Gem)
                 shopObjects.Add(draggable);
+            if (draggable is Gem gem)
+                Gems.Add(gem);
         }
 
         PentagramObject.SetActive(true);
         ShopObject.SetActive(false);
+
+
     }
 
     public IEnumerator Play()
@@ -85,8 +98,8 @@ public class RuneBoard : MonoBehaviour
         PentagramObject.SetActive(true);
 
         running = true;
-        Gem.Rigidbody.isKinematic = false;
-        Gem.Rigidbody.AddForce(Random.onUnitSphere * 1 + Vector3.up * 1, ForceMode.VelocityChange);
+        StartGem.Rigidbody.isKinematic = false;
+        StartGem.Rigidbody.AddForce(Random.onUnitSphere * 1 + Vector3.up * 1, ForceMode.VelocityChange);
 
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
 
@@ -114,7 +127,6 @@ public class RuneBoard : MonoBehaviour
 
         runeVelocity = Vector3.zero;
         Draggable hovered = null;
-        RuneSlot hoveredSlot = null;
 
         foreach (Draggable drag in allDragables)
         {
@@ -145,10 +157,12 @@ public class RuneBoard : MonoBehaviour
                 // Drag
                 held = hovered;
                 held.Rigidbody.isKinematic = true;
-                if (hoveredSlot != null)
+
+                var gemSlots = GemSlots.Where(slot => slot.Held != null && slot.Held == held).ToList();
+                if(gemSlots.Count > 0)
                 {
-                    hoveredSlot.Take();
-                    runes.Add((RuneVisuals) held);
+                    gemSlots[0].Held = null;
+                    TakeArtifact(held as Gem);
                 }
             }
             else if (Input.GetMouseButtonDown(1))
@@ -233,7 +247,6 @@ public class RuneBoard : MonoBehaviour
             if(shopping && shopHovered)
             {
                 // Sell held shard or buy held shop item
-                Debug.Log("Buying");
                 if (held is RuneVisuals vis)
                 {
                     // TODO: animate into box
@@ -260,12 +273,19 @@ public class RuneBoard : MonoBehaviour
                 vis.UpdateStats();
                 yield return Resolve(index, events);
             }
-            else if(hovered != null && held is StartGem && hovered is StartSlot)
+            else if(hovered != null && held is Gem gem && hovered is GemSlot gemSlot && (gem == StartGem && gemSlot.IsStart || gem != StartGem && !gemSlot.IsStart))
             {
                 held.transform.position = hovered.transform.position;
                 held.transform.rotation = Quaternion.identity;
                 held.Rigidbody.isKinematic = true;
-                running = false;
+
+                if(gem == StartGem)
+                    running = false;
+                else
+                {
+                    gemSlot.Held = gem;
+                    yield return PlaceArtifact(gem);
+                }
             }
             else
             {
@@ -293,7 +313,7 @@ public class RuneBoard : MonoBehaviour
             Quaternion targetRot = Quaternion.identity;
             float moveSmoothing = RuneMoveSmoothing;
             float rotationSpeed = RotationSpeed;
-            if (hovered != null && (hovered is RuneSlot slot && held is RuneVisuals && slot.Open) || (held is StartGem && hovered is StartSlot))
+            if (hovered != null && (hovered is RuneSlot slot && held is RuneVisuals && slot.Open) || (held is Gem gem && hovered is GemSlot gemslot && (gem == StartGem && gemslot.IsStart || gem != StartGem && !gemslot.IsStart)))
             {
                 targetPos = hovered.transform.position + held.SlotOffset;
                 targetRot = hovered.transform.localRotation;
@@ -448,13 +468,16 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator EndSummon()
     {
+        List<IEnumerator> deathAnims = new();
         foreach (RuneVisuals vis in runes)
         {
-            Destroy(vis.gameObject);
+            deathAnims.Add(DestroyRune(vis, false));
         }
+        yield return RunConcurently(0.1f, deathAnims.ToArray());
+
         runes.Clear();
 
-        List<IEnumerator> deathAnims = new();
+        deathAnims = new();
         for (int i = 0; i < 5; i++)
         {
             if (!slots[i].Open)
@@ -599,7 +622,9 @@ public class RuneBoard : MonoBehaviour
         boughtCount = 0;
         PentagramObject.SetActive(false);
         ShopObject.SetActive(true);
-        Gem.gameObject.SetActive(false);
+        StartGem.gameObject.SetActive(false);
+        foreach (Gem gem in Gems)
+            gem.gameObject.SetActive(false);
 
         // Instantiate Shop Objects
         foreach(Transform origin in CardPackSlots)
@@ -659,8 +684,10 @@ public class RuneBoard : MonoBehaviour
 
         PentagramObject.SetActive(true);
         ShopObject.SetActive(false);
-        Gem.gameObject.SetActive(true);
+        StartGem.gameObject.SetActive(true);
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
+        foreach (Gem gem in Gems)
+            gem.gameObject.SetActive(true);
     }
 
     private IEnumerator ShopRunes(Vector3 origin)
@@ -771,4 +798,16 @@ public class RuneBoard : MonoBehaviour
         yield return null;
     }
 
+    private IEnumerator PlaceArtifact(Gem gem)
+    {
+        int index = Gems.IndexOf(gem);
+        var events = gem.Artifact.OnEnter(index, Player.Instance);
+        // TODO: visuals
+        yield return null;
+    }
+
+    private void TakeArtifact(Gem gem)
+    {
+        gem.Artifact.OnExit(0, Player.Instance);
+    }
 }
