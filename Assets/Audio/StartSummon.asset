@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc02903647b24794981184b6992edb5a, type: 3}
   m_Name: StartSummon
   m_EditorClassIdentifier: 
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: f88fbca8ae2f5c44cb58712049338ac1, type: 3}
+  - {fileID: 8300000, guid: 1b4dc413cf949144ba92f738903fcbc0, type: 3}
+  - {fileID: 8300000, guid: 446df245e7c1a5d438a5efd36acf41ee, type: 3}
+  - {fileID: 8300000, guid: 9fb9e807c4963944da36eb8cddef5b31, type: 3}
+  - {fileID: 8300000, guid: 514f5afaa81724e47aa8190f6327a887, type: 3}
   vol_min: 0.5
   vol_max: 1
-  pitch_min: 0
+  pitch_min: 0.9
   pitch_max: 1

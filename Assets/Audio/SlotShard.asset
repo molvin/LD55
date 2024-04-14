@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc02903647b24794981184b6992edb5a, type: 3}
   m_Name: SlotShard
   m_EditorClassIdentifier: 
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 3afa91f12782cfe4b89877652593e1e4, type: 3}
+  - {fileID: 8300000, guid: c3d74c715dbff0d4aac890bbf27344b6, type: 3}
   vol_min: 0.5
   vol_max: 1
-  pitch_min: 0
+  pitch_min: 0.9
   pitch_max: 1
