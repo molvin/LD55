@@ -15,11 +15,12 @@ public class RuneVisuals : Draggable
     private Player player;
     public Rune Rune => rune;
 
+    public bool InSlot;
+
     public void Init(Rune rune, Player player)
     {
         this.rune = rune;
         this.player = player;
-
     }
 
     private void Update()
@@ -33,4 +34,6 @@ public class RuneVisuals : Draggable
             Description.text = rune.Text;
         }
     }
+
+
 }

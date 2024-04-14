@@ -13,6 +13,7 @@ public class RuneSlot : Slot
     public void Set(RuneVisuals rune)
     {
         held = rune;
+        held.InSlot = true;
 
         if (held != null)
         {

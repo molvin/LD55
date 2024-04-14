@@ -9,4 +9,22 @@ public abstract class Draggable : MonoBehaviour
     public Rigidbody Rigidbody;
     public Vector3 SlotOffset;
     public Vector3 InspectOffset;
+
+    public void ResetRot()
+    {
+        StartCoroutine(Do());
+        IEnumerator Do()
+        {
+            Quaternion startRot = transform.rotation;
+            float t = 0;
+            float duration = 0.15f;
+            while (t < duration)
+            {
+                transform.rotation = Quaternion.Slerp(startRot, Quaternion.identity, t / duration);
+                t += Time.deltaTime;
+                yield return null;
+            }
+            transform.rotation = Quaternion.identity;
+        }
+    }
 }

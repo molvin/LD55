@@ -193,6 +193,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: PlaneHeight
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: HealRune.Index
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: InspectRotationSpeed
       value: 500
       objectReference: {fileID: 0}
