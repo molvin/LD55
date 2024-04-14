@@ -3,6 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 
+public enum TriggerType
+{
+    OnEnter,
+    OnActivate,
+    OnDestroy,
+    OnExile,
+}
 public enum EventType
 {
     None,
@@ -36,7 +43,13 @@ public class EventHistory
 }
 
 public delegate List<EventHistory> EventTrigger(int selfIndex, Player player);
+public delegate List<EventHistory> TriggerTrigger(TriggerType trigger, int selfIndex, Player player);
 public delegate bool AuraPredicate(int selfIndex, int other, Player player);
+
+public static class Keywords
+{
+    public static readonly string Energy = "Energy";
+}
 
 public struct Aura
 {
@@ -72,6 +85,7 @@ public class Rune : ICloneable
     public EventTrigger OnActivate;
     public EventTrigger OnDestroy;
     public EventTrigger OnExile;
+    public TriggerTrigger OnOtherRuneTrigger;
     public List<Aura> Aura;
 
     public object Clone()
