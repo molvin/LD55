@@ -355,9 +355,11 @@ public class RuneBoard : MonoBehaviour
                         yield return UpdateScore(e.Power);
                         break;
                     case EventType.PowerToRune:
-                        RuneVisuals vis = slots[e.Actor].Held;
-                        vis.UpdateStats();
-                        yield return new WaitForSeconds(0.5f);
+                        {
+                            RuneVisuals vis = slots[e.Actor].Held;
+                            vis.UpdateStats();
+                            yield return new WaitForSeconds(0.5f);
+                        }
                         break;
                     case EventType.Exile:
                         yield return DestroySlot(e.Actor, true);
@@ -379,7 +381,19 @@ public class RuneBoard : MonoBehaviour
                         HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
                         yield return new WaitForSeconds(1.0f);
                         break;
+                    case EventType.ReturnToHand:
+                        {
+                            RuneVisuals vis = slots[e.Actor].Held;
+                            runes.Add(vis);
+                            vis.Collider.enabled = true;
+                            vis.Rigidbody.isKinematic = false;
+                            vis.Rigidbody.AddForce(Random.onUnitSphere * 3 + Vector3.up * 3, ForceMode.VelocityChange);
+                            slots[e.Actor].Set(null);
+                            yield return new WaitForSeconds(1.0f);
+                        }
+                        break;
                     case EventType.DiceRoll:
+                        // TODO:
                         break;
                 }
 
