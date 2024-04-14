@@ -36,6 +36,9 @@ public class Player : MonoBehaviour
     private int circlePower;
     private int circlePowerPromise;
     private int currentRound;
+
+    private List<Artifact> artifacts = new(new Artifact[4]);
+
     public int CurrentRound => currentRound;
     public int ShopActions = Settings.ShopActions;
     private RuneBoard runeBoard;
@@ -129,6 +132,14 @@ public class Player : MonoBehaviour
     public void AddLife(int value)
     {
         health += value;
+    }
+    public List<EventHistory> PlaceArtifact(int index, Artifact artifact)
+    {
+        return new();
+    }
+    public void TakeArtifact(int index)
+    {
+
     }
     public List<EventHistory> Place(Rune rune, int slot)
     {
@@ -298,6 +309,14 @@ public class Player : MonoBehaviour
 
         bag.Shuffle();
     }
+    private void ResetTempStats()
+    {
+        temporaryStats.Clear();
+        foreach (Rune rune in deckRef)
+        {
+            temporaryStats.Add(rune, new());
+        }
+    }
 
     private void Awake()
     {
@@ -346,6 +365,7 @@ public class Player : MonoBehaviour
             HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
             HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
+            ResetTempStats();
             Draw(true);
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();

@@ -44,6 +44,7 @@ public class RuneBoard : MonoBehaviour
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
 
+    public Animation ScrollAnimation;
     public TextMeshProUGUI ScoreText;
 
     private RuneSlot[] slots;
@@ -99,6 +100,10 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Play()
     {
+        ScrollAnimation.Play("OpenScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
+
         PentagramObject.gameObject.SetActive(true);
         foreach(GemSlot gemSlot in GemSlots)
         {
@@ -519,9 +524,11 @@ public class RuneBoard : MonoBehaviour
         }
         yield return RunConcurently(0.1f, deathAnims.ToArray());
 
-        yield return new WaitForSeconds(1.0f);
+        ScoreText.text = "";
 
-        ScoreText.text = "0";
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
     }
 
     public IEnumerator UpdateScore(int circlePower)
@@ -649,6 +656,10 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Shop()
     {
+        ScrollAnimation.Play("OpenScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
+
         HUD.Instance.EndTurnButton.gameObject.SetActive(true);
 
         boughtCount = 0;
@@ -857,6 +868,7 @@ public class RuneBoard : MonoBehaviour
     private IEnumerator PlaceArtifact(Gem gem, GemSlot slot)
     {
         int index = Gems.IndexOf(gem);
+        //var events = Player.Instance.PlaceArtifact(index, gem.Artifact);
         var events = gem.Artifact.OnEnter(index, Player.Instance);
         slot.ActiveParticles.Play();
         yield return null;
@@ -864,6 +876,7 @@ public class RuneBoard : MonoBehaviour
 
     private void TakeArtifact(Gem gem, GemSlot slot)
     {
+        Player.Instance.TakeArtifact(Gems.IndexOf(gem));
         gem.Artifact.OnExit(0, Player.Instance);
         slot.ActiveParticles.Stop();
     }
