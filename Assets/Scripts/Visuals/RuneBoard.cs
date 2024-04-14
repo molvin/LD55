@@ -33,9 +33,10 @@ public class RuneBoard : MonoBehaviour
 
     public Transform DiscardPile;
     public Transform ExilePile;
+    public Transform RuneSpawn;
 
-    public BoxCollider InspectDeck;
-    public BoxCollider InspectDiscard;
+    // public BoxCollider InspectDeck;
+    // public BoxCollider InspectDiscard;
 
     public Gem StartGem;
     public List<Gem> Gems = new();
@@ -100,6 +101,7 @@ public class RuneBoard : MonoBehaviour
         running = true;
         StartGem.Rigidbody.isKinematic = false;
         StartGem.Rigidbody.AddForce(Random.onUnitSphere * 1 + Vector3.up * 1, ForceMode.VelocityChange);
+        StartSlot.ActiveParticles.Stop();
 
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
 
@@ -123,8 +125,6 @@ public class RuneBoard : MonoBehaviour
 
     private IEnumerator UpdateHover(Ray ray)
     {
-        // TODO: we can also hover and inspect shop objects
-
         runeVelocity = Vector3.zero;
         Draggable hovered = null;
 
@@ -162,7 +162,7 @@ public class RuneBoard : MonoBehaviour
                 if(gemSlots.Count > 0)
                 {
                     gemSlots[0].Held = null;
-                    TakeArtifact(held as Gem);
+                    TakeArtifact(held as Gem, gemSlots[0]);
                 }
             }
             else if (Input.GetMouseButtonDown(1))
@@ -196,6 +196,7 @@ public class RuneBoard : MonoBehaviour
                 }
             }
 
+            /*
             // Check inspect deck
             if(InspectDeck.Raycast(ray, out RaycastHit _, 1000.0f) && Input.GetMouseButtonDown(1))
             {
@@ -207,6 +208,7 @@ public class RuneBoard : MonoBehaviour
             {
                 yield return InspectMany(Player.Instance.DiscardPile, InspectDiscard.transform);
             }
+            */
         }
     }
 
@@ -280,11 +282,14 @@ public class RuneBoard : MonoBehaviour
                 held.Rigidbody.isKinematic = true;
 
                 if(gem == StartGem)
+                {
                     running = false;
+                    gemSlot.ActiveParticles.Play();
+                }
                 else
                 {
                     gemSlot.Held = gem;
-                    yield return PlaceArtifact(gem);
+                    yield return PlaceArtifact(gem, gemSlot);
                 }
             }
             else
@@ -774,16 +779,18 @@ public class RuneBoard : MonoBehaviour
     
     private IEnumerator Draw(Rune rune)
     {
-        RuneVisuals vis = Instantiate(RunePrefab);
+        RuneVisuals vis = Instantiate(RunePrefab, RuneSpawn.position, Quaternion.identity);
         vis.Init(rune, Player.Instance);
         runes.Add(vis);
 
+        /*
         vis.transform.position = new Vector3(
-            UnityEngine.Random.Range(-0.5f, 0.5f),
+            Random.Range(-0.2f, 0.2f),
             1.0f,
-            UnityEngine.Random.Range(-2.5f, -1.5f));
+            Random.Range(-2.5f, -1.5f));
+        */
         var rigidBody = vis.GetComponent<Rigidbody>();
-        rigidBody.AddForce(UnityEngine.Random.onUnitSphere, ForceMode.VelocityChange);
+        rigidBody.AddForce(RuneSpawn.forward * 2.5f + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
 
         yield return new WaitForSeconds(0.2f);
     }
@@ -798,16 +805,17 @@ public class RuneBoard : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator PlaceArtifact(Gem gem)
+    private IEnumerator PlaceArtifact(Gem gem, GemSlot slot)
     {
         int index = Gems.IndexOf(gem);
         var events = gem.Artifact.OnEnter(index, Player.Instance);
-        // TODO: visuals
+        slot.ActiveParticles.Play();
         yield return null;
     }
 
-    private void TakeArtifact(Gem gem)
+    private void TakeArtifact(Gem gem, GemSlot slot)
     {
         gem.Artifact.OnExit(0, Player.Instance);
+        slot.ActiveParticles.Stop();
     }
 }

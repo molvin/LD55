@@ -265,8 +265,8 @@ public static class Runes
                 player.AddCirclePower(power);
                 history.Add(EventHistory.PowerToSummon(player.GetCirclePower()));
 
-                player.Remove(prev);
                 history.Add(EventHistory.Destroy(prev));
+                history.AddRange(player.Remove(prev));
             }
 
             return history;
@@ -285,10 +285,17 @@ public static class Runes
             List<EventHistory> history = new();
             int idx1 = Player.CircularIndex(selfIndex - 1);
             int idx2 = Player.CircularIndex(selfIndex + 1);
-            if (player.Remove(idx1))
+
+            if (player.HasRuneAtIndex(idx1))
+            {
                 history.Add(EventHistory.Destroy(idx1));
-            if (player.Remove(idx2))
+                history.AddRange(player.Remove(idx1));
+            }
+            if (player.HasRuneAtIndex(idx2))
+            {
                 history.Add(EventHistory.Destroy(idx2));
+                history.AddRange(player.Remove(idx2));
+            }
 
             return history;
         },
@@ -335,7 +342,23 @@ public static class Runes
             return null;
         },
     };
+    private static Rune Discovery => new()
+    {
+        Name  = "Discovery",
+        Power = -5,
+        Rarity = Rarity.Common,
+        Text  = "On Play: Draw 3 Shards",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<Rune> drawn = player.Draw(3);
+            if (drawn.Count > 0)
+            {
+                return new() { EventHistory.Draw(drawn.ToArray()) };
+            }
 
+            return new();
+        },
+    };
     private static Rune Divinity => new()
     {
         Name = "Divinity",
@@ -490,10 +513,10 @@ public static class Runes
             {
                 return new();
             }
-
             if (!player.HasRuneAtIndex(prev))
             {
                 player.Remove(next, true);
+                // silent
                 return new();
             }
 
@@ -826,6 +849,27 @@ public static class Runes
             return new();
         },
     };
+    // K
+    private static Rune Kill => new()
+    {
+        Name  = "Kill",
+        Power = -20,
+        Rarity = Rarity.Legendary,
+        Text  = "On Activate: Exile next Shard",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            int next = Player.CircularIndex(selfIndex + 1);
+
+            if (player.HasRuneAtIndex(next))
+            {
+                history.Add(EventHistory.Exile(next));
+                history.AddRange(player.Exile(next));
+            }
+
+            return history;
+        },
+    };
     // L
     private static Rune Light => new()
     {
@@ -871,8 +915,8 @@ public static class Runes
                 Rune rune = player.GetRuneInCircle(i);
                 if (rune != null && rune.Keywords != null && rune.Keywords.Contains(Keywords.Energy))
                 {
-                    player.Remove(i);
                     history.Add(EventHistory.Destroy(i));
+                    history.AddRange(player.Remove(i));
                     destroyed++;
                 }
             }
@@ -887,7 +931,6 @@ public static class Runes
         },
     };
     // N
-
     private static Rune Next => new()
     {
         Name = "Next",
@@ -970,9 +1013,10 @@ public static class Runes
         {
             List<EventHistory> history = new();
             int next = Player.CircularIndex(selfIndex + 1);
-            if (player.Remove(next))
+            if (player.HasRuneAtIndex(next))
             {
                 history.Add(EventHistory.Destroy(next));
+                history.AddRange(player.Remove(next));
             }
             history.Add(EventHistory.Exile(selfIndex));
             history.AddRange(player.Exile(selfIndex));
@@ -1443,8 +1487,8 @@ public static class Runes
             {
                 if (player.HasRuneAtIndex(i))
                 {
-                    player.Remove(i);
                     history.Add(EventHistory.Destroy(i));
+                    history.AddRange(player.Remove(i));
                 }
             }
 

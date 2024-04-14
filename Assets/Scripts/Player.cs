@@ -136,20 +136,21 @@ public class Player : MonoBehaviour
         }
         return Trigger(TriggerType.OnEnter, slot);
     }
-    public bool Remove(int index, bool silentRemove = false)
+    public List<EventHistory> Remove(int index, bool silentRemove = false)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return false;
+            return new();
 
         if (circle[index].Aura != null)
         {
             runeBoard.ForceUpdateVisuals();
         }
 
+        List<EventHistory> history = new();
         if (!silentRemove)
         {
-            Trigger(TriggerType.OnDestroy, index);
+            history = Trigger(TriggerType.OnDestroy, index);
         }
         else
         {
@@ -161,7 +162,7 @@ public class Player : MonoBehaviour
             Discard(circle[index]);
         }
         circle[index] = null;
-        return true;
+        return history;
     }
     public void ReturnToHand(int index)
     {
@@ -298,6 +299,7 @@ public class Player : MonoBehaviour
     {
         Instance = this;
         runeBoard = FindObjectOfType<RuneBoard>();
+        RuneIcons.Init();
     }
 
     private void Start()
