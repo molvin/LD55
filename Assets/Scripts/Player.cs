@@ -41,9 +41,11 @@ public class Player : MonoBehaviour
     public bool AreNeighbours(int first, int second) => CircularIndex(first + 1) == second || CircularIndex(first - 1) == second;
     public bool AreOpposites(int first, int second) => first != second && !AreNeighbours(first, second);
     public bool CircleIsFull => circle.All(rune => rune != null);
+    public int HandSize => hand.Count;
     public bool HasRuneAtIndex(int index) => circle[CircularIndex(index)] != null;
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
     public int GetCirclePower() => circlePower;
+    public Rune[] GetRunesInHand() => hand.ToArray();
     public int GetIndexOfRune(Rune rune) => circle.IndexOf(rune);
     public int RunesInCircle() => circle.Sum(r => r != null ? 1 : 0);
     public int GetRunePower(int runeIndex)
@@ -60,7 +62,7 @@ public class Player : MonoBehaviour
             {
                 foreach (Aura aura in other.Aura)
                 {
-                    if (aura.Application.Invoke(runeIndex, i, this))
+                    if (aura.Application.Invoke(i, runeIndex, this))
                     {
                         runePower += aura.Power;
                     }
@@ -95,7 +97,7 @@ public class Player : MonoBehaviour
             {
                 foreach (Aura aura in other.Aura)
                 {
-                    if (aura.Application.Invoke(index, i, this))
+                    if (aura.Application.Invoke(i, index, this))
                     {
                         auraPower += aura.Power;
                     }
@@ -122,6 +124,10 @@ public class Player : MonoBehaviour
     {
         hand.Remove(rune);
         circle[slot] = rune;
+        if (rune.Aura != null)
+        {
+            runeBoard.ForceUpdateVisuals();
+        }
         return Trigger(TriggerType.OnEnter, slot);
     }
     public bool Remove(int index)
@@ -130,8 +136,16 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return false;
 
+        if (circle[index].Aura != null)
+        {
+            runeBoard.ForceUpdateVisuals();
+        }
+
         Trigger(TriggerType.OnDestroy, index);
-        Discard(circle[index]);
+        if (circle[index] != null)
+        {
+            Discard(circle[index]);
+        }
         circle[index] = null;
         return true;
     }
@@ -141,6 +155,11 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return;
 
+        if (circle[index].Aura != null)
+        {
+            runeBoard.ForceUpdateVisuals();
+        }
+
         hand.Add(circle[index]);
         circle[index] = null;
     }
@@ -149,6 +168,11 @@ public class Player : MonoBehaviour
         index = CircularIndex(index);
         if (circle[index] == null)
             return false;
+
+        if (circle[index].Aura != null)
+        {
+            runeBoard.ForceUpdateVisuals();
+        }
 
         Trigger(TriggerType.OnExile, index);
         deckRef.Remove(circle[index]);
@@ -362,12 +386,17 @@ public class Player : MonoBehaviour
 
         return events;
     }
+    public void AddNewRuneToBag(Rune rune)
+    {
+        temporaryStats.Add(rune, new());
+        bag.Add(rune);
+    }
     public void AddNewRuneToHand(Rune rune)
     {
         temporaryStats.Add(rune, new());
         hand.Add(rune);
     }
-    private List<Rune> Draw(bool discard)
+    public List<Rune> Draw(bool discard, int? count = null)
     {
         if (discard)
         {
@@ -377,7 +406,7 @@ public class Player : MonoBehaviour
             }
             hand.Clear();
         }
-        return Draw(Settings.HandSize - hand.Count);
+        return Draw(count.HasValue ? count.Value : Settings.HandSize - hand.Count);
     }
     public List<Rune> Draw(int count)
     {
@@ -410,6 +439,23 @@ public class Player : MonoBehaviour
 
         return result;
     }
+
+    public Rune DiscardAtIndex(int? index = null)
+    {
+        if (HandSize == 0 || index.HasValue && index.Value >= HandSize)
+            return null;
+
+        int indexToRemove = -1;
+        if (index.HasValue)
+            indexToRemove = index.Value;
+        else
+            indexToRemove = UnityEngine.Random.Range(0, HandSize);
+
+        Rune rune = GetRunesInHand()[indexToRemove];
+        Discard(rune);
+        return rune;
+    }
+
     private void Discard(Rune rune)
     {
         if (!rune.Token)

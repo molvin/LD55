@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using Unity.VisualScripting;
 using UnityEditor;
 
 public static class Runes
@@ -35,6 +36,23 @@ public static class Runes
     // ---------------------------------------------------------------------------------------------------------
 
     // A
+    private static Rune Abundance => new()
+    {
+        Name = "Abundance",
+        Power = 10,
+        Rarity = Rarity.Rare,
+        Text = "On Activate: Add 10 times the number of Shards in hand to the summon",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            if (player.HandSize > 0)
+            {
+                player.AddCirclePower(player.HandSize * 10);
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            }
+
+            return new();
+        },
+    };
     private static Rune Ally => new()
     {
         Name = "Ally",
@@ -197,6 +215,44 @@ public static class Runes
             return new();
         },
     };
+    private static Rune Bulking => new()
+    {
+        Name = "Bulking",
+        Power = 5,
+        Rarity = Rarity.Common,
+        Text = "On Play: Permanently add +1 Power to this shard",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            Rune rune = player.GetRuneInCircle(selfIndex);
+            // Permanent
+            rune.Power += 1;
+            return new() { EventHistory.PowerToRune(selfIndex, 1) };
+        },
+    };
+    private static Rune Burn => new()
+    {
+        Name = "Burn",
+        Power = 6,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Add the previous Shards Power to the summon then destroy the previous",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            int prev = Player.CircularIndex(selfIndex - 1);
+            if (player.HasRuneAtIndex(prev))
+            {
+                int power = player.GetRunePower(prev);
+                player.AddCirclePower(power);
+                history.Add(EventHistory.PowerToSummon(player.GetCirclePower()));
+
+                player.Remove(prev);
+                history.Add(EventHistory.Destroy(prev));
+            }
+
+            return history;
+        },
+    };
     // C
     private static Rune Cut => new()
     {
@@ -219,6 +275,47 @@ public static class Runes
         },
     };
     // D
+    private static Rune Dam => new()
+    {
+        Name = "Dam",
+        Power = 0,
+        Rarity = Rarity.None,
+        Text = "On Play: Add +10 to the summon. Exile this Shard",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            player.AddCirclePower(10);
+            history.Add(EventHistory.PowerToSummon(player.GetCirclePower()));
+            player.Exile(selfIndex);
+            history.Add(EventHistory.Exile(selfIndex));
+
+            return history;
+        },
+    };
+    private static Rune DevilsLuck => new()
+    {
+        Name = "Devils Luck",
+        Power = 0,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Transform into a random Legendary",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            Rune thisRune = player.GetRuneInCircle(selfIndex);
+            if (thisRune != null)
+            {
+                List<Rune> allRunes = GetAllRunes((rune) => { return rune.Rarity > Rarity.Rare; });
+                Rune rune = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                if(rune != null)
+                {
+                    player.Replace(rune, selfIndex);
+                    return new() { EventHistory.Replace(selfIndex, rune) };
+                }
+            }
+
+            return null;
+        },
+    };
     private static Rune Drain => new()
     {
         Name = "Drain",
@@ -266,6 +363,20 @@ public static class Runes
             return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
         },
     };
+
+    private static Rune Experiment => new()
+    {
+        Name = "Experiment",
+        Power = 15,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Discard hand and draw 5",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new List<EventHistory> { EventHistory.Discard(player.GetRunesInHand()), EventHistory.Draw(player.Draw(true, 5).ToArray()) };
+            return history;
+        },
+    };
+
     // F
     private static Rune Fake => new()
     {
@@ -327,6 +438,24 @@ public static class Runes
             int circlePower = player.GetCirclePower();
             player.AddStats(player.GetRuneInCircle(selfIndex), new() { Power = circlePower * 5 });
             return new() { EventHistory.PowerToRune(selfIndex, circlePower * 5) };
+        },
+    };
+    private static Rune Floods => new()
+    {
+        Name  = "Floods",
+        Power = 18,
+        Rarity = Rarity.Rare,
+        Text  = "On Activate: Conjure 4 Dams to your Shard pouch",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                Rune dam = Dam;
+                dam.Token = true;
+                player.AddNewRuneToBag(dam);
+            }
+
+            return new();
         },
     };
     private static Rune Flow => new()
@@ -411,7 +540,61 @@ public static class Runes
             return new();
         },
     };
+    private static Rune Guidance => new()
+    {
+        Name = "Guidance",
+        Power = 11,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Add +5 Power to all Common rarity Shards",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            for (int i = 0; i < 5; i++)
+            {
+                Rune r = player.GetRuneInCircle(i);
+                if (r != null && r.Rarity == Rarity.Common)
+                {
+                    player.AddStats(i, new() { Power = 5 });
+                    history.Add(EventHistory.PowerToRune(i, 5));
+                }
+            }
+
+            return history;
+        },
+    };
     // H
+    private static Rune Hallowed => new()
+    {
+        Name = "Hallowed",
+        Power = 15,
+        Rarity = Rarity.Rare,
+        Text = "On Destroy: Eile this Shard and its neighbours",
+        OnDestroy = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            int prev = Player.CircularIndex(selfIndex - 1);
+            int next = Player.CircularIndex(selfIndex + 1);
+
+            if (player.HasRuneAtIndex(prev))
+            {
+                player.Exile(prev);
+                history.Add(EventHistory.Exile(prev));
+            }
+
+            player.Exile(selfIndex);
+            history.Add(EventHistory.Exile(selfIndex));
+
+            if (player.HasRuneAtIndex(next))
+            {
+                player.Exile(next);
+                history.Add(EventHistory.Exile(next));
+            }
+
+            return history;
+        },
+    };
     private static Rune Help => new()
     {
         Name = "Help",
@@ -773,6 +956,25 @@ public static class Runes
             return history;
         },
     };
+    private static Rune Retry => new()
+    {
+        Name = "Retry",
+        Power = 10,
+        Rarity = Rarity.Rare,
+        Text = "On Activate: Activate the Previous Shard if it is not a Retry",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            int previusIndex = Player.CircularIndex(selfIndex - 1);
+            Rune previus = player.GetRuneInCircle(previusIndex);
+            if(previus == null)
+                return null;
+
+            if(previus.Name == "Retry")
+                return null;
+
+            return previus.OnActivate?.Invoke(previusIndex, player);
+        },
+    };
     private static Rune Run => new()
     {
         Name = "Run",
@@ -821,6 +1023,20 @@ public static class Runes
             return new();
         },
     };
+    private static Rune Seeing => new()
+    {
+        Name = "Seeing",
+        Power = -10,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Draw 4 Shards then Discard a random one",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new List<EventHistory>();
+            history.Add(EventHistory.Draw(player.Draw(4).ToArray()));
+            history.Add(EventHistory.Discard(player.DiscardAtIndex()));
+            return history;
+        },
+    };
     private static Rune Shore => new()
     {
         Name = "Shore",
@@ -838,6 +1054,25 @@ public static class Runes
             }
 
             return new();
+        },
+    };
+    private static Rune Serate => new()
+    {
+        Name  = "Serate",
+        Power = 10,
+        Rarity = Rarity.Rare,
+        Text  = "All Energy Shards has +10 Power",
+        Aura = new()
+        {
+            new()
+            {
+                Power = 10,
+                Application = (int selfIndex, int other, Player player) =>
+                {
+                    Rune rune = player.GetRuneInCircle(other);
+                    return rune != null && rune.Keywords != null && rune.Keywords.Contains(Keywords.Energy);
+                },
+            },
         },
     };
     private static Rune Slow => new()
@@ -870,6 +1105,24 @@ public static class Runes
         {
             player.AddCirclePower(5);
             return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+        },
+    };
+    private static Rune Strongheart => new()
+    {
+        Name  = "Strongheart",
+        Power = 10,
+        Rarity = Rarity.Rare,
+        Text  = "On Activate: Conjure 2 Vigor to your Shard pouch",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Rune vigor = Vigor;
+                vigor.Token = true;
+                player.AddNewRuneToBag(vigor);
+            }
+
+            return new();
         },
     };
     private static Rune Supporter => new()
@@ -908,6 +1161,28 @@ public static class Runes
         },
     };
     // T
+    private static Rune Tempest => new()
+    {
+        Name  = "Tempest",
+        Power = 0,
+        Rarity = Rarity.Rare,
+        Text  = "On Play: Destroy all Shards in circle",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (player.HasRuneAtIndex(i))
+                {
+                    player.Remove(i);
+                    history.Add(EventHistory.Destroy(i));
+                }
+            }
+
+            return history;
+        },
+    };
     private static Rune Tides => new()
     {
         Name  = "Tides",
@@ -944,6 +1219,97 @@ public static class Runes
             {
                 player.AddStats(idx2, new() { Power = 2 });
                 history.Add(EventHistory.PowerToRune(idx1, 2));
+            }
+
+            return history;
+        },
+    };
+    // U
+    private static Rune Unsable => new()
+    {
+        Name = "Unsable",
+        Power = 10,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Transform neighbouring Shards to random Shards",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            {
+                int prev = Player.CircularIndex(selfIndex - 1);
+                Rune prevRune = player.GetRuneInCircle(prev);
+                if (prevRune != null)
+                {
+                    List<Rune> allRunes = GetAllRunes();
+                    Rune rune = null;
+                    while (rune == null)
+                    {
+                        Rune r = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                        if (r.Name != prevRune.Name)
+                            rune = r;
+                    }
+                    rune.Token = true;
+
+                    player.Replace(rune, prev);
+                    history.Add(EventHistory.Replace(prev, rune));
+                }
+            }
+            {
+                int next = Player.CircularIndex(selfIndex + 1);
+                Rune nextRune = player.GetRuneInCircle(next);
+                if (nextRune != null)
+                {
+                    List<Rune> allRunes = GetAllRunes();
+                    Rune rune = null;
+                    while (rune == null)
+                    {
+                        Rune r = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                        if (r.Name != nextRune.Name)
+                            rune = r;
+                    }
+                    rune.Token = true;
+
+                    player.Replace(rune, next);
+                    history.Add(EventHistory.Replace(next, rune));
+                }
+            }
+
+            return new();
+        },
+    };
+    // V
+    private static Rune Vigor => new()
+    {
+        Name = "Vigor",
+        Power = 15,
+        Rarity = Rarity.None,
+        Text = "Counts as Energy",
+        Keywords = { Keywords.Energy },
+    };
+    // W
+    private static Rune Wound => new()
+    {
+        Name = "Wound",
+        Power = 0,
+        Rarity = Rarity.Rare,
+        Text = "On Destroy: Permanently add +4 to opposite Shards",
+        OnDestroy = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            Rune leftOp = player.GetRuneInCircle(selfIndex - 2);
+            if (leftOp != null)
+            {
+                // Permanent
+                leftOp.Power += 4;
+                history.Add(EventHistory.PowerToRune(player.GetIndexOfRune(leftOp), 4));
+            }
+            Rune rightOp = player.GetRuneInCircle(selfIndex + 2);
+            if (rightOp != null)
+            {
+                // Permanent
+                rightOp.Power += 4;
+                history.Add(EventHistory.PowerToRune(player.GetIndexOfRune(rightOp), 4));
             }
 
             return history;
