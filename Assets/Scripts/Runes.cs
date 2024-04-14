@@ -102,7 +102,7 @@ public static class Runes
     // C
     private static Rune Cut => new()
     {
-        Name = "Cut",
+        Name = "Cut", 
         Power = 7,
         Rarity = Rarity.Starter,
         StartCount = 1,

@@ -250,7 +250,8 @@ public class Player : MonoBehaviour
 
                 var events = Activate(i);
 
-                yield return runeBoard.Resolve(i, events, circlePower);
+                yield return runeBoard.Resolve(i, events);
+                yield return runeBoard.FinishResolve(i, circlePower);
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");

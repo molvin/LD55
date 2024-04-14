@@ -8,6 +8,8 @@ public class RuneSlot : Slot
     private RuneVisuals held;
     public RuneVisuals Held => held;
 
+    public ParticleSystem Active;
+
     public bool Open => held == null;
 
     public void Set(RuneVisuals rune)

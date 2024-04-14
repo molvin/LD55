@@ -337,14 +337,14 @@ public class RuneBoard : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator Resolve(int index, List<EventHistory> events, int circlePower)
+    public IEnumerator Resolve(int index, List<EventHistory> events)
     {
-        // TODO: highlight rune
         if (events == null || events.Count == 0)
         {
         }
         else
         {
+            slots[index].Active.Play();
             foreach(EventHistory e in events)
             {
                 switch(e.Type)
@@ -352,7 +352,7 @@ public class RuneBoard : MonoBehaviour
                     case EventType.None:
                         break;
                     case EventType.PowerToSummon:
-                        yield return UpdateScore(circlePower);
+                        yield return UpdateScore(e.Power);
                         break;
                     case EventType.PowerToRune:
                         RuneVisuals vis = slots[e.Actor].Held;
@@ -382,9 +382,13 @@ public class RuneBoard : MonoBehaviour
                     case EventType.DiceRoll:
                         break;
                 }
-            }
-        }
 
+            }
+            slots[index].Active.Stop();
+        }
+    }
+    public IEnumerator FinishResolve(int index, int circlePower)
+    {
         yield return UpdateScore(circlePower);
     }
 
@@ -416,7 +420,7 @@ public class RuneBoard : MonoBehaviour
     private IEnumerator UpdateScore(int circlePower)
     {
         ScoreText.text = $"{circlePower}";
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.5f);
     }
     
     private IEnumerator RunConcurently(float delay, params IEnumerator[] corouties)
