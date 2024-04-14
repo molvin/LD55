@@ -593,7 +593,7 @@ MonoBehaviour:
   PentagramMoveSmoothing: 35
   PentagramRotationSpeed: 600
   InspectMoveSmoothing: 25
-  InspectRotationSpeed: 250
+  InspectRotationSpeed: 500
   PentagramOrigin: {fileID: 2302836321048753090}
   PentagramObject: {fileID: 7813126596824748097}
   ShopObject: {fileID: 4040186180811474519}
@@ -609,11 +609,11 @@ MonoBehaviour:
     Index: 15
   SellSlot: {fileID: 4235180210224434827}
   HealRune:
-    Index: 1
+    Index: 11
   HealSlot: {fileID: 7310206780807125373}
   ShopArea: {fileID: 6997473978232206070}
   ScoreText: {fileID: 3299889211315085032}
-  PlaneHeight: 0.6
+  PlaneHeight: 0.3
 --- !u!1 &2794618316508520973
 GameObject:
   m_ObjectHideFlags: 0
