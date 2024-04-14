@@ -249,7 +249,7 @@ public class RuneBoard : MonoBehaviour
                     yield return ShopRunes(origin);
                 }
                 boughtCount++;
-            }
+            }   
             else if(hovered != null && ((RuneSlot)hovered).Open)
             {
                 int index = System.Array.IndexOf(slots, hovered);
