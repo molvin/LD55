@@ -389,11 +389,11 @@ public class Player : MonoBehaviour
             yield return runeBoard.EndSummon();
             yield return runeBoard.UpdateScore(circlePower);
 
-            health += Regen;
 
             if (opponentHealth <= 0)
             {
                 set = 0;
+                health += Regen;
                 currentRound++;
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);

@@ -819,6 +819,7 @@ Transform:
   - {fileID: 723540107912441607}
   - {fileID: 116708300881104027}
   - {fileID: 2854131125718930852}
+  - {fileID: 3852861123584652222}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &800811488055798456
@@ -859,7 +860,7 @@ MonoBehaviour:
   ShopFeedback: {fileID: 3963881836860597401}
   DiscardPile: {fileID: 7632840621575060275}
   ExilePile: {fileID: 4481715636750561347}
-  RuneSpawn: {fileID: 723540107912441607}
+  RuneSpawn: {fileID: 3852861123584652222}
   ShopGemPoints:
   - {fileID: 49010072514945594}
   - {fileID: 3649331737377366461}
@@ -7697,6 +7698,37 @@ Transform:
   - {fileID: 8037367205296433359}
   m_Father: {fileID: 156749549436576044}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8399756459501581831
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3852861123584652222}
+  m_Layer: 0
+  m_Name: RuneSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3852861123584652222
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8399756459501581831}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.067766435, y: 0.70385206, z: -0.06776645, w: 0.70385206}
+  m_LocalPosition: {x: -2.708, y: 0.371, z: -1.275}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6084850725393783034}
+  m_LocalEulerAnglesHint: {x: 10.999, y: 90, z: 0}
 --- !u!1 &8454990951380334352
 GameObject:
   m_ObjectHideFlags: 0
