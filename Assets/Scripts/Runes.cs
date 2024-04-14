@@ -123,7 +123,7 @@ public static class Runes
                     if (r.Name != otherRune.Name)
                         rune = r;
                 }
-                rune.Rarity = Rarity.None;
+                rune.Token = true;
 
                 player.Swap(rune, index);
             }
@@ -170,7 +170,7 @@ public static class Runes
             Rune rune = player.GetRuneInCircle(selfIndex - 1);
             if (rune != null)
             {
-                if (rune.Rarity != Rarity.None && (int)rune.Rarity > (int)self.Rarity)
+                if ((int)rune.Rarity > (int)self.Rarity)
                 {
                     player.AddCirclePower(7);
                 }
@@ -206,6 +206,18 @@ public static class Runes
         OnEnter = (int selfIndex, Player player) =>
         {
             player.Draw(2);
+        },
+    };
+    private static Rune Prune => new()
+    {
+        Name  = "Prune",
+        Power = 0,
+        Rarity = Rarity.None,
+        Text  = "On Activate: Exile previous Shard, then Exile this",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            player.Exile(selfIndex - 1);
+            player.Exile(selfIndex);
         },
     };
     private static Rune Prysm => new()
@@ -266,7 +278,7 @@ public static class Runes
         OnEnter = (int selfIndex, Player player) =>
         {
             Rune pool = Pool;
-            pool.Rarity = Rarity.None;
+            pool.Token = true;
             player.AddNewRuneToHand(pool);
         },
     };
@@ -274,7 +286,7 @@ public static class Runes
     {
         Name = "Restore",
         Power = 0,
-        Rarity = Rarity.Common,
+        Rarity = Rarity.None,
         Text = "On Play: Add +2 life then Exile this Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
