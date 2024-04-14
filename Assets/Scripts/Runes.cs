@@ -1545,6 +1545,42 @@ public static class Runes
             return new();
         },
     };
+
+
+    private static Rune Upgrade => new()
+    {
+        Name = "Upgrade",
+        Power = 32,
+        Rarity = Rarity.Legendary,
+        Text = "On Activate: Transform weakest Shard in the circle to a random Rare or Ledgendary Shard",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            Rune weakestRune = Enumerable.Range(0, 5)
+                .Select(e => player.GetRuneInCircle(e))
+                .Where(e => e != null)
+                .OrderBy((e) => e.Power)
+                .ToArray()[0];
+            
+            int weakestRuneIndex = player.GetIndexOfRune(weakestRune);
+            Rune rune = null;
+            List<Rune> allRunes = GetAllRunes((e) => e.Rarity >= Rarity.Rare);
+            while (rune == null)
+            {
+                Rune r = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                if (r.Name != weakestRune.Name)
+                    rune = r;
+            }
+            rune.Token = true;
+            player.Replace(rune, weakestRuneIndex);
+            history.Add(EventHistory.Replace(weakestRuneIndex, rune));
+
+
+            return history;
+        },
+    };
+
     // V
     private static Rune Vigor => new()
     {
