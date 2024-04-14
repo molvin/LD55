@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4183897307495662369}
   - component: {fileID: 1181616254195016193}
+  - component: {fileID: 7214113616316314965}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -44,11 +45,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb4f54160d010564686e80c2da6a31ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RuneVisualPrefab: {fileID: 0}
   BaseDeck:
-  - Index: 1
-  - Index: 2
-  - Index: 3
-  - Index: 4
-  - Index: 5
-  - Index: 6
+  - Index: 13
+  - Index: 13
+  - Index: 13
+  - Index: 15
+  UseStarters: 1
+  MaxHandSize: 5
+--- !u!114 &7214113616316314965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4623128399770220443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0622fa4ed40d22c4289da0d32986a490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pool_start_size: 10
+  loop_config_test: {fileID: 0}
+  clip_config_test: {fileID: 0}
