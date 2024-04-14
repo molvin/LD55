@@ -45,6 +45,7 @@ public class RuneBoard : MonoBehaviour
     private Vector3 grabOffset;
     private int boughtCount;
     private float dragTime;
+    private Vector3 mouseDragStartPoint;
 
     private List<Draggable> allDragables => shopObjects.Union(runes.Select(x => x as Draggable)).ToList();
     private List<Slot> allSlots => slots.Select(s => s as Slot).ToList(); //slots.Union(ShopSlots).ToList();
@@ -171,6 +172,7 @@ public class RuneBoard : MonoBehaviour
                 grabOffset = drag.transform.InverseTransformPoint(hit.point);
                 grabOffset.y = 0.0f;
                 dragTime = Time.time;
+                mouseDragStartPoint = ray.origin;
             }
         }
 
@@ -260,7 +262,7 @@ public class RuneBoard : MonoBehaviour
             }
             else
             {
-                if((Time.time - dragTime) < 0.1f)
+                if(Vector3.Distance(ray.origin, mouseDragStartPoint) < 0.01f)
                 {
                     held.ResetRot();
                     held.Rigidbody.isKinematic = false;
