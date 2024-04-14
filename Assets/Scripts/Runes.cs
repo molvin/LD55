@@ -85,7 +85,7 @@ public static class Runes
     private static Rune Avarice => new()
     {
         Name = "Avarice",
-        Power = -20,
+        Power = -60,
         Rarity = Rarity.Common,
         Text = "On Activate: The summon power is multiplied by 3",
         OnActivate = (int selfIndex, Player player) =>
