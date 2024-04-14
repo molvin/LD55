@@ -1026,7 +1026,7 @@ public static class Runes
     private static Rune Seeing => new()
     {
         Name = "Seeing",
-        Power = -10,
+        Power = 13,
         Rarity = Rarity.Rare,
         Text = "On Play: Draw 4 Shards then Discard a random one",
         OnEnter = (int selfIndex, Player player) =>
