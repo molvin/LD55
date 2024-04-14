@@ -540,10 +540,12 @@ public class RuneBoard : MonoBehaviour
         HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
         HUD.Instance.EndTurnButton.onClick.AddListener(() => buying = false);
 
-        List<Rune> allRunes = Runes.GetAllRunes();
         List<Rune> runes = new List<Rune>();
         for (int i = 0; i < 5; i++)
+        {
+            List<Rune> allRunes = Runes.GetAllRunes();
             runes.Add(allRunes[Random.Range(0, allRunes.Count)]);
+        }
 
         List<RuneVisuals> shopRunes = new();
         foreach (Rune rune in runes)

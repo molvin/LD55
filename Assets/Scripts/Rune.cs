@@ -58,7 +58,7 @@ public enum Rarity
 }
 
 [System.Serializable]
-public class Rune
+public class Rune : ICloneable
 {
     public string Name;
     public int Power;
@@ -73,4 +73,9 @@ public class Rune
     public EventTrigger OnDestroy;
     public EventTrigger OnExile;
     public List<Aura> Aura;
+
+    public object Clone()
+    {
+        return MemberwiseClone();
+    }
 }

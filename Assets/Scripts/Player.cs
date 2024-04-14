@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Unity.VisualScripting;
 
 public struct TempStats
 {
@@ -209,7 +210,7 @@ public class Player : MonoBehaviour
             {
                 for(int i = 0; i < rune.StartCount; i++)
                 {
-                    deckRef.Add(rune);
+                    deckRef.Add(rune.Clone() as Rune);
                 }
             }
         }
