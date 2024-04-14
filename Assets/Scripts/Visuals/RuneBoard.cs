@@ -43,6 +43,7 @@ public class RuneBoard : MonoBehaviour
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
 
+    public Animation ScrollAnimation;
     public TextMeshProUGUI ScoreText;
 
     private RuneSlot[] slots;
@@ -96,6 +97,9 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Play()
     {
+        ScrollAnimation.Play("OpenScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
         PentagramObject.SetActive(true);
 
         running = true;
@@ -492,9 +496,11 @@ public class RuneBoard : MonoBehaviour
         }
         yield return RunConcurently(0.1f, deathAnims.ToArray());
 
-        yield return new WaitForSeconds(1.0f);
+        ScoreText.text = "";
 
-        ScoreText.text = "0";
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
     }
 
     public IEnumerator UpdateScore(int circlePower)
@@ -622,6 +628,10 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Shop()
     {
+        ScrollAnimation.Play("OpenScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
+
         HUD.Instance.EndTurnButton.gameObject.SetActive(true);
 
         boughtCount = 0;
