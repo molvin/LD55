@@ -493,6 +493,18 @@ public class RuneBoard : MonoBehaviour
         onEnd();
     }
 
+    public void ForceDestroyVisuals(Rune rune)
+    {
+        foreach (var slot in slots)
+        {
+            if (slot.Held != null && slot.Held.Rune == rune)
+            {
+                Destroy(slot.Held.gameObject);
+                break;
+            }
+        }
+    }
+
     private IEnumerator DestroySlot(int index, bool exile)
     {
         RuneVisuals vis = slots[index].Held;

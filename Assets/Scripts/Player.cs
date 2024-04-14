@@ -152,7 +152,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            runeBoard.RemoveRune(circle[index]);
+            runeBoard.ForceDestroyVisuals(circle[index]);
         }
 
         if (circle[index] != null)

@@ -871,6 +871,14 @@ public static class Runes
             return new();
         },
     };
+    private static Rune Power => new()
+    {
+        Name = "Power",
+        Power = 40,
+        Rarity = Rarity.Legendary,
+        Text = "Counts as Energy",
+        Keywords = { Keywords.Energy },
+    };
     public static Rune Prune => new()
     {
         Name  = "Prune",
@@ -1135,6 +1143,31 @@ public static class Runes
             List<EventHistory> history = new List<EventHistory>();
             history.Add(EventHistory.Draw(player.Draw(4).ToArray()));
             history.Add(EventHistory.Discard(player.DiscardAtIndex()));
+            return history;
+        },
+    };
+    private static Rune Shadow => new()
+    {
+        Name = "Shadow",
+        Power = 60,
+        Rarity = Rarity.Legendary,
+        Text = "On Activate: Add -20 Power to neighbouring Shards",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            int idx1 = Player.CircularIndex(selfIndex - 1);
+            int idx2 = Player.CircularIndex(selfIndex + 1);
+            if (player.HasRuneAtIndex(idx1))
+            {
+                player.AddStats(idx1, new() { Power = -20 });
+                history.Add(EventHistory.PowerToRune(idx1, -20));
+            }
+            if (player.HasRuneAtIndex(idx2))
+            {
+                player.AddStats(idx2, new() { Power = -20 });
+                history.Add(EventHistory.PowerToRune(idx2, -20));
+            }
+
             return history;
         },
     };
