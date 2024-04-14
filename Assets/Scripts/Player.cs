@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
+using System.Threading;
 
 public struct TempStats
 {
@@ -25,6 +26,7 @@ public class Player : MonoBehaviour
 
     public RuneVisuals RuneVisualPrefab;
     public List<RuneRef> BaseDeck;
+    public bool UseStarters;
     private int health;
 
     private List<Rune> deckRef = new();
@@ -205,11 +207,19 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        foreach (RuneRef runeRef in BaseDeck)
+        if(UseStarters)
         {
-            Rune rune = runeRef.Get();
-            deckRef.Add(rune);
+            Runes.GetAllRunes(r => r.Rarity == Rarity.Starter);
         }
+        else
+        {
+            foreach (RuneRef runeRef in BaseDeck)
+            {
+                Rune rune = runeRef.Get();
+                deckRef.Add(rune);
+            }
+        }
+        
 
         Restart();
         StartCoroutine(Game());
