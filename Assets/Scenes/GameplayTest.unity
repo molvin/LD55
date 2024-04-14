@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &63245915 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4204802775895148597, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+  m_PrefabInstance: {fileID: 4471929155943880039}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 898f597141aa7954ab0278351947ba8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &120067444
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -293,9 +304,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: StartGem
+      value: 
+      objectReference: {fileID: 63245915}
+    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: GemPrefab
+      value: 
+      objectReference: {fileID: 2426167951513081066, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
     - target: {fileID: 2188590060883278622, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_Name
       value: RuneBoard
+      objectReference: {fileID: 0}
+    - target: {fileID: 4204802775895148597, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: Colors.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4204802775895148597, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: Colors.Array.data[1].Name
+      value: Malechite
+      objectReference: {fileID: 0}
+    - target: {fileID: 4204802775895148597, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: Colors.Array.data[1].Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4204802775895148597, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: Colors.Array.data[1].Color.g
+      value: 0.6320754
       objectReference: {fileID: 0}
     - target: {fileID: 6084850725393783034, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalPosition.x
