@@ -136,6 +136,7 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return;
 
+        circle[index].OnExile?.Invoke(index, this);
         runeBoard.DestroySlot(index);
         deckRef.Remove(circle[index]);
         circle[index] = null;
