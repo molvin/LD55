@@ -333,6 +333,85 @@ public static class Runes
             return null;
         },
     };
+
+    private static Rune Divinity => new()
+    {
+        Name = "Divinity",
+        Power = 30,
+        Rarity = Rarity.Legendary,
+        Text = "On Play: Transform All other Shards in circle to random Shards. Adds +5  to All.",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            List<Rune> allRunes = GetAllRunes();
+            List<int> replacedRunes =
+                new List<int>() { 1, 2, -1, -2 }.Select(e =>
+                {
+                    int index = Player.CircularIndex(selfIndex + e);
+                    Rune original = player.GetRuneInCircle(index);
+                    if (original != null)
+                    {
+                        Rune rune = null;
+                        while (rune == null)
+                        {
+                            Rune r = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                            if (r.Name != original.Name)
+                                rune = r;
+                        }
+                        rune.Token = true;
+
+                        player.Replace(rune, index);
+                        history.Add(EventHistory.Replace(index, rune));
+
+                        return index;
+                    }
+
+                    return -1;
+
+                }).Where(e => e >= 0).ToList<int>();
+            //replacedRunes.Add(selfIndex);
+            TempStats statss = new TempStats();
+            statss.Power = 5;
+            player.AddStats(selfIndex, statss);
+            history.Add(EventHistory.PowerToRune(selfIndex, 5));
+            foreach (int r in replacedRunes)
+            {
+                TempStats stats = new TempStats();
+                stats.Power = 5;
+                player.AddStats(r, stats);
+                history.Add(EventHistory.PowerToRune(r, 5));
+            }
+
+            return history;
+        },
+    };
+
+    private static Rune Displacement => new() //NOT WORK
+    {
+        Name = "Displacement",
+        Power = 16,
+        Rarity = Rarity.Rare,
+        Text = "On Play: return Opposite Shards to hand",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            int op_1 = Player.CircularIndex(selfIndex - 2);
+            int op_2 = Player.CircularIndex(selfIndex + 2);
+            if (player.HasRuneAtIndex(op_1))
+            {
+                player.ReturnToHand(op_1);
+                history.Add(EventHistory.ReturnToHand(op_1));
+            }
+            if (player.HasRuneAtIndex(op_2))
+            {
+                player.ReturnToHand(op_2);
+                history.Add(EventHistory.ReturnToHand(op_2));
+
+            }
+            return history;
+        },
+    };
+
     private static Rune Drain => new()
     {
         Name = "Drain",
@@ -786,6 +865,30 @@ public static class Runes
         },
     };
     // N
+
+    private static Rune Next => new()
+    {
+        Name = "Next",
+        Power = 0,
+        Rarity = Rarity.Rare,
+        Text = "On Play: Permanently Transform this to a random Legendary",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            List<Rune> allLedgendaryRunes = GetAllRunes((Rune r) => r.Rarity == Rarity.Legendary);
+            Rune r = allLedgendaryRunes[UnityEngine.Random.Range(0, allLedgendaryRunes.Count)];
+            Rune currentRune = player.GetRuneInCircle(selfIndex);
+            currentRune.Name = r.Name;
+            currentRune.Power = r.Power;
+            currentRune.Rarity = r.Rarity;
+            currentRune.Text = r.Text;
+
+            history.Add(EventHistory.Replace(selfIndex, currentRune));
+
+            return history;
+        },
+    };
+
     private static Rune Noble => new()
     {
         Name = "Noble",
@@ -1449,4 +1552,10 @@ public static class Runes
             return history;
         },
     };
+
+  
+
+   
+
+    
 }
