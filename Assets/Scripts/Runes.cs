@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using Unity.VisualScripting;
 using UnityEditor;
 
 public static class Runes
@@ -875,6 +876,25 @@ public static class Runes
             player.Exile(selfIndex);
             history.Add(EventHistory.Exile(selfIndex));
             return history;
+        },
+    };
+    private static Rune Retry => new()
+    {
+        Name = "Retry",
+        Power = 10,
+        Rarity = Rarity.Rare,
+        Text = "On Activate: Activate the Previous Shard if it is not a Retry",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            int previusIndex = Player.CircularIndex(selfIndex - 1);
+            Rune previus = player.GetRuneInCircle(previusIndex);
+            if(previus == null)
+                return null;
+
+            if(previus.Name == "Retry")
+                return null;
+
+            return previus.OnActivate?.Invoke(previusIndex, player);
         },
     };
     private static Rune Run => new()
