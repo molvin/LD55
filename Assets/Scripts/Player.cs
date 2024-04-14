@@ -124,7 +124,8 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return;
 
-        circle[index]?.OnDestroy(index, this);
+        if (circle[index].OnDestroy != null)
+            circle[index]?.OnDestroy(index, this);
         runeBoard.DestroySlot(index);
         Discard(circle[index]);
         circle[index] = null;
@@ -291,10 +292,13 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return;
 
-        int power = GetRunePower(index);
-        circlePower += power;
-
         circle[index].OnActivate?.Invoke(index, this);
+
+        if (HasRuneAtIndex(index))
+        {
+            int power = GetRunePower(index);
+            circlePower += power;
+        }
     }
     public void AddNewRuneToHand(Rune rune)
     {
@@ -345,7 +349,7 @@ public class Player : MonoBehaviour
     }
     private void Discard(Rune rune)
     {
-        if (rune.Rarity != Rarity.None)
+        if (!rune.Token)
         {
             discardPile.Add(rune);
         }

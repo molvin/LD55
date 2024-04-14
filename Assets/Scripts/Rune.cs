@@ -17,7 +17,7 @@ public struct Aura
 
 public enum Rarity
 {
-    None, // Temporary cards & tokens
+    None,
     Starter,
     Common,
     Rare,
@@ -29,7 +29,8 @@ public class Rune
 {
     public string Name;
     public int Power;
-    public Rarity Rarity; 
+    public Rarity Rarity;
+    public bool Token;
     public List<string> Keywords = new();
     public string Text;
 
