@@ -103,7 +103,7 @@ public class RuneBoard : MonoBehaviour
         ScrollAnimation.Play("OpenScroll");
         while (ScrollAnimation.isPlaying)
             yield return null;
-        PentagramObject.SetActive(true);
+
         PentagramObject.gameObject.SetActive(true);
         foreach(GemSlot gemSlot in GemSlots)
         {
