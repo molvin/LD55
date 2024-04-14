@@ -352,7 +352,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: UseStarters
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: BaseDeck.Array.size
