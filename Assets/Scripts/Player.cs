@@ -62,7 +62,7 @@ public class Player : MonoBehaviour
             {
                 foreach (Aura aura in other.Aura)
                 {
-                    if (aura.Application.Invoke(runeIndex, i, this))
+                    if (aura.Application.Invoke(i, runeIndex, this))
                     {
                         runePower += aura.Power;
                     }
@@ -97,7 +97,7 @@ public class Player : MonoBehaviour
             {
                 foreach (Aura aura in other.Aura)
                 {
-                    if (aura.Application.Invoke(index, i, this))
+                    if (aura.Application.Invoke(i, index, this))
                     {
                         auraPower += aura.Power;
                     }
@@ -124,6 +124,10 @@ public class Player : MonoBehaviour
     {
         hand.Remove(rune);
         circle[slot] = rune;
+        if (rune.Aura != null)
+        {
+            runeBoard.ForceUpdateVisuals();
+        }
         return Trigger(TriggerType.OnEnter, slot);
     }
     public bool Remove(int index)
@@ -132,8 +136,16 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return false;
 
+        if (circle[index].Aura != null)
+        {
+            runeBoard.ForceUpdateVisuals();
+        }
+
         Trigger(TriggerType.OnDestroy, index);
-        Discard(circle[index]);
+        if (circle[index] != null)
+        {
+            Discard(circle[index]);
+        }
         circle[index] = null;
         return true;
     }
@@ -143,6 +155,11 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return;
 
+        if (circle[index].Aura != null)
+        {
+            runeBoard.ForceUpdateVisuals();
+        }
+
         hand.Add(circle[index]);
         circle[index] = null;
     }
@@ -151,6 +168,11 @@ public class Player : MonoBehaviour
         index = CircularIndex(index);
         if (circle[index] == null)
             return false;
+
+        if (circle[index].Aura != null)
+        {
+            runeBoard.ForceUpdateVisuals();
+        }
 
         Trigger(TriggerType.OnExile, index);
         deckRef.Remove(circle[index]);
