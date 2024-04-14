@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 public class RuneBoard : MonoBehaviour
 {
     public RuneVisuals RunePrefab;
     public RuneSlot SlotPrefab;
-    public GameObject JointPrefab;
     public float RuneMoveSmoothing;
     public float RotationSpeed;
 
@@ -24,7 +24,12 @@ public class RuneBoard : MonoBehaviour
     public GameObject ShopObject;
     public Transform ShopObjectOrigin;
     public CardPack CardPackPrefab;
-    public Slot[] ShopSlots;
+    public Transform[] CardPackSlots;
+    public Transform[] RandomRuneSlots;
+    public RuneRef SellRune;
+    public Transform SellSlot;
+    public RuneRef HealRune;
+    public Transform HealSlot;
 
     public TextMeshProUGUI ScoreText;
 
@@ -40,7 +45,7 @@ public class RuneBoard : MonoBehaviour
     private bool doneShopping;
 
     private List<Draggable> allDragables => shopObjects.Union(runes.Select(x => x as Draggable)).ToList();
-    private List<Slot> allSlots => slots.Union(ShopSlots).ToList();
+    private List<Slot> allSlots => slots.Select(s => s as Slot).ToList(); //slots.Union(ShopSlots).ToList();
 
     private void Start()
     {
@@ -205,7 +210,7 @@ public class RuneBoard : MonoBehaviour
             if(shopping && hovered is BuySellSlot)
             {
                 // Sell held shard or buy held shop item
-                Debug.Log("Buying and selling");
+                Debug.Log("Buying");
                 held.transform.position = hovered.transform.position + held.SlotOffset;
                 held.transform.rotation = hovered.transform.localRotation;
                 if (held is RuneVisuals vis)
@@ -336,8 +341,25 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(true);
 
         // Instantiate Shop Objects
-        Draggable cardPack = Instantiate(CardPackPrefab, ShopObjectOrigin.transform.position, Quaternion.identity);
-        shopObjects.Add(cardPack);
+        foreach(Transform origin in CardPackSlots)
+        {
+            Draggable cardPack = Instantiate(CardPackPrefab, origin.position, Quaternion.identity);
+            shopObjects.Add(cardPack);
+        }
+        foreach(Transform origin in RandomRuneSlots)
+        {
+            RuneVisuals vis = Instantiate(RunePrefab, origin.position, Quaternion.identity);
+            var allRunes = Runes.GetAllRunes();
+            vis.Init(allRunes[Random.Range(0, allRunes.Count)], Player.Instance);
+        }
+        {
+            RuneVisuals vis = Instantiate(RunePrefab, HealSlot.position, Quaternion.identity);
+            vis.Init(HealRune.Get(), Player.Instance);
+        }
+        {
+            RuneVisuals vis = Instantiate(RunePrefab, SellSlot.position, Quaternion.identity);
+            vis.Init(SellRune.Get(), Player.Instance);
+        }
 
         HUD.Instance.EndTurnButton.onClick.AddListener(() => doneShopping = true);
         HUD.Instance.EndTurnButton.interactable = true;

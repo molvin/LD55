@@ -235,12 +235,12 @@ public class Player : MonoBehaviour
                 yield return new WaitForSeconds(1.0f);
 
                 Restart();
-                yield return runeBoard.Draw(deckRef);
+
                 yield return runeBoard.Shop();
-                yield return runeBoard.EndRound();
 
                 opponentHealth = Settings.GetOpponentHealth(currentRound);
                 HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+
             }
             else
             {
@@ -326,4 +326,5 @@ public class Player : MonoBehaviour
     {
         deckRef.Add(rune);
     }
+
 }
