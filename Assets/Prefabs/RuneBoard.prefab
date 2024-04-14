@@ -842,7 +842,7 @@ MonoBehaviour:
   InspectMoveSmoothing: 25
   InspectRotationSpeed: 500
   PentagramOrigin: {fileID: 2302836321048753090}
-  PentagramObject: {fileID: 7813126596824748097}
+  PentagramObject: {fileID: 5471611506491346824}
   ShopObject: {fileID: 4040186180811474519}
   ShopObjectOrigin: {fileID: 2104071901607209685}
   CardPackPrefab: {fileID: 7766761578153719315, guid: 0bc8e682f4551b348a8079961d8ba990, type: 3}
@@ -7582,6 +7582,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2302836321048753090}
+  - component: {fileID: 5471611506491346824}
   m_Layer: 0
   m_Name: Pentagram
   m_TagString: Untagged
@@ -7612,6 +7613,23 @@ Transform:
   - {fileID: 4297577521237483414}
   m_Father: {fileID: 6084850725393783034}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5471611506491346824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7813126596824748097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80a9fa04220925943bfe930488b988fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Slots:
+  - {fileID: 6645493875997140990}
+  - {fileID: 8412483077791778100}
+  - {fileID: 4349615932717173432}
+  - {fileID: 2514952203670334156}
 --- !u!1 &8016090967781360383
 GameObject:
   m_ObjectHideFlags: 0
@@ -8060,6 +8078,10 @@ PrefabInstance:
     - target: {fileID: 1904933211172687940, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2426167951513081066, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
+      propertyPath: Colors.Array.size
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
