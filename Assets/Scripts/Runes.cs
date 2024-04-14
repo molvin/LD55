@@ -105,6 +105,7 @@ public static class Runes
         Name = "Cut",
         Power = 7,
         Rarity = Rarity.Starter,
+        StartCount = 1,
         Text = "On Play: Destroy neighbouring Shards",
         OnEnter = (int selfIndex, Player player) =>
         {
@@ -151,6 +152,7 @@ public static class Runes
         Name  = "Energy",
         Power = 10,
         Rarity = Rarity.Starter,
+        StartCount = 5,
         Text  = "",
     };
     private static Rune Explosive => new()
@@ -337,6 +339,7 @@ public static class Runes
         Name  = "Iron",
         Power = 2,
         Rarity = Rarity.Starter,
+        StartCount = 1,
         Text  = "Neighbouring Shards has +5 Power",
         Aura = new()
         {
@@ -371,12 +374,42 @@ public static class Runes
             return new();
         },
     };
+    // O
+    private static Rune Oppression => new()
+    {
+        Name  = "Oppression",
+        Power = -10,
+        Rarity = Rarity.Common,
+        Text = "On Play: Neighbouring Shards Power is multiplied by 2",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            int prev = Player.CircularIndex(selfIndex - 1);
+            if (player.HasRuneAtIndex(prev))
+            {
+                int power = player.GetRunePower(prev);
+                player.MultiplyPower(prev, 2);
+                history.Add(EventHistory.PowerToRune(prev, power));
+            }
+            int next = Player.CircularIndex(selfIndex + 1);
+            if (player.HasRuneAtIndex(next))
+            {
+                int power = player.GetRunePower(next);
+                player.MultiplyPower(next, 2);
+                history.Add(EventHistory.PowerToRune(next, power));
+            }
+
+            return history;
+        },
+    };
     // P
     private static Rune Pool => new()
     {
         Name  = "Pool",
         Power = 5,
         Rarity = Rarity.Starter,
+        StartCount = 2,
         Text  = "On Play: Draw 2 Shards",
         OnEnter = (int selfIndex, Player player) =>
         {
@@ -413,6 +446,7 @@ public static class Runes
         Name  = "Prysm",
         Power = 3,
         Rarity = Rarity.Starter,
+        StartCount = 1,
         Text  = "On Activate: Power is multiplied by 2",
         OnActivate = (int selfIndex, Player player) =>
         {
