@@ -55,6 +55,7 @@ public class Rune
     public bool Token;
     public List<string> Keywords = new();
     public string Text;
+    public int StartCount = 0;
 
     public EventTrigger OnEnter;
     public EventTrigger OnActivate;
