@@ -307,6 +307,14 @@ public class Player : MonoBehaviour
 
         bag.Shuffle();
     }
+    private void ResetTempStats()
+    {
+        temporaryStats.Clear();
+        foreach (Rune rune in deckRef)
+        {
+            temporaryStats.Add(rune, new());
+        }
+    }
 
     private void Awake()
     {
@@ -355,6 +363,7 @@ public class Player : MonoBehaviour
             HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
             HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
+            ResetTempStats();
             Draw(true);
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
