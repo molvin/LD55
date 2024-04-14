@@ -10,7 +10,6 @@ public class VolumeSettings : MonoBehaviour
     public SliderConfiguration[] sliderConfigurations;
     public AudioMixer AudioMixer;
 
-    public AudioMixer mixer;
 
     [System.Serializable]
     public struct SliderConfiguration
@@ -24,7 +23,6 @@ public class VolumeSettings : MonoBehaviour
         {
             float v;
             AudioMixer.GetFloat(sc.mixer_value, out v);
-            Debug.Log(v);
             sc.slider.value = Mathf.Pow(10, v) * 20;
             sc.slider.onValueChanged.AddListener(delegate { setMixerValue(sc); });
 
@@ -40,7 +38,7 @@ public class VolumeSettings : MonoBehaviour
 
     public void SetMasterVolume(Slider slider)
     {
-        mixer.SetFloat("master", Mathf.Log10(slider.value) * 20);
+        AudioMixer.SetFloat("master", Mathf.Log10(slider.value) * 20);
     }
 
 }
