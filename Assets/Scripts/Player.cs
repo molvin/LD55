@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using Unity.VisualScripting;
 
 public struct TempStats
 {
@@ -76,6 +77,7 @@ public class Player : MonoBehaviour
         return runePower;
     }
 
+    public TempStats GetTempStats(int index) => temporaryStats[GetRuneInCircle(index)];
     public void AddStats(int index, TempStats stats)
     {
         Rune rune = circle[index];
@@ -133,7 +135,7 @@ public class Player : MonoBehaviour
         }
         return Trigger(TriggerType.OnEnter, slot);
     }
-    public bool Remove(int index)
+    public bool Remove(int index, bool silentRemove = false)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
@@ -144,7 +146,15 @@ public class Player : MonoBehaviour
             runeBoard.ForceUpdateVisuals();
         }
 
-        Trigger(TriggerType.OnDestroy, index);
+        if (!silentRemove)
+        {
+            Trigger(TriggerType.OnDestroy, index);
+        }
+        else
+        {
+            runeBoard.RemoveRune(circle[index]);
+        }
+
         if (circle[index] != null)
         {
             Discard(circle[index]);

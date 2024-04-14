@@ -25,9 +25,7 @@ public class RuneBoard : MonoBehaviour
     public CardPack CardPackPrefab;
     public Transform[] CardPackSlots;
     public Transform[] RandomRuneSlots;
-    public RuneRef SellRune;
     public Transform SellSlot;
-    public RuneRef HealRune;
     public Transform HealSlot;
     public BoxCollider ShopArea;
     public ParticleSystem ShopFeedback;
@@ -606,12 +604,12 @@ public class RuneBoard : MonoBehaviour
         }
         {
             RuneVisuals vis = Instantiate(RunePrefab, HealSlot.position, Quaternion.identity);
-            vis.Init(HealRune.Get(), Player.Instance);
+            vis.Init(Runes.Restore, Player.Instance);
             shopObjects.Add(vis);
         }
         {
             RuneVisuals vis = Instantiate(RunePrefab, SellSlot.position, Quaternion.identity);
-            vis.Init(SellRune.Get(), Player.Instance);
+            vis.Init(Runes.Prune, Player.Instance);
             shopObjects.Add(vis);
         }
 
