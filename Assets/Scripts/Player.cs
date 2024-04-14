@@ -46,6 +46,7 @@ public class Player : MonoBehaviour
     public bool AreOpposites(int first, int second) => first != second && !AreNeighbours(first, second);
     public bool CircleIsFull => circle.All(rune => rune != null);
     public int HandSize => hand.Count;
+    public int MaxHandSize = Settings.HandSize;
     public bool HasRuneAtIndex(int index) => circle[CircularIndex(index)] != null;
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
     public int GetCirclePower() => circlePower;
@@ -419,7 +420,7 @@ public class Player : MonoBehaviour
             }
             hand.Clear();
         }
-        return Draw(count.HasValue ? count.Value : Settings.HandSize - hand.Count);
+        return Draw(count.HasValue ? count.Value : MaxHandSize - hand.Count);
     }
     public List<Rune> Draw(int count)
     {
