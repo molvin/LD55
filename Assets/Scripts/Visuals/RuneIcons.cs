@@ -4,25 +4,25 @@ using UnityEngine;
 
 public static class RuneIcons
 {
-    private static Dictionary<string, Texture2D> textures;
+    private static Dictionary<string, Sprite> sprites;
 
     public static void Init()
     {
-        textures = new();
-        Texture2D[] resources = Resources.LoadAll<Texture2D>("CardIcons");
+        sprites = new();
+        Sprite[] resources = Resources.LoadAll<Sprite>("CardIcons");
 
-        foreach(Texture2D tex in resources)
+        foreach(Sprite tex in resources)
         {
-            textures.Add(tex.name, tex);
+            sprites.Add(tex.name, tex);
         }
     }
 
-    public static Texture2D Get(string name)
+    public static Sprite Get(string name)
     {
-        if(textures == null)
+        if(sprites == null)
         {
             Init();
         }
-        return textures.GetValueOrDefault(name, null);
+        return sprites.GetValueOrDefault(name, null);
     }
 }
