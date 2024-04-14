@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     public List<RuneRef> BaseDeck;
     public bool UseStarters;
     private int health;
+    public int Health => health;
 
     private List<Rune> deckRef = new();
     private List<Rune> bag = new();
@@ -101,18 +102,16 @@ public class Player : MonoBehaviour
     public void AddCirclePower(int value)
     {
         circlePower += value;
-        runeBoard.UpdateScore(circlePower);
     }
     public void AddLife(int value)
     {
         health += value;
-        HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
     }
-    public void Place(Rune rune, int slot)
+    public List<EventHistory> Place(Rune rune, int slot)
     {
         hand.Remove(rune);
         circle[slot] = rune;
-        rune.OnEnter?.Invoke(slot, this);
+        return rune.OnEnter?.Invoke(slot, this);
     }
 
     public bool Remove(int index)
@@ -123,7 +122,6 @@ public class Player : MonoBehaviour
 
         if (circle[index].OnDestroy != null)
             circle[index]?.OnDestroy(index, this);
-        runeBoard.DestroySlot(index);
         Discard(circle[index]);
         circle[index] = null;
         return true;
@@ -135,7 +133,6 @@ public class Player : MonoBehaviour
             return false;
 
         circle[index].OnExile?.Invoke(index, this);
-        runeBoard.DestroySlot(index);
         deckRef.Remove(circle[index]);
         circle[index] = null;
         return true;
@@ -251,26 +248,17 @@ public class Player : MonoBehaviour
                 if (circle[i] == null)
                     continue;
 
-                Activate(i);
+                var events = Activate(i);
 
-                yield return runeBoard.Resolve(circlePower);
+                yield return runeBoard.Resolve(i, events, circlePower);
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
             opponentHealth -= circlePower;
             HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
-            for (int i = 0; i < circle.Count; i++)
-            {
-                if (circle[i] != null)
-                    runeBoard.DestroySlot(i);
-            }
-
-            yield return new WaitForSeconds(1.0f);
-
             ClearCircle();
-
-            yield return runeBoard.EndRound();
+            yield return runeBoard.EndSummon();
 
             if (opponentHealth <= 0)
             {
@@ -302,19 +290,21 @@ public class Player : MonoBehaviour
 
         yield return null;
     }
-    public void Activate(int index)
+    public List<EventHistory> Activate(int index)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return;
+            return null;
 
-        circle[index].OnActivate?.Invoke(index, this);
+        var events = circle[index].OnActivate?.Invoke(index, this);
 
         if (HasRuneAtIndex(index))
         {
             int power = GetRunePower(index);
             circlePower += power;
         }
+
+        return events;
     }
     public void AddNewRuneToHand(Rune rune)
     {
@@ -333,9 +323,9 @@ public class Player : MonoBehaviour
             }
             hand.Clear();
         }
-        return Draw(Settings.HandSize - hand.Count, false);
+        return Draw(Settings.HandSize - hand.Count);
     }
-    public List<Rune> Draw(int count, bool spawnVisuals)
+    public List<Rune> Draw(int count)
     {
         List<Rune> result = new();
 
@@ -357,8 +347,6 @@ public class Player : MonoBehaviour
                 hand.Add(rune);
                 bag.RemoveAt(0);
                 result.Add(rune);
-                if(spawnVisuals)
-                    StartCoroutine(runeBoard.Draw(rune));
             }
             else
             {

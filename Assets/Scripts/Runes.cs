@@ -380,7 +380,7 @@ public static class Runes
         Text  = "On Play: Draw 2 Shards",
         OnEnter = (int selfIndex, Player player) =>
         {
-            List<Rune> drawn = player.Draw(2, true);
+            List<Rune> drawn = player.Draw(2);
             if (drawn.Count > 0)
             {
                 return new() { EventHistory.Draw(drawn.ToArray()) };

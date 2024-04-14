@@ -21,19 +21,17 @@ public class RuneVisuals : Draggable
     {
         this.rune = rune;
         this.player = player;
+
+        Name.text = rune.Name;
+        Description.text = rune.Text;
+
+        UpdateStats();
     }
 
-    private void Update()
+    public void UpdateStats()
     {
-        if (rune != null)
-        {
-            Name.text = rune.Name;
-            int index = player.GetIndexOfRune(rune);
-            int power = index >= 0 ? player.GetRunePower(index) : rune.Power;
-            Power.text = $"{power}";
-            Description.text = rune.Text;
-        }
+        int index = player.GetIndexOfRune(rune);
+        int power = index >= 0 ? player.GetRunePower(index) : rune.Power;
+        Power.text = $"{power}";
     }
-
-
 }
