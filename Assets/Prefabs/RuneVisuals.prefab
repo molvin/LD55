@@ -5526,10 +5526,7 @@ MonoBehaviour:
   Power: {fileID: 8597786555992850285}
   Description: {fileID: 1419742937521937932}
   Icon: {fileID: 9126180257228466855}
-<<<<<<< HEAD
-=======
   HoverParticles: {fileID: 2405969792689309718}
->>>>>>> 3439826acfd27da1ac45988a360062ccbdc698ad
   InSlot: 0
 --- !u!54 &8826767862864762015
 Rigidbody:
