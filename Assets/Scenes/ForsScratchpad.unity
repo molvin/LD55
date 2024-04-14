@@ -152,10 +152,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb4f54160d010564686e80c2da6a31ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RuneVisualPrefab: {fileID: 1420245527118480796, guid: 753dd122e791f8643931c5a1ae9a4df6, type: 3}
   BaseDeck:
-  - Index: 23
-  - Index: 23
+  - Index: 39
+  - Index: 39
   - Index: 23
   - Index: 23
   - Index: 23
@@ -165,6 +164,7 @@ MonoBehaviour:
   - Index: 7
   - Index: 7
   UseStarters: 0
+  MaxHandSize: 5
 --- !u!4 &2090246430
 Transform:
   m_ObjectHideFlags: 0

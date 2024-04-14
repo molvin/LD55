@@ -136,20 +136,21 @@ public class Player : MonoBehaviour
         }
         return Trigger(TriggerType.OnEnter, slot);
     }
-    public bool Remove(int index, bool silentRemove = false)
+    public List<EventHistory> Remove(int index, bool silentRemove = false)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return false;
+            return new();
 
         if (circle[index].Aura != null)
         {
             runeBoard.ForceUpdateVisuals();
         }
 
+        List<EventHistory> history = new();
         if (!silentRemove)
         {
-            Trigger(TriggerType.OnDestroy, index);
+            history = Trigger(TriggerType.OnDestroy, index);
         }
         else
         {
@@ -161,7 +162,7 @@ public class Player : MonoBehaviour
             Discard(circle[index]);
         }
         circle[index] = null;
-        return true;
+        return history;
     }
     public void ReturnToHand(int index)
     {
@@ -177,43 +178,48 @@ public class Player : MonoBehaviour
         hand.Add(circle[index]);
         circle[index] = null;
     }
-    public bool Exile(int index)
+    public List<EventHistory> Exile(int index)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return false;
+            return new();
 
         if (circle[index].Aura != null)
         {
             runeBoard.ForceUpdateVisuals();
         }
 
-        Trigger(TriggerType.OnExile, index);
+        List<EventHistory> history = Trigger(TriggerType.OnExile, index);
         deckRef.Remove(circle[index]);
         circle[index] = null;
-        return true;
+        return history;
     }
     public List<EventHistory> Trigger(TriggerType trigger, int index)
     {
         List<EventHistory> history = new();
+        List<EventHistory> hist = null;
         switch (trigger)
         {
             case TriggerType.OnEnter:
             {
-                history = circle[index].OnEnter?.Invoke(index, this);
+                hist = circle[index].OnEnter?.Invoke(index, this);
             } break;
             case TriggerType.OnActivate:
             {
-                history = circle[index].OnActivate?.Invoke(index, this);
+                hist = circle[index].OnActivate?.Invoke(index, this);
             } break;
             case TriggerType.OnDestroy:
             {
-                history = circle[index].OnDestroy?.Invoke(index, this);
+                hist = circle[index].OnDestroy?.Invoke(index, this);
             } break;
             case TriggerType.OnExile:
             { 
-                history = circle[index].OnExile?.Invoke(index, this);
+                hist = circle[index].OnExile?.Invoke(index, this);
             } break;
+        }
+        if (hist != null)
+        {
+            history.AddRange(hist);
         }
 
         for (int i = 0; i < 5; i++)
@@ -222,7 +228,11 @@ public class Player : MonoBehaviour
             {
                 if (circle[i].OnOtherRuneTrigger != null)
                 {
-                    history.AddRange(circle[i].OnOtherRuneTrigger.Invoke(trigger, i, this));
+                    List<EventHistory> h = circle[i].OnOtherRuneTrigger.Invoke(trigger, i, index, this);
+                    if (h != null && h.Count > 0)
+                    {
+                        history.AddRange(h);
+                    }
                 }
             }
         }
@@ -390,7 +400,7 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return null;
 
-        var events = circle[index].OnActivate?.Invoke(index, this);
+        var events = Trigger(TriggerType.OnActivate, index);
 
         if (HasRuneAtIndex(index))
         {
@@ -414,14 +424,20 @@ public class Player : MonoBehaviour
     {
         if (discard)
         {
-            foreach (Rune rune in hand)
-            {
-                Discard(rune);
-            }
-            hand.Clear();
+            DiscardHand();
         }
         return Draw(count.HasValue ? count.Value : MaxHandSize - hand.Count);
     }
+
+    public void DiscardHand()
+    {
+        foreach (Rune rune in hand)
+        {
+            Discard(rune);
+        }
+        hand.Clear();
+    }
+
     public List<Rune> Draw(int count)
     {
         List<Rune> result = new();
