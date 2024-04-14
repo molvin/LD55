@@ -8,6 +8,7 @@ public static class Settings
     public static int HandSize = 5;
     public static int NumSlots = 5;
     public static int PlayerMaxHealth = 5;
+    public static int ShopActions = 2;
 
     private static int opponentBaseHealth = 25;
     private static int opponentHealthRamp = 25;

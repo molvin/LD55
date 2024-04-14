@@ -28,6 +28,23 @@ public static class Artifacts
         return artifacts;
     }
 
+    // A
+
+    private static Artifact Acanthite => new()
+    {
+        Name = "Acanthite",
+        Text = "Increase Shop actions by 1",
+        OnEnter = (int selfIndex, Player player) =>
+        {
+            player.ShopActions++;
+            return new();
+        },
+        OnExit = (int selfIndex, Player player) =>
+        {
+            player.ShopActions--;
+            return new();
+        },
+    };
 
     // M
     private static Artifact Malechite => new()
