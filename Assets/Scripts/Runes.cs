@@ -85,7 +85,7 @@ public static class Runes
     private static Rune Avarice => new()
     {
         Name = "Avarice",
-        Power = -20,
+        Power = -60,
         Rarity = Rarity.Common,
         Text = "On Activate: The summon power is multiplied by 3",
         OnActivate = (int selfIndex, Player player) =>
@@ -1131,8 +1131,8 @@ public static class Runes
         Name = "Ravage",
         Power = 4,
         Rarity = Rarity.Common,
-        Text = "On Activate: Activate the Shard two steps prior to this one",
-        OnActivate = (int selfIndex, Player player) =>
+        Text = "On Play: Activate the Shard two steps prior to this one",
+        OnEnter = (int selfIndex, Player player) =>
         {
             return player.Activate(selfIndex - 2);
         },
@@ -1247,8 +1247,8 @@ public static class Runes
         Name = "Retry",
         Power = 10,
         Rarity = Rarity.Rare,
-        Text = "On Activate: Activate the Previous Shard if it is not a Retry",
-        OnActivate = (int selfIndex, Player player) =>
+        Text = "On Play: Activate the Previous Shard",
+        OnEnter = (int selfIndex, Player player) =>
         {
             int previusIndex = Player.CircularIndex(selfIndex - 1);
             Rune previus = player.GetRuneInCircle(previusIndex);
@@ -1589,6 +1589,42 @@ public static class Runes
             return new();
         },
     };
+
+
+    private static Rune Upgrade => new()
+    {
+        Name = "Upgrade",
+        Power = 32,
+        Rarity = Rarity.Legendary,
+        Text = "On Activate: Transform weakest Shard in the circle to a random Rare or Ledgendary Shard",
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+
+            Rune weakestRune = Enumerable.Range(0, 5)
+                .Select(e => player.GetRuneInCircle(e))
+                .Where(e => e != null)
+                .OrderBy((e) => e.Power)
+                .ToArray()[0];
+            
+            int weakestRuneIndex = player.GetIndexOfRune(weakestRune);
+            Rune rune = null;
+            List<Rune> allRunes = GetAllRunes((e) => e.Rarity >= Rarity.Rare);
+            while (rune == null)
+            {
+                Rune r = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                if (r.Name != weakestRune.Name)
+                    rune = r;
+            }
+            rune.Token = true;
+            player.Replace(rune, weakestRuneIndex);
+            history.Add(EventHistory.Replace(weakestRuneIndex, rune));
+
+
+            return history;
+        },
+    };
+
     // V
     private static Rune Vigor => new()
     {
