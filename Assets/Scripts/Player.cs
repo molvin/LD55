@@ -9,13 +9,11 @@ using Unity.VisualScripting;
 public struct TempStats
 {
     public int Power;
-    public int Multiplier;
 
     public static TempStats operator+(TempStats first, TempStats second)
     {
         TempStats stats;
         stats.Power = first.Power + second.Power;
-        stats.Multiplier = first.Multiplier + second.Multiplier;
         return stats;
     }
 }
@@ -54,7 +52,6 @@ public class Player : MonoBehaviour
         Rune rune = circle[runeIndex];
         TempStats stats = temporaryStats[rune];
         int runePower = rune.Power + stats.Power;
-        int runeMultiplier = stats.Multiplier;
 
         for (int i = 0; i < Settings.NumSlots; i++)
         {
@@ -66,13 +63,12 @@ public class Player : MonoBehaviour
                     if (aura.Application.Invoke(runeIndex, i, this))
                     {
                         runePower += aura.Power;
-                        runeMultiplier += aura.Multiplier;
                     }
                 }
             }
         }
 
-        return runePower * Mathf.Max(runeMultiplier, 1);
+        return runePower;
     }
 
     public void AddStats(Rune rune, TempStats stats)
@@ -80,6 +76,30 @@ public class Player : MonoBehaviour
         TempStats current = temporaryStats[rune];
         current += stats;
         temporaryStats[rune] = current;
+    }
+    public void MultiplyPower(int index, float multiplier)
+    {
+        Rune rune = GetRuneInCircle(index);
+        TempStats stats = temporaryStats[rune];
+        int auraPower = 0;
+
+        for (int i = 0; i < Settings.NumSlots; i++)
+        {
+            Rune other = circle[i];
+            if (other != null && other.Aura != null && other.Aura.Count > 0)
+            {
+                foreach (Aura aura in other.Aura)
+                {
+                    if (aura.Application.Invoke(index, i, this))
+                    {
+                        auraPower += aura.Power;
+                    }
+                }
+            }
+        }
+        int totalPower = rune.Power + stats.Power + auraPower;
+        stats.Power = Mathf.RoundToInt(totalPower * multiplier) - (rune.Power + auraPower);
+        temporaryStats[rune] = stats;
     }
     public void AddCirclePower(int value)
     {

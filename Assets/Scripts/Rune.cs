@@ -8,12 +8,11 @@ public delegate bool AuraPredicate(int selfIndex, int other, Player player);
 public struct Aura
 {
     public int Power;
-    public int Multiplier;
     public string Keyword;
 
     public AuraPredicate Application;
 
-    public readonly bool IsValid => (Power != 0 || Multiplier != 0 || Keyword != null) && Application != null;
+    public readonly bool IsValid => (Power != 0 || Keyword != null) && Application != null;
 }
 
 public enum Rarity
