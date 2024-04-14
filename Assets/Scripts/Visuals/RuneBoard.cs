@@ -413,7 +413,7 @@ public class RuneBoard : MonoBehaviour
         ScoreText.text = "0";
     }
 
-    private IEnumerator UpdateScore(int circlePower)
+    public IEnumerator UpdateScore(int circlePower)
     {
         ScoreText.text = $"{circlePower}";
         yield return new WaitForSeconds(0.2f);

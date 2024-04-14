@@ -174,7 +174,10 @@ public class Player : MonoBehaviour
         {
             if (circle[i] != null)
             {
-                history.AddRange(circle[i].OnOtherRuneTrigger?.Invoke(trigger, i, this));
+                if (circle[i].OnOtherRuneTrigger != null)
+                {
+                    history.AddRange(circle[i].OnOtherRuneTrigger.Invoke(trigger, i, this));
+                }
             }
         }
 
@@ -302,6 +305,7 @@ public class Player : MonoBehaviour
 
             ClearCircle();
             yield return runeBoard.EndSummon();
+            yield return runeBoard.UpdateScore(circlePower);
 
             if (opponentHealth <= 0)
             {
