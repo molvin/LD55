@@ -1131,8 +1131,8 @@ public static class Runes
         Name = "Ravage",
         Power = 4,
         Rarity = Rarity.Common,
-        Text = "On Activate: Activate the Shard two steps prior to this one",
-        OnActivate = (int selfIndex, Player player) =>
+        Text = "On Play: Activate the Shard two steps prior to this one",
+        OnEnter = (int selfIndex, Player player) =>
         {
             return player.Activate(selfIndex - 2);
         },
@@ -1247,8 +1247,8 @@ public static class Runes
         Name = "Retry",
         Power = 10,
         Rarity = Rarity.Rare,
-        Text = "On Activate: Activate the Previous Shard if it is not a Retry",
-        OnActivate = (int selfIndex, Player player) =>
+        Text = "On Play: Activate the Previous Shard",
+        OnEnter = (int selfIndex, Player player) =>
         {
             int previusIndex = Player.CircularIndex(selfIndex - 1);
             Rune previus = player.GetRuneInCircle(previusIndex);

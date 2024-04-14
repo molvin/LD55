@@ -707,7 +707,15 @@ public class RuneBoard : MonoBehaviour
         List<Rune> runes = new List<Rune>();
         for (int i = 0; i < 5; i++)
         {
-            List<Rune> allRunes = Runes.GetAllRunes();
+            bool rare = Random.value > 0.7f;
+            bool legendary = rare && Random.value > 0.7f;
+            List<Rune> allRunes = legendary
+                ? Runes.GetAllRunes(r => r.Rarity != Rarity.None)
+                : rare
+                    ? Runes.GetAllRunes(r => r.Rarity != Rarity.None && r.Rarity <= Rarity.Rare)
+                    : Runes.GetAllRunes(r => r.Rarity != Rarity.None && r.Rarity <= Rarity.Common);
+            allRunes = allRunes.Where(r => r.Name != Runes.GetRestore().Name && r.Name != Runes.GetPrune().Name).ToList();
+
             runes.Add(allRunes[Random.Range(0, allRunes.Count)]);
         }
 
