@@ -697,7 +697,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RunePrefab: {fileID: 1420245527118480796, guid: 753dd122e791f8643931c5a1ae9a4df6, type: 3}
   SlotPrefab: {fileID: 5706262028073016692, guid: 9fc2c07272829154cbe0c6a6a4837280, type: 3}
-  GemPrefab: {fileID: 0}
+  GemPrefab: {fileID: 2426167951513081066, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
   RuneMoveSmoothing: 15
   RotationSpeed: 440
   PentagramMoveSmoothing: 35
@@ -732,6 +732,9 @@ MonoBehaviour:
   - {fileID: 2514952203670334156}
   ScoreText: {fileID: 3299889211315085032}
   PlaneHeight: 0.3
+  placeInSlotSound: {fileID: 11400000, guid: 5c1af88d0e2e611428efb9f5f140479d, type: 2}
+  dropShardSound: {fileID: 11400000, guid: 9c0b0c1077c88b742899628165b56984, type: 2}
+  startSummonSound: {fileID: 11400000, guid: c012d6acd7c5e0444b44f6b2afd70a74, type: 2}
 --- !u!1 &2794618316508520973
 GameObject:
   m_ObjectHideFlags: 0
