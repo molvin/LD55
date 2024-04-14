@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
-using System.Threading;
 
 public struct TempStats
 {
@@ -24,10 +21,10 @@ public class Player : MonoBehaviour
     public static int CircularIndex(int index) => index < 0 ? Settings.NumSlots + index : index >= Settings.NumSlots ? index - Settings.NumSlots : index;
     public static Player Instance;
 
-    public RuneVisuals RuneVisualPrefab;
     public List<RuneRef> BaseDeck;
     public bool UseStarters;
     private int health;
+    public int Health => health;
 
     private List<Rune> deckRef = new();
     private List<Rune> bag = new();
@@ -36,6 +33,7 @@ public class Player : MonoBehaviour
     private List<Rune> discardPile = new();
     private Dictionary<Rune, TempStats> temporaryStats = new();
     private int circlePower;
+    private int circlePowerPromise;
 
     private RuneBoard runeBoard;
 
@@ -73,6 +71,11 @@ public class Player : MonoBehaviour
         return runePower;
     }
 
+    public void AddStats(int index, TempStats stats)
+    {
+        Rune rune = circle[index];
+        AddStats(rune, stats);
+    }
     public void AddStats(Rune rune, TempStats stats)
     {
         TempStats current = temporaryStats[rune];
@@ -106,42 +109,76 @@ public class Player : MonoBehaviour
     public void AddCirclePower(int value)
     {
         circlePower += value;
-        runeBoard.UpdateScore(circlePower);
+    }
+    public void AddCirclePowerPromise(int value)
+    {
+        circlePowerPromise += value;
     }
     public void AddLife(int value)
     {
         health += value;
-        HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
     }
-    public void Place(Rune rune, int slot)
+    public List<EventHistory> Place(Rune rune, int slot)
     {
         hand.Remove(rune);
         circle[slot] = rune;
-        rune.OnEnter?.Invoke(slot, this);
+        return Trigger(TriggerType.OnEnter, slot);
     }
 
-    public void Remove(int index)
+    public bool Remove(int index)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return;
+            return false;
 
-        if (circle[index].OnDestroy != null)
-            circle[index]?.OnDestroy(index, this);
-        runeBoard.DestroySlot(index);
+        Trigger(TriggerType.OnDestroy, index);
         Discard(circle[index]);
         circle[index] = null;
+        return true;
     }
-    public void Exile(int index)
+    public bool Exile(int index)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return;
+            return false;
 
-        circle[index].OnExile?.Invoke(index, this);
-        runeBoard.DestroySlot(index);
+        Trigger(TriggerType.OnExile, index);
         deckRef.Remove(circle[index]);
         circle[index] = null;
+        return true;
+    }
+    public List<EventHistory> Trigger(TriggerType trigger, int index)
+    {
+        List<EventHistory> history = new();
+        switch (trigger)
+        {
+            case TriggerType.OnEnter:
+            {
+                history = circle[index].OnEnter?.Invoke(index, this);
+            } break;
+            case TriggerType.OnActivate:
+            {
+                history = circle[index].OnActivate?.Invoke(index, this);
+            } break;
+            case TriggerType.OnDestroy:
+            {
+                history = circle[index].OnDestroy?.Invoke(index, this);
+            } break;
+            case TriggerType.OnExile:
+            { 
+                history = circle[index].OnExile?.Invoke(index, this);
+            } break;
+        }
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (circle[i] != null)
+            {
+                history.AddRange(circle[i].OnOtherRuneTrigger?.Invoke(trigger, i, this));
+            }
+        }
+
+        return history;
     }
     public void Swap(int first, int second)
     {
@@ -149,14 +186,13 @@ public class Player : MonoBehaviour
         second = CircularIndex(second);
 
         (circle[second], circle[first]) = (circle[first], circle[second]);
-        runeBoard.SwapSlot(first, second);
     }
-    public void Swap(Rune rune, int index)
+    public void Replace(Rune rune, int index)
     {
         index = CircularIndex(index);
         temporaryStats.Add(rune, new());
         Discard(GetRuneInCircle(index));
-        runeBoard.SwapSlot(rune, index);
+        // runeBoard.ReplaceSlot(rune, index);
         circle[index] = rune;
     }
 
@@ -177,7 +213,8 @@ public class Player : MonoBehaviour
             }
         }
 
-        circlePower = 0;
+        circlePower = circlePowerPromise;
+        circlePowerPromise = 0;
     }
 
     public void Restart()
@@ -209,7 +246,15 @@ public class Player : MonoBehaviour
     {
         if(UseStarters)
         {
-            Runes.GetAllRunes(r => r.Rarity == Rarity.Starter);
+            deckRef = new();
+            var runes = Runes.GetAllRunes(r => r.Rarity == Rarity.Starter);
+            foreach(Rune rune in runes)
+            {
+                for(int i = 0; i < rune.StartCount; i++)
+                {
+                    deckRef.Add(rune.Clone() as Rune);
+                }
+            }
         }
         else
         {
@@ -246,26 +291,17 @@ public class Player : MonoBehaviour
                 if (circle[i] == null)
                     continue;
 
-                Activate(i);
+                var events = Activate(i);
 
-                yield return runeBoard.Resolve(circlePower);
+                yield return runeBoard.Resolve(i, events, circlePower);
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
             opponentHealth -= circlePower;
             HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
-            for (int i = 0; i < circle.Count; i++)
-            {
-                if (circle[i] != null)
-                    runeBoard.DestroySlot(i);
-            }
-
-            yield return new WaitForSeconds(1.0f);
-
             ClearCircle();
-
-            yield return runeBoard.EndRound();
+            yield return runeBoard.EndSummon();
 
             if (opponentHealth <= 0)
             {
@@ -297,28 +333,28 @@ public class Player : MonoBehaviour
 
         yield return null;
     }
-    public void Activate(int index)
+    public List<EventHistory> Activate(int index)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
-            return;
+            return null;
 
-        circle[index].OnActivate?.Invoke(index, this);
+        var events = circle[index].OnActivate?.Invoke(index, this);
 
         if (HasRuneAtIndex(index))
         {
             int power = GetRunePower(index);
             circlePower += power;
         }
+
+        return events;
     }
     public void AddNewRuneToHand(Rune rune)
     {
         temporaryStats.Add(rune, new());
         hand.Add(rune);
-        // TODO: Put in the main routine!
-        StartCoroutine(runeBoard.Draw(rune));
     }
-    private void Draw(bool discard)
+    private List<Rune> Draw(bool discard)
     {
         if (discard)
         {
@@ -328,10 +364,12 @@ public class Player : MonoBehaviour
             }
             hand.Clear();
         }
-        Draw(Settings.HandSize - hand.Count, false);
+        return Draw(Settings.HandSize - hand.Count);
     }
-    public void Draw(int count, bool spawnVisuals)
+    public List<Rune> Draw(int count)
     {
+        List<Rune> result = new();
+
         for (int i = 0; i < count; i++)
         {
             if (bag.Count == 0)
@@ -349,14 +387,15 @@ public class Player : MonoBehaviour
                 Rune rune = bag[0];
                 hand.Add(rune);
                 bag.RemoveAt(0);
-                if(spawnVisuals)
-                    StartCoroutine(runeBoard.Draw(rune));
+                result.Add(rune);
             }
             else
             {
                 Debug.LogWarning("Your deck is too small");
             }
         }
+
+        return result;
     }
     private void Discard(Rune rune)
     {

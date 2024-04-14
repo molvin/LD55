@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 
 public class RuneBoard : MonoBehaviour
 {
@@ -31,6 +30,10 @@ public class RuneBoard : MonoBehaviour
     public RuneRef HealRune;
     public Transform HealSlot;
     public BoxCollider ShopArea;
+    public ParticleSystem ShopFeedback;
+
+    public Transform DiscardPile;
+    public Transform ExilePile;
 
     public TextMeshProUGUI ScoreText;
 
@@ -38,13 +41,12 @@ public class RuneBoard : MonoBehaviour
     private List<RuneVisuals> runes = new();
     private List<Draggable> shopObjects = new();
     private Draggable held;
-    private Draggable inspect;
     public float PlaneHeight;
     private Plane playSpace;
     private Vector3 runeVelocity;
     private Vector3 grabOffset;
     private int boughtCount;
-    private float dragTime;
+    private Vector3 mouseDragStartPoint;
 
     private List<Draggable> allDragables => shopObjects.Union(runes.Select(x => x as Draggable)).ToList();
     private List<Slot> allSlots => slots.Select(s => s as Slot).ToList(); //slots.Union(ShopSlots).ToList();
@@ -135,27 +137,21 @@ public class RuneBoard : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (held == null && inspect == null)
+            if (held == null)
             {
-                UpdateHover(ray);
-            }
-            else if(inspect != null)
-            {
-                yield return Inspect(true);
+                yield return UpdateHover(ray);
             }
             else
             {
                 yield return UpdateDrag(ray, false);
             }
-
-            yield return null;
         }
 
         HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
         HUD.Instance.EndTurnButton.interactable = false;
     }
 
-    private void UpdateHover(Ray ray)
+    private IEnumerator UpdateHover(Ray ray)
     {
         // TODO: we can also hover and inspect shop objects
 
@@ -170,7 +166,7 @@ public class RuneBoard : MonoBehaviour
                 hovered = drag;
                 grabOffset = drag.transform.InverseTransformPoint(hit.point);
                 grabOffset.y = 0.0f;
-                dragTime = Time.time;
+                mouseDragStartPoint = ray.origin;
             }
         }
 
@@ -190,8 +186,9 @@ public class RuneBoard : MonoBehaviour
             else if (Input.GetMouseButtonDown(1))
             {
                 // Inspect
-                inspect = hovered;
-                inspect.Rigidbody.isKinematic = true;
+                HUD.Instance.EndTurnButton.interactable = false;
+                yield return Inspect(hovered, true, Quaternion.identity);
+                HUD.Instance.EndTurnButton.interactable = true;
             }
         }
         else
@@ -202,8 +199,9 @@ public class RuneBoard : MonoBehaviour
                 {
                     if (Input.GetMouseButtonDown(1))
                     {
-                        inspect = slot.Held;
-                        inspect.Rigidbody.isKinematic = true;
+                        HUD.Instance.EndTurnButton.interactable = false;
+                        yield return Inspect(slot.Held, false, slot.Held.transform.rotation);
+                        HUD.Instance.EndTurnButton.interactable = true;
                     }
                 }
             }
@@ -221,9 +219,13 @@ public class RuneBoard : MonoBehaviour
                 hovered = slot;
             }
         }
-        if(shopping)
+        if (shopping)
         {
             shopHovered = ShopArea.Raycast(ray, out RaycastHit _, 1000.0f);
+            if (shopHovered && !ShopFeedback.isPlaying)
+                ShopFeedback.Play();
+            else if (!shopHovered && ShopFeedback.isPlaying)
+                ShopFeedback.Stop();
         }
 
         if (!Input.GetMouseButton(0))
@@ -249,18 +251,19 @@ public class RuneBoard : MonoBehaviour
                     yield return ShopRunes(origin);
                 }
                 boughtCount++;
-            }   
+            }
             else if(hovered != null && ((RuneSlot)hovered).Open)
             {
                 int index = System.Array.IndexOf(slots, hovered);
                 var vis = (RuneVisuals)held;
                 ((RuneSlot)hovered).Set(vis);
                 runes.Remove(vis);
-                Player.Instance?.Place(vis.Rune, index);
+                var events = Player.Instance.Place(vis.Rune, index);
+                yield return Resolve(index, events, Player.Instance.GetCirclePower());
             }
             else
             {
-                if((Time.time - dragTime) < 0.1f)
+                if (Vector3.Distance(ray.origin, mouseDragStartPoint) < 0.01f)
                 {
                     held.ResetRot();
                     held.Rigidbody.isKinematic = false;
@@ -295,16 +298,15 @@ public class RuneBoard : MonoBehaviour
             held.transform.position = Vector3.SmoothDamp(held.transform.position, targetPos, ref runeVelocity, moveSmoothing * Time.deltaTime);
             held.transform.localRotation = Quaternion.RotateTowards(held.transform.localRotation, targetRot, rotationSpeed * Time.deltaTime);
         }
-        yield return null;
     }
 
-    private IEnumerator Inspect(bool enablePhysicsWhenDone)
+    private IEnumerator Inspect(Draggable inspect, bool enablePhysicsWhenDone, Quaternion cachedRot)
     {
+        inspect.Rigidbody.isKinematic = true;
 
         yield return null;
 
         Vector3 cachedPos = inspect.transform.position;
-        Quaternion cachedRot = Quaternion.identity; //inspect.transform.rotation;
         while (!Input.GetMouseButtonDown(1))
         {
             Transform target = CameraController.Instance.InspectPoint;
@@ -328,49 +330,192 @@ public class RuneBoard : MonoBehaviour
             inspect.Rigidbody.isKinematic = false;
             inspect.Rigidbody.velocity = runeVelocity;
         }
-        inspect = null;
     }
 
-    public IEnumerator Resolve(int circlePower)
+    public IEnumerator BeginSummon()
     {
-        UpdateScore(circlePower);
-        yield return new WaitForSeconds(1.0f);
+        yield return null;
     }
 
-    public void UpdateScore(int circlePower)
+    public IEnumerator Resolve(int index, List<EventHistory> events, int circlePower)
     {
-        ScoreText.text = $"{circlePower}";
+        // TODO: highlight rune
+        if (events == null || events.Count == 0)
+        {
+        }
+        else
+        {
+            foreach(EventHistory e in events)
+            {
+                switch(e.Type)
+                {
+                    case EventType.None:
+                        break;
+                    case EventType.PowerToSummon:
+                        yield return UpdateScore(circlePower);
+                        break;
+                    case EventType.PowerToRune:
+                        RuneVisuals vis = slots[e.Actor].Held;
+                        vis.UpdateStats();
+                        yield return new WaitForSeconds(0.5f);
+                        break;
+                    case EventType.Exile:
+                        yield return DestroySlot(e.Actor, true);
+                        break;
+                    case EventType.Destroy:
+                        yield return DestroySlot(e.Actor, false);
+                        break;
+                    case EventType.Swap:
+                        yield return SwapSlot(e.Actor, e.Target);
+                        break;
+                    case EventType.Replace:
+                        yield return ReplaceSlot(e.Others[0], e.Actor);
+                        break;
+                    case EventType.Draw:
+                        foreach (Rune rune in e.Others)
+                            yield return Draw(rune);
+                        break;
+                    case EventType.AddLife:
+                        HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
+                        yield return new WaitForSeconds(1.0f);
+                        break;
+                    case EventType.DiceRoll:
+                        break;
+                }
+            }
+        }
+
+        yield return UpdateScore(circlePower);
     }
 
-    public void DestroySlot(int index)
-    {
-        Destroy(slots[index].Held.gameObject); // TODO: visuals
-    }
-
-    public void SwapSlot(int first, int second)
-    {
-        RuneVisuals temp = slots[first].Held;
-        slots[first].Set(slots[second].Held);
-        slots[second].Set(temp);
-    }
-    public void SwapSlot(Rune rune, int index)
-    {
-        slots[index].Held.Init(rune, Player.Instance);
-    }
-
-    public IEnumerator EndRound()
+    public IEnumerator EndSummon()
     {
         // TODO: visuals
 
-        ScoreText.text = "0";
-
-        foreach(RuneVisuals vis in runes)
+        foreach (RuneVisuals vis in runes)
         {
             Destroy(vis.gameObject);
         }
         runes.Clear();
 
+        List<IEnumerator> deathAnims = new();
+        for (int i = 0; i < 5; i++)
+        {
+            if (!slots[i].Open)
+            {
+                deathAnims.Add(DestroySlot(i, false));
+            }
+        }
+        yield return RunConcurently(0.1f, deathAnims.ToArray());
+
         yield return new WaitForSeconds(1.0f);
+
+        ScoreText.text = "0";
+    }
+
+    private IEnumerator UpdateScore(int circlePower)
+    {
+        ScoreText.text = $"{circlePower}";
+        yield return new WaitForSeconds(0.2f);
+    }
+    
+    private IEnumerator RunConcurently(float delay, params IEnumerator[] corouties)
+    {
+        int count = corouties.Length;
+        foreach(var cor in corouties)
+        {
+            StartCoroutine(RunWithEndPredicate(cor, () => count--));
+            yield return new WaitForSeconds(delay);
+        }
+        while (count > 0)
+            yield return null;
+    }
+
+    private IEnumerator RunWithEndPredicate(IEnumerator coroutine, System.Action onEnd)
+    {
+        yield return coroutine;
+        onEnd();
+    }
+
+    private IEnumerator DestroySlot(int index, bool exile)
+    {
+        RuneVisuals vis = slots[index].Held;
+        float t = 0;
+        float duration = 0.3f;
+        Vector3 startPos = vis.transform.position;
+        Quaternion startRot = vis.transform.rotation;
+        Vector3 endPos = exile ? ExilePile.position : DiscardPile.position;
+        while(t < duration)
+        {
+            vis.transform.position = Vector3.Lerp(startPos, endPos, t / duration);
+            vis.transform.rotation = Quaternion.Slerp(startRot, Quaternion.identity, t / duration);
+            t += Time.deltaTime;
+            yield return null;
+        }
+        Destroy(slots[index].Held.gameObject); // TODO: visuals
+        yield return new WaitForSeconds(0.15f);
+    }
+
+    private IEnumerator SwapSlot(int first, int second)
+    {
+        RuneVisuals firstVis = slots[first].Open ? null : slots[first].Held;
+        RuneVisuals secondVis = slots[second].Open ? null : slots[second].Held;
+
+        Vector3 firstStartPos = firstVis == null ? slots[first].transform.position : firstVis.transform.position;
+        Vector3 secondStartPos = secondVis == null ? slots[second].transform.position : secondVis.transform.position;
+
+        Quaternion firstStartRotation = firstVis == null ? slots[first].transform.rotation : firstVis.transform.rotation;
+        Quaternion secondStartRotation = secondVis == null ? slots[second].transform.rotation : secondVis.transform.rotation;
+
+        float t = 0.0f;
+        float duration = 0.25f;
+        while (t < duration)
+        {
+            if(firstVis != null)
+            {
+                firstVis.transform.position = Vector3.Lerp(firstStartPos, secondStartPos, t / duration);
+                firstVis.transform.rotation = Quaternion.Slerp(firstStartRotation, secondStartRotation, t / duration);
+            }
+            if(secondVis != null)
+            {
+                secondVis.transform.position = Vector3.Lerp(secondStartPos, firstStartPos, t / duration);
+                secondVis.transform.rotation = Quaternion.Slerp(secondStartRotation, firstStartRotation, t / duration);
+            }
+
+
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        slots[first].Set(secondVis);
+        slots[second].Set(firstVis);
+    }
+    
+    private IEnumerator ReplaceSlot(Rune rune, int index)
+    {
+        RuneVisuals vis = slots[index].Held;
+        float t = 0.0f;
+        float duration = 0.25f;
+
+        Vector3 startEuler = vis.transform.rotation.eulerAngles;
+        bool done = false;
+        while(t < duration)
+        {
+            vis.transform.rotation = Quaternion.Euler(startEuler.x, startEuler.y, Mathf.Lerp(0, 360, t / duration));
+            t += Time.deltaTime;
+
+            if (!done && t >= duration / 2)
+            {
+                vis.Init(rune, Player.Instance);
+                done = true;
+            }
+
+            yield return null;
+        }
+        vis.transform.rotation = Quaternion.Euler(startEuler);
+
+        slots[index].Held.Init(rune, Player.Instance);
+        yield return null;
     }
 
     public IEnumerator Shop()
@@ -410,23 +555,23 @@ public class RuneBoard : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (held == null && inspect == null)
+            if (held == null)
             {
-                UpdateHover(ray);
-            }
-            else if (inspect != null)
-            {
-                yield return Inspect(true);
+                if (ShopFeedback.isPlaying)
+                    ShopFeedback.Stop();
+
+                yield return UpdateHover(ray);
             }
             else
             {
                 yield return UpdateDrag(ray, true);
             }
-
-            yield return null;
         }
 
-        foreach(Draggable obj in shopObjects)
+        if (ShopFeedback.isPlaying)
+            ShopFeedback.Stop();
+
+        foreach (Draggable obj in shopObjects)
         {
             Destroy(obj.gameObject);
         }
@@ -441,15 +586,19 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator ShopRunes(Vector3 origin)
     {
+        if(ShopFeedback.isPlaying)
+            ShopFeedback.Stop();
         bool buying = true;
 
         HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
         HUD.Instance.EndTurnButton.onClick.AddListener(() => buying = false);
 
-        List<Rune> allRunes = Runes.GetAllRunes();
         List<Rune> runes = new List<Rune>();
         for (int i = 0; i < 5; i++)
+        {
+            List<Rune> allRunes = Runes.GetAllRunes();
             runes.Add(allRunes[Random.Range(0, allRunes.Count)]);
+        }
 
         List<RuneVisuals> shopRunes = new();
         foreach (Rune rune in runes)
@@ -489,8 +638,7 @@ public class RuneBoard : MonoBehaviour
                     }
                     if(Input.GetMouseButtonDown(1))
                     {
-                        inspect = vis;
-                        yield return Inspect(false);
+                        yield return Inspect(vis, false, vis.transform.rotation);
                     }
                 }
             }
