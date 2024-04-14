@@ -298,6 +298,7 @@ public class Player : MonoBehaviour
     {
         Instance = this;
         runeBoard = FindObjectOfType<RuneBoard>();
+        RuneIcons.Init();
     }
 
     private void Start()
