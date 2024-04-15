@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc02903647b24794981184b6992edb5a, type: 3}
-  m_Name: CloseShop
+  m_Name: AfterSummon
   m_EditorClassIdentifier: 
   clips:
-  - {fileID: 8300000, guid: e96387d75e58e6a4f8cd96fe27cc7706, type: 3}
-  mixer: {fileID: -7069094555200107113, guid: b5ae5806a793eee458f3f1ac68c6cf0a, type: 2}
-  vol_min: 1
+  - {fileID: 8300000, guid: 654bc020b1cf1364aabc730fdff99cb3, type: 3}
+  mixer: {fileID: -6106622184497648700, guid: b5ae5806a793eee458f3f1ac68c6cf0a, type: 2}
+  vol_min: 0.9
   vol_max: 1
-  pitch_min: 0.95
-  pitch_max: 1.05
+  pitch_min: 0.9
+  pitch_max: 1.1

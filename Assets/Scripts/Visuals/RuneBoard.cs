@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using static UnityEngine.GraphicsBuffer;
 
 public class RuneBoard : MonoBehaviour
@@ -46,10 +47,11 @@ public class RuneBoard : MonoBehaviour
     public List<Gem> Gems = new();
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
-    public Animation ScrollAnimation;
+    public ScrollAnimationController ScrollAnimation;
     public TextMeshPro ScoreText;
 
     private RuneSlot[] slots;
+    private List<GameObject> slotLights = new();
     private List<RuneVisuals> runes = new();
     private List<Draggable> shopObjects = new();
     private Draggable held;
@@ -84,8 +86,10 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration addPowerToCircleSound;
     public AudioOneShotClipConfiguration raiseShardAnimSound;
     public AudioOneShotClipConfiguration drawShardsSound;
+    public AudioOneShotClipConfiguration inspecSound;
+    public AudioOneShotClipConfiguration runeDestroySound;
 
-    
+    private HandVisualizer handVisualizer;
 
     private Audioman audioman;
 
@@ -98,6 +102,18 @@ public class RuneBoard : MonoBehaviour
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);
             slots[i].transform.parent = PentagramObject.transform;
             slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i + 2), 0);
+
+            GameObject go = new GameObject();
+            go.transform.parent = PentagramObject.transform;
+            go.transform.localPosition = Vector3.zero;
+            go.transform.position += slots[i].transform.localRotation * Vector3.forward * 0.4f;
+            Light light = go.AddComponent<Light>();
+            light.color = Color.red;
+            light.intensity = 0.4f;
+            light.bounceIntensity = 0.0f;
+            light.range = 1.8f;
+            go.SetActive(false);
+            slotLights.Add(go);
         }
 
         runes = FindObjectsOfType<RuneVisuals>().ToList();
@@ -113,6 +129,38 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         audioman = FindObjectOfType<Audioman>();
+        handVisualizer = FindObjectOfType<HandVisualizer>();
+    }
+
+    public IEnumerator ActivateLight(int index, bool turnOn)
+    {
+        if (turnOn)
+        {
+            slotLights[index].SetActive(true);
+
+            Light light = slotLights[index].GetComponent<Light>(); ;
+            float intensity = light.intensity;
+            light.intensity = 0.0f;
+            while (light.intensity < intensity)
+            {
+                light.intensity += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+            light.intensity = intensity;
+        }
+        else
+        {
+            Light light = slotLights[index].GetComponent<Light>(); ;
+            float intensity = light.intensity;
+            while (intensity > 0.0f)
+            {
+                light.intensity -= Time.deltaTime * 2.0f;
+                light.intensity = Mathf.Clamp(light.intensity, 0.0f, intensity);
+                yield return new WaitForEndOfFrame();
+            }
+            light.intensity = intensity;
+            slotLights[index].SetActive(false);
+        }
     }
 
     private void Update()
@@ -424,7 +472,7 @@ public class RuneBoard : MonoBehaviour
                 runes.Remove(vis);
                 var events = Player.Instance.Place(vis.Rune, index);
                 vis.UpdateStats();
-                FindAnyObjectByType<Audioman>().PlaySound(placeInSlotSound, slot.transform.position);
+                audioman.PlaySound(placeInSlotSound, slot.transform.position);
                 yield return Resolve(index, events);
             }
             else if(hovered != null && held is Gem gem && hovered is GemSlot gemSlot && (gem == StartGem && gemSlot.IsStart || gem != StartGem && !gemSlot.IsStart))
@@ -437,7 +485,7 @@ public class RuneBoard : MonoBehaviour
                 {
                     running = false;
                     gemSlot.ActiveParticles.Play();
-                    FindAnyObjectByType<Audioman>().PlaySound(startSummonSound, gemSlot.transform.position);
+                    audioman.PlaySound(startSummonSound, gemSlot.transform.position);
                 }
                 else
                 {
@@ -457,7 +505,7 @@ public class RuneBoard : MonoBehaviour
                 {
                     held.Rigidbody.isKinematic = false;
                     held.Rigidbody.velocity = runeVelocity;
-                    FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, held.transform.position);
+                    audioman.PlaySound(dropShardSound, held.transform.position);
                 }
             }
             held = null;
@@ -488,6 +536,8 @@ public class RuneBoard : MonoBehaviour
     private IEnumerator Inspect<T>(T inspect, bool enablePhysicsWhenDone, Quaternion cachedRot, List<T> containingList) where T : Draggable
     {
         inspect.Rigidbody.isKinematic = true;
+
+        audioman.PlaySound(inspecSound, transform.position);
 
         if (containingList != null)
         {
@@ -562,7 +612,7 @@ public class RuneBoard : MonoBehaviour
         slots[index].Held.GetComponent<Animator>().enabled = true;
 
         slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
-        FindAnyObjectByType<Audioman>().PlaySound(raiseShardAnimSound, ScoreText.transform.position);
+        audioman.PlaySound(raiseShardAnimSound, ScoreText.transform.position);
 
         yield return new WaitForSeconds(0.2f);
 
@@ -611,8 +661,9 @@ public class RuneBoard : MonoBehaviour
                             yield return Draw(rune);
                         break;
                     case EventType.AddLife:
-                        HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
-                        yield return new WaitForSeconds(1.0f);
+                        // HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
+                        //yield return new WaitForSeconds(1.0f);
+                        yield return handVisualizer.ViewSelf(Player.Instance.Health, true);
                         break;
                     case EventType.ReturnToHand:
                         {
@@ -660,11 +711,10 @@ public class RuneBoard : MonoBehaviour
             if (!slots[index].Open)
             {
                 slots[index].Held.GetComponent<Animator>().SetTrigger("lower");
-
             }
             
             yield return new WaitForSeconds(0.3f);
-            FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, ScoreText.transform.position);
+            audioman.PlaySound(dropShardSound, ScoreText.transform.position);
             slots[index].Active.Stop();
         }
     }
@@ -704,7 +754,7 @@ public class RuneBoard : MonoBehaviour
 
         Vector3 secondStartPoint = power.transform.position;
         yield return null;
-        FindAnyObjectByType<Audioman>().PlaySound(addPowerToCircleSound, ScoreText.transform.position);
+        audioman.PlaySound(addPowerToCircleSound, ScoreText.transform.position);
 
         time = 0;
         while(time < textPointsResolveDuration)
@@ -722,6 +772,8 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator AddPowerToSummonAnim(int index, int power) //TODO add rotation
     {
+        if (slots[index].Held == null)
+            yield break;
 
         TextMeshProUGUI powerText = slots[index].Held.Power;
         Vector3 startPoint = powerText.transform.position;
@@ -811,7 +863,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator EndDamage(int health, int maxHealth)
     {
-        OpponentHealth.text = $"{health}";
+        OpponentHealth.text = $"{Mathf.Max(health, 0)}";
         yield return new WaitForSeconds(1.5f);
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);
@@ -856,6 +908,7 @@ public class RuneBoard : MonoBehaviour
 
     private IEnumerator DestroyRune(RuneVisuals vis, bool exile)
     {
+        audioman.PlaySound(runeDestroySound, transform.position);
         yield return new WaitForSeconds(0.5f);
         float t = 0;
         float duration = 0.5f;
@@ -944,9 +997,6 @@ public class RuneBoard : MonoBehaviour
             yield return null;
 
         yield return Progress.Set(currentRound);
-
-        while (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
-            yield return null;
 
         ScrollAnimation.Play("CloseScroll");
         while (ScrollAnimation.isPlaying)
@@ -1060,7 +1110,10 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
- 
+
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
     }
 
     private List<Rune> GetRunesToBuy(int num)
@@ -1068,8 +1121,8 @@ public class RuneBoard : MonoBehaviour
         List<Rune> runes = new List<Rune>();
         for (int i = 0; i < num; i++)
         {
-            bool rare = Random.value > 0.7f;
-            bool legendary = rare && Random.value > 0.7f;
+            bool rare = Random.value > 0.5f;
+            bool legendary = rare && Random.value > 0.5f;
             List<Rune> allRunes = legendary
                 ? Runes.GetAllRunes(r => r.Rarity != Rarity.None)
                 : rare
@@ -1175,7 +1228,7 @@ public class RuneBoard : MonoBehaviour
         var rigidBody = vis.GetComponent<Rigidbody>();
         rigidBody.AddForce(RuneSpawn.forward * 3 + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
 
-        FindObjectOfType<Audioman>().PlaySound(drawShardsSound, rigidBody.position);
+        audioman.PlaySound(drawShardsSound, rigidBody.position);
 
         yield return new WaitForSeconds(0.2f);
     }

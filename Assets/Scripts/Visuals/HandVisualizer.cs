@@ -25,26 +25,39 @@ public class HandVisualizer : MonoBehaviour
         m_AudioMan.PlaySound(m_CutSound, transform.position);
     }
 
+    private int cachedHealth = 5;
+
     public IEnumerator ViewSelf(int health, bool heal)
     {
         m_CameraAnimator.SetTrigger("ViewSelf");
 
         yield return new WaitForSeconds(1.0f);
 
-        m_Animator.SetInteger("health", health);
-        m_Animator.SetTrigger(heal ? "heal" : "damage");
+        int delta = health - cachedHealth;
+        int dir = (int) Mathf.Sign(delta);
+        delta = Mathf.Abs(delta);
 
-        /*
-        while(m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 || m_Animator.IsInTransition(0))
+        for(int i = 0; i < delta && cachedHealth != 5; i++)
         {
-            yield return null;
+            cachedHealth += dir;
+            m_Animator.SetInteger("health", cachedHealth);
+            m_Animator.SetTrigger(heal ? "heal" : "damage");
+
+            /*
+            while(m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 || m_Animator.IsInTransition(0))
+            {
+                yield return null;
+            }
+            */
+            yield return new WaitForSeconds(3.0f);
         }
-        */
-        yield return new WaitForSeconds(3.0f);
+;
 
         m_CameraAnimator.SetTrigger("BackFromSelf");
         yield return new WaitForSeconds(1.0f);
         m_CameraAnimator.SetTrigger("Idle");
+
+        cachedHealth = health;
 
     }
 }
