@@ -65,6 +65,7 @@ public class RuneBoard : MonoBehaviour
     public Animator CameraAnim;
     public TextMeshProUGUI OpponentHealth;
     public ProgressView Progress;
+    public GameObject TutorialObject;
 
     private List<Draggable> allDragables => shopObjects.Union(runes).Union(Gems).Union(new[] {StartGem}).ToList();
     private List<Slot> allSlots => new Slot[] { StartSlot }.Union(slots).Union(GemSlots).ToList(); //slots.Union(ShopSlots).ToList();
@@ -138,6 +139,22 @@ public class RuneBoard : MonoBehaviour
                 StartGem.Rigidbody.AddForce(force + Vector3.up * (StartGemUpForce * Time.deltaTime), ForceMode.VelocityChange);
             }
         }
+    }
+
+    public IEnumerator Tutorial()
+    {
+        ScrollAnimation.Play("OpenScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
+
+        TutorialObject.SetActive(true);
+        while (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(0))
+            yield return null;
+        TutorialObject.SetActive(false);
+
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
     }
 
     public IEnumerator BeginRound()
@@ -678,7 +695,6 @@ public class RuneBoard : MonoBehaviour
         StartCoroutine(FadeInShardPower(power));
     }
 
-    
     public IEnumerator AddPowerToSummonAnim(int index, int power) //TODO add rotation
     {
 
@@ -712,8 +728,6 @@ public class RuneBoard : MonoBehaviour
 
         powerText.transform.localPosition = startPointLocal;
     }
-
-
 
     public IEnumerator FadeInShardPower(TextMeshProUGUI power)
     {
@@ -913,6 +927,9 @@ public class RuneBoard : MonoBehaviour
             yield return null;
 
         yield return Progress.Set(currentRound);
+
+        while (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
+            yield return null;
 
         ScrollAnimation.Play("CloseScroll");
         while (ScrollAnimation.isPlaying)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEngine.SceneManagement;
 
 public struct TempStats
 {
@@ -335,13 +336,10 @@ public class Player : MonoBehaviour
         // runeBoard.ReplaceSlot(rune, index);
         circle[index] = rune;
     }
-
-    
     public void RemoveFromDeck(Rune rune)
     {
         deckRef.Remove(rune);
     }
-
     private void ClearCircle()
     {
         for (int i = 0; i < circle.Count; i++)
@@ -427,6 +425,8 @@ public class Player : MonoBehaviour
         int set = 0;
         bool win = false;
 
+        yield return runeBoard.Tutorial();
+
         while (Health > 0)
         {
             HUD.Instance.PlayerHealth.Set(Health, Settings.PlayerMaxHealth);
@@ -506,10 +506,12 @@ public class Player : MonoBehaviour
         if(win)
         {
             Debug.Log("You win");
+            SceneManager.LoadScene(0);
         }
         else
         {
             Debug.Log("You lose");
+            SceneManager.LoadScene(0);
         }
 
         yield return null;
