@@ -472,6 +472,33 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 753dd122e791f8643931c5a1ae9a4df6, type: 3}
+--- !u!1 &678101842 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 203377750427861347, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+  m_PrefabInstance: {fileID: 4471929155943880039}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &678101846
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 678101842}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4702925393065980420, guid: 90c77485d3e454f468f2f376f780261b, type: 3}
 --- !u!1001 &1622039962
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -566,6 +593,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RuneBoard
       objectReference: {fileID: 0}
+    - target: {fileID: 4204802775895148597, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: Collider
+      value: 
+      objectReference: {fileID: 678101846}
     - target: {fileID: 6084850725393783034, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -606,6 +637,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8077143989658553995, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4702925393065980420, guid: 90c77485d3e454f468f2f376f780261b, type: 3}
+    - target: {fileID: 8077143989658553995, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8849306112804028013, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
@@ -621,6 +660,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1094113221589360314, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 203377750427861347, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 678101846}
   m_SourcePrefab: {fileID: 100100000, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
 --- !u!1001 &5232668895611596137
 PrefabInstance:

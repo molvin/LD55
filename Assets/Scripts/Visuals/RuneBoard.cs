@@ -84,7 +84,7 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration addPowerToCircleSound;
     public AudioOneShotClipConfiguration raiseShardAnimSound;
 
-    
+    private HandVisualizer handVisualizer;
 
     private Audioman audioman;
 
@@ -112,6 +112,7 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         audioman = FindObjectOfType<Audioman>();
+        handVisualizer = FindObjectOfType<HandVisualizer>();
     }
 
     private void Update()
@@ -595,8 +596,9 @@ public class RuneBoard : MonoBehaviour
                             yield return Draw(rune);
                         break;
                     case EventType.AddLife:
-                        HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
-                        yield return new WaitForSeconds(1.0f);
+                        // HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
+                        //yield return new WaitForSeconds(1.0f);
+                        yield return handVisualizer.ViewSelf(Player.Instance.Health, true);
                         break;
                     case EventType.ReturnToHand:
                         {
@@ -795,7 +797,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator EndDamage(int health, int maxHealth)
     {
-        OpponentHealth.text = $"{health}";
+        OpponentHealth.text = $"{Mathf.Max(health, 0)}";
         yield return new WaitForSeconds(1.5f);
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);

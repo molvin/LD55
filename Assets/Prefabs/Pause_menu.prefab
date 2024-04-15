@@ -3627,7 +3627,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sliderConfigurations:
-  - slider: {fileID: 0}
+  - slider: {fileID: 1933118113431296554}
     mixer_value: master
   AudioMixer: {fileID: 24100000, guid: b5ae5806a793eee458f3f1ac68c6cf0a, type: 2}
 --- !u!1 &8784633965034243871
