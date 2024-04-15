@@ -14,8 +14,8 @@ public static class Settings
     public static int MinStartHandSize = 10;
 
     private static int opponentHealthBase = 1;
-    private static int opponentHealthBaseRamp = 15;
-    private static int opponentHealthRoundRamp = 3;
+    private static int opponentHealthBaseRamp = 1;
+    private static int opponentHealthRoundRamp = 1;
 
     private static int opponentDamageBase = 0;
     private static int opponentDamageRamp = 1;
