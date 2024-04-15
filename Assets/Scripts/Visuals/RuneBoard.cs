@@ -396,6 +396,21 @@ public class RuneBoard : MonoBehaviour
                 {
                     shopObjects.Remove(gem);
                     Gems.Add(gem);
+
+                    List<Draggable> destroys = new();
+                    foreach (var shopObj in shopObjects)
+                    {
+                        if (shopObj is Gem)
+                        {
+                            destroys.Add(shopObj);
+                        }
+                    }
+                    for (int i = destroys.Count - 1; i >= 0; i--)
+                    {
+                        shopObjects.Remove(destroys[i]);
+                        Destroy(destroys[i].gameObject);
+                    }
+
                     gem.gameObject.SetActive(false);
                     yield return new WaitForSeconds(0.25f);
                 }
@@ -976,13 +991,35 @@ public class RuneBoard : MonoBehaviour
             vis.Init(Runes.GetPrune(), Player.Instance);
             shopObjects.Add(vis);
         }
+
         if ((Player.Instance.CurrentRound % 3) == 0)
         {
+            Dictionary<string, int> gemCount = new();
+            List<string> exclusion = new();
+            foreach (Gem g in Gems)
+            {
+                string name = g.Artifact.Name;
+                int count = gemCount.GetValueOrDefault(name, 0);
+                count++;
+                gemCount[name] = count;
+
+                if (count >= g.Artifact.Limit)
+                {
+                    exclusion.Add(name);
+                }
+            }
+
+            var allArtifacts = Artifacts
+                .GetAllArtifacts()
+                .Where(a => !exclusion.Contains(a.Name))
+                .ToList();
+
             for(int i = 0; i < 3; i++)
             {
-                var allArtifacts = Artifacts.GetAllArtifacts();
                 Gem gem = Instantiate(GemPrefab, ShopGemPoints[i].transform.position, Quaternion.identity);
-                gem.Init(allArtifacts[Random.Range(0, allArtifacts.Count)]);
+                int index = Random.Range(0, allArtifacts.Count);
+                gem.Init(allArtifacts[index]);
+                allArtifacts.RemoveAt(index);
                 shopObjects.Add(gem);
             }
         }
