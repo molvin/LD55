@@ -70,10 +70,7 @@ public class RuneBoard : MonoBehaviour
     [Header("animations")]
     public AnimationCurve textPointsResolveAnim;
     public float textPointsResolveDuration = 1;
-    public AnimationCurve beginResolveFloatAnimCurv;
 
-    public float beginResolveFloatAnimDuration;
-    public float beginResolveFloatAnimHeight;
 
     [Header("audio")]
     public AudioOneShotClipConfiguration placeInSlotSound;
