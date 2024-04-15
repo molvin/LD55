@@ -423,7 +423,7 @@ public class Player : MonoBehaviour
         while (health > 0)
         {
             HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
-            HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+            runeBoard.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             ResetTempStats();
             Draw(true);
@@ -443,18 +443,18 @@ public class Player : MonoBehaviour
 
                 var events = Activate(i);
 
+                yield return runeBoard.BeginResolve(i);
                 yield return runeBoard.Resolve(i, events);
                 yield return runeBoard.FinishResolve(i, circlePower);
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
             opponentHealth -= circlePower;
-            HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             ClearCircle();
             yield return runeBoard.EndSummon();
             yield return runeBoard.UpdateScore(circlePower);
-            yield return runeBoard.EndDamage();
+            yield return runeBoard.EndDamage(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             if (opponentHealth <= 0)
             {
@@ -474,9 +474,6 @@ public class Player : MonoBehaviour
 
                 yield return runeBoard.Shop();
                 Restart();
-
-                opponentHealth = Settings.GetOpponentHealth(currentRound);
-                HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
             }
             else
             {

@@ -45,9 +45,8 @@ public class RuneBoard : MonoBehaviour
     public List<Gem> Gems = new();
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
-
     public Animation ScrollAnimation;
-    public TextMeshProUGUI ScoreText;
+    public TextMeshPro ScoreText;
 
     private RuneSlot[] slots;
     private List<RuneVisuals> runes = new();
@@ -63,9 +62,15 @@ public class RuneBoard : MonoBehaviour
     private Draggable previousHover;
 
     public Animator CameraAnim;
+    public Health OpponentHealth;
 
     private List<Draggable> allDragables => shopObjects.Union(runes).Union(Gems).Union(new[] {StartGem}).ToList();
     private List<Slot> allSlots => new Slot[] { StartSlot }.Union(slots).Union(GemSlots).ToList(); //slots.Union(ShopSlots).ToList();
+
+
+    [Header("animations")]
+    public AnimationCurve textPointsResolveAnim;
+    public float textPointsResolveDuration = 1;
 
 
     [Header("audio")]
@@ -506,9 +511,18 @@ public class RuneBoard : MonoBehaviour
         CameraAnim.SetTrigger("ToSummon");
         yield return new WaitForSeconds(1.0f);
     }
+    public IEnumerator BeginResolve(int index)
+    {
+
+        slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
+        yield return new WaitForSeconds(0.4f);
+
+        yield return null;
+    }
+
 
     public IEnumerator Resolve(int index, List<EventHistory> events)
-    {
+    { //VISUAL ON SUMMON HERE, TODO SHAKY HSAKY LIGHY SOYND
         if (events == null || events.Count == 0)
         {
         }
@@ -522,7 +536,7 @@ public class RuneBoard : MonoBehaviour
                     case EventType.None:
                         break;
                     case EventType.PowerToSummon:
-                        yield return UpdateScore(e.Power);
+                        yield return UpdateScore(e.Power); //TODO floaty number animation
                         break;
                     case EventType.PowerToRune:
                         {
@@ -584,17 +598,88 @@ public class RuneBoard : MonoBehaviour
             }
             slots[index].Active.Stop();
         }
+
     }
 
-    public IEnumerator FinishResolve(int index, int circlePower)
+
+
+    public IEnumerator FinishResolve(int index, int circlePower) // TODO floaty number animation
     {
-        slots[index].Active.Play();
-        yield return UpdateScore(circlePower);
-        slots[index].Active.Stop();
+        if(slots[index].Held != null) {
+            slots[index].Active.Play();
+            yield return SpawnAndAnimateFlyingNumber(index);
+            yield return UpdateScore(circlePower);
+            slots[index].Active.Stop();
+        }
+
     }
+
+    public IEnumerator SpawnAndAnimateFlyingNumber(int index) //TODO add rotation
+    {
+        //yield return new WaitForSeconds(2f);
+
+        TextMeshProUGUI power = slots[index].Held.Power;
+        Vector3 startPoint = power.transform.position;
+        Vector3 startPointLocal = power.transform.localPosition;
+        Debug.Log("pause");
+        float time = 0;
+        float duration = 0.7f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            power.transform.position = startPoint + ((startPoint + new Vector3(0,0.1f,0) - startPoint) * (time / duration));
+            yield return null;
+
+        }
+
+        Vector3 secondStartPoint = power.transform.position;
+        yield return null;
+
+        time = 0;
+        while(time < textPointsResolveDuration)
+        {
+            time += Time.deltaTime;
+            power.transform.position = secondStartPoint + ((ScoreText.transform.position - secondStartPoint) * textPointsResolveAnim.Evaluate(time / textPointsResolveDuration));
+            yield return null;
+
+        }
+        power.transform.localPosition = startPointLocal;
+        StartCoroutine(FadeInShardPower(power));
+    }
+
+
+    public IEnumerator FadeInShardPower(TextMeshProUGUI power)
+    {
+        Color originalColor = power.color;
+        float time = 0;
+        float fadeInDuration = 2f;
+        while (time < fadeInDuration)
+        {
+            time += Time.deltaTime;
+            float currentAlpha = ((originalColor.a) * (time / fadeInDuration));
+            Color newColor = power.color;
+            newColor.a = currentAlpha;
+            power.color = newColor;
+            yield return null;
+
+        }
+    }
+
 
     public IEnumerator EndSummon()
     {
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (!slots[i].Open)
+            {
+                slots[i].Held.GetComponent<Animator>().SetTrigger("lower");
+
+            }
+        }
+        yield return new WaitForSeconds(0.5f);
+   
+
         List<IEnumerator> deathAnims = new();
         foreach (RuneVisuals vis in runes)
         {
@@ -609,6 +694,7 @@ public class RuneBoard : MonoBehaviour
         {
             if (!slots[i].Open)
             {
+                slots[i].Held.Rigidbody.isKinematic = true;
                 deathAnims.Add(DestroySlot(i, false));
             }
         }
@@ -626,8 +712,10 @@ public class RuneBoard : MonoBehaviour
         yield return new WaitForSeconds(1f);
     }
 
-    public IEnumerator EndDamage()
+    public IEnumerator EndDamage(int health, int maxHealth)
     {
+        OpponentHealth.Set(health, maxHealth);
+
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);
         CameraAnim.SetTrigger("Idle");

@@ -16,6 +16,7 @@ public class RuneVisuals : Draggable
 
     private Rune rune;
     private Player player;
+    public Transform visual;
 
     public Rune Rune => rune;
 
