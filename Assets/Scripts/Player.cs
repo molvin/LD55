@@ -391,6 +391,7 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        artifacts[0] = Artifacts.GetSmokeyQuartz;
         if(UseStarters)
         {
             deckRef = new();
