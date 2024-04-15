@@ -387,6 +387,15 @@ public class Player : MonoBehaviour
         Instance = this;
         runeBoard = FindObjectOfType<RuneBoard>();
         RuneIcons.Init();
+
+        List<Rune> allRunes = Runes.GetAllRunes();
+        foreach (Rune rune in allRunes)
+        {
+            if (!RuneIcons.Has(rune.Name))
+            {
+                Debug.LogWarning($"Missing rune icon for {rune.Name}");
+            }
+        }
     }
 
     private void Start()
@@ -504,8 +513,9 @@ public class Player : MonoBehaviour
                     break;
                 }
 
-                yield return runeBoard.ViewProgress(currentRound);
                 yield return runeBoard.Shop();
+                yield return runeBoard.ViewProgress(currentRound);
+
                 Restart();
                 opponentHealth = Settings.GetOpponentHealth(currentRound);
             }
