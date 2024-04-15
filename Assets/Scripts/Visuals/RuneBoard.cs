@@ -1238,7 +1238,7 @@ public class RuneBoard : MonoBehaviour
             Random.Range(-2.5f, -1.5f));
         */
         var rigidBody = vis.GetComponent<Rigidbody>();
-        rigidBody.AddForce(RuneSpawn.forward * 3 + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
+        rigidBody.AddForce(RuneSpawn.forward * 4 + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
 
         audioman.PlaySound(drawShardsSound, rigidBody.position);
 

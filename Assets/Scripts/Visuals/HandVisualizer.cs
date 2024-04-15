@@ -37,7 +37,7 @@ public class HandVisualizer : MonoBehaviour
         int dir = (int) Mathf.Sign(delta);
         delta = Mathf.Abs(delta);
 
-        for(int i = 0; i < delta && cachedHealth != 5; i++)
+        for(int i = 0; i < delta; i++)
         {
             cachedHealth += dir;
             m_Animator.SetInteger("health", cachedHealth);
@@ -50,6 +50,9 @@ public class HandVisualizer : MonoBehaviour
             }
             */
             yield return new WaitForSeconds(3.0f);
+
+            if (cachedHealth == 5)
+                break;
         }
 ;
 

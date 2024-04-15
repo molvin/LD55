@@ -132,6 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d205a6d6f1f2f2f48a113c04d8096d1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Anim: {fileID: 0}
   PaperRenderer: {fileID: 6017328834113926897}
   PaperMaterials:
   - {fileID: 2100000, guid: 35d80c52c2f5c7540926b96eecdb0e9b, type: 2}
