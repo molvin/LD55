@@ -526,7 +526,7 @@ public class RuneBoard : MonoBehaviour
 
 
     public IEnumerator Resolve(int index, List<EventHistory> events)
-    { //VISUAL ON SUMMON HERE, TODO SHAKY HSAKY LIGHY SOYND
+    { 
         if (events == null || events.Count == 0)
         {
         }
@@ -540,6 +540,7 @@ public class RuneBoard : MonoBehaviour
                     case EventType.None:
                         break;
                     case EventType.PowerToSummon:
+                        yield return AddPowerToSummonAnim(index, e.Power);
                         yield return UpdateScore(e.Power); //TODO floaty number animation
                         break;
                     case EventType.PowerToRune:
@@ -650,6 +651,42 @@ public class RuneBoard : MonoBehaviour
         power.transform.localPosition = startPointLocal;
         StartCoroutine(FadeInShardPower(power));
     }
+
+    public IEnumerator AddPowerToSummonAnim(int index, int power) //TODO add rotation
+    {
+        //yield return new WaitForSeconds(2f);
+
+        TextMeshProUGUI powerText = slots[index].Held.Power;
+        Vector3 startPoint = powerText.transform.position;
+        Vector3 startPointLocal = powerText.transform.localPosition;
+        string og_power = powerText.text;
+        powerText.text = power+"";
+        float time = 0;
+        float duration = 0.7f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            powerText.transform.position = startPoint + ((startPoint + new Vector3(0, 0.1f, 0) - startPoint) * (time / duration));
+            yield return null;
+
+        }
+
+        Vector3 secondStartPoint = powerText.transform.position;
+        yield return null;
+
+        time = 0;
+        while (time < textPointsResolveDuration)
+        {
+            time += Time.deltaTime;
+            powerText.transform.position = secondStartPoint + ((ScoreText.transform.position - secondStartPoint) * textPointsResolveAnim.Evaluate(time / textPointsResolveDuration));
+            yield return null;
+
+        }
+        powerText.text = og_power;
+
+        powerText.transform.localPosition = startPointLocal;
+    }
+
 
 
     public IEnumerator FadeInShardPower(TextMeshProUGUI power)
