@@ -132,13 +132,6 @@ public class RuneBoard : MonoBehaviour
 
         audioman = FindObjectOfType<Audioman>();
         handVisualizer = FindObjectOfType<HandVisualizer>();
-
-        // Give starting artifact
-        Vector3 pos = StartGem.transform.position;
-        Gem gem = Instantiate(GemPrefab, pos, Quaternion.identity);
-        gem.Init(Artifacts.GetSmokeyQuartz);
-        gem.GetComponent<Rigidbody>().AddForce(Random.onUnitSphere, ForceMode.VelocityChange);
-        Gems.Add(gem);
     }
 
     public IEnumerator ActivateLight(int index, bool turnOn)
@@ -1043,8 +1036,7 @@ public class RuneBoard : MonoBehaviour
             shopObjects.Add(cardPack);
         }
 
-        // NOTE: We use the sell slot for a last random
-        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length + 1);
+        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length);
         for (int i = 0; i < RandomRuneSlots.Length; i++)
         {
             Transform origin = RandomRuneSlots[i];
@@ -1054,17 +1046,13 @@ public class RuneBoard : MonoBehaviour
             shopObjects.Add(vis);
         }
         {
-            bool healRune = Random.value > 0.6f;
-            Rune rune = healRune ? Runes.GetRestore() : Runes.GetPrune();
             RuneVisuals vis = Instantiate(RunePrefab, HealSlot.position, Quaternion.identity);
-            vis.Init(rune, Player.Instance);
+            vis.Init(Runes.GetRestore(), Player.Instance);
             shopObjects.Add(vis);
         }
-        // NOTE: We use the sell slot for a last random
         {
             RuneVisuals vis = Instantiate(RunePrefab, SellSlot.position, Quaternion.identity);
-            vis.Init(randomRuneShop.Last(), Player.Instance);
-            //vis.Init(Runes.GetPrune(), Player.Instance);
+            vis.Init(Runes.GetPrune(), Player.Instance);
             shopObjects.Add(vis);
         }
 
@@ -1253,7 +1241,6 @@ public class RuneBoard : MonoBehaviour
         var rigidBody = vis.GetComponent<Rigidbody>();
         rigidBody.AddForce(RuneSpawn.forward * 4 + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
 
-        DeckVisual.SetDeckSize(Player.Instance.Bag.Count);
         audioman.PlaySound(drawShardsSound, rigidBody.position);
 
         yield return new WaitForSeconds(0.2f);
