@@ -386,8 +386,6 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        artifacts[0] = Artifacts.GetAzurite;
-        artifacts[1] = Artifacts.GetAzurite;
         if(UseStarters)
         {
             deckRef = new();
@@ -425,10 +423,14 @@ public class Player : MonoBehaviour
         while (health > 0)
         {
             HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
-            HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+            runeBoard.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             ResetTempStats();
             Draw(true);
+            if(set == 0)
+            {
+                yield return runeBoard.BeginRound();
+            }
             ArtifactDraw();
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
@@ -448,22 +450,21 @@ public class Player : MonoBehaviour
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
             opponentHealth -= circlePower;
-            HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             ClearCircle();
             yield return runeBoard.EndSummon();
             yield return runeBoard.UpdateScore(circlePower);
-
+            yield return runeBoard.EndDamage(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             if (opponentHealth <= 0)
             {
+                yield return runeBoard.EndRound();
+
                 set = 0;
                 health += Regen;
                 currentRound++;
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
-
-                currentRound += 1;
 
                 if(currentRound >= Settings.Rounds)
                 {
@@ -473,9 +474,6 @@ public class Player : MonoBehaviour
 
                 yield return runeBoard.Shop();
                 Restart();
-
-                opponentHealth = Settings.GetOpponentHealth(currentRound);
-                HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
             }
             else
             {
