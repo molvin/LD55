@@ -31,9 +31,10 @@ public class EventHistory
     public int Actor = -1;
     public int Target = -1;
     public int Power = 0;
+    public int Delta = 0;
     public Rune[] Others;
 
-    public static EventHistory PowerToSummon(int power) => new() { Type = EventType.PowerToSummon, Power = power };
+    public static EventHistory PowerToSummon(int power, int delta, int? actor = null) => new() { Type = EventType.PowerToSummon, Power = power, Delta = delta, Actor = actor.HasValue ? actor.Value : -1};
     public static EventHistory PowerToRune(int actor, int power) => new() { Type = EventType.PowerToRune, Actor = actor, Power = power };
     public static EventHistory Exile(int actor) => new() { Type = EventType.Exile, Actor = actor };
     public static EventHistory Destroy(int actor) => new() { Type = EventType.Destroy, Actor = actor };
