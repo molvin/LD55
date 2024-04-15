@@ -394,7 +394,7 @@ Transform:
   m_GameObject: {fileID: 3632661556276498422}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 1.65}
+  m_LocalPosition: {x: 0, y: 0, z: 2.512}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -808,7 +808,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EndTurnButton: {fileID: 7644423451529816299}
   PlayerHealth: {fileID: 7155277912921913192}
-  OpponentHealth: {fileID: 1819001072636167542}
 --- !u!1 &6058460292919966650
 GameObject:
   m_ObjectHideFlags: 0
@@ -1155,7 +1154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8135527595883076123
 RectTransform:
   m_ObjectHideFlags: 0

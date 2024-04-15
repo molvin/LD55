@@ -8,7 +8,7 @@ public class HUD : MonoBehaviour
     public static HUD Instance;
     public Button EndTurnButton;
     public Health PlayerHealth;
-    public Health OpponentHealth;
+    //public Health OpponentHealth;
 
     private void Awake()
     {
