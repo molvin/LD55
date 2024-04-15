@@ -186,6 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 4178580511895799790}
   m_CameraAnimator: {fileID: 0}
+  m_CutSound: {fileID: 11400000, guid: 248cefaabae30b74484fdb4935223615, type: 2}
 --- !u!95 &4178580511895799790
 Animator:
   serializedVersion: 5
