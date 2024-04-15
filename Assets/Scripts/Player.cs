@@ -463,9 +463,15 @@ public class Player : MonoBehaviour
 
                 var events = Activate(i);
 
+                StartCoroutine(runeBoard.ActivateLight(i, true));
                 yield return runeBoard.BeginResolve(i);
                 yield return runeBoard.Resolve(i, events);
                 yield return runeBoard.FinishResolve(i, circlePower);
+            }
+
+            for (int i = 0; i < circle.Count; i++)
+            {
+                StartCoroutine(runeBoard.ActivateLight(i, false));
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
