@@ -103,7 +103,6 @@ public class Audioman : MonoBehaviour
             yield return null;
         }
         sfx_queue.Enqueue(source);
-        Debug.Log("return to pool");
     }
 
     public void Update()

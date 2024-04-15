@@ -28,6 +28,7 @@ public static class Artifacts
         return artifacts;
     }
     public static Artifact GetAquamarine => Aquamarine;
+    public static Artifact GetAzurite => Azurite;
     public static Artifact GetMuscovite => Muscovite;
     public static Artifact GetScheelite => Scheelite;
     public static Artifact GetWitherite => Witherite;
@@ -62,6 +63,38 @@ public static class Artifacts
             }
 
             return new();
+        },
+    };
+    private static Artifact Azurite => new()
+    {
+        Name = "Azurite",
+        Text = "Energy Shards has +2 Power for each other Energy Shard. Conjure a Energy Shard every summon",
+        Limit = 4,
+        Draw = () =>
+        {
+            return Runes.GetEnergy();
+        },
+        Buff = (int runeIndex, Player player) =>
+        {
+            Rune active = player.GetRuneInCircle(runeIndex);
+            if (active == null || active.Keywords == null || !active.Keywords.Contains(Keywords.Energy))
+            {
+                return 0;
+            }
+
+            int buff = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                if (i == runeIndex)
+                    continue;
+
+                Rune rune = player.GetRuneInCircle(i);
+                if (rune != null && rune.Keywords != null && rune.Keywords.Contains(Keywords.Energy))
+                {
+                    buff++;
+                }
+            }
+            return buff * 2;
         },
     };
     // M

@@ -53,6 +53,19 @@ public class Player : MonoBehaviour
         .Where(a => a != null)
         .Select(a => a.Stats.ShopActions)
         .Sum();
+    public void ArtifactDraw()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (artifacts[i] != null && artifacts[i].Draw != null)
+            {
+                Rune rune = artifacts[i].Draw.Invoke();
+                rune.Token = true;
+                hand.Add(rune);
+                temporaryStats.Add(rune, new());
+            }
+        }
+    }
 
     public List<Rune> Bag => bag;
     public List<Rune> DiscardPile => discardPile;
@@ -68,6 +81,7 @@ public class Player : MonoBehaviour
     public Rune[] GetRunesInHand() => hand.ToArray();
     public int GetIndexOfRune(Rune rune) => circle.IndexOf(rune);
     public int RunesInCircle() => circle.Sum(r => r != null ? 1 : 0);
+    public bool HasArtifactBuff() => artifacts.Any(a => a != null && a.Buff != null);
     public int GetRunePower(int runeIndex)
     {
         runeIndex = CircularIndex(runeIndex);
@@ -75,6 +89,7 @@ public class Player : MonoBehaviour
         TempStats stats = temporaryStats[rune];
         int runePower = rune.Power + stats.Power;
 
+        // Rune
         for (int i = 0; i < Settings.NumSlots; i++)
         {
             Rune other = circle[i];
@@ -87,6 +102,15 @@ public class Player : MonoBehaviour
                         runePower += aura.Power;
                     }
                 }
+            }
+        }
+
+        // Artifact
+        foreach (Artifact artifact in artifacts)
+        {
+            if (artifact != null && artifact.Buff != null)
+            {
+                runePower += artifact.Buff.Invoke(runeIndex, this);
             }
         }
 
@@ -111,6 +135,7 @@ public class Player : MonoBehaviour
         TempStats stats = temporaryStats[rune];
         int auraPower = 0;
 
+        // Rune
         for (int i = 0; i < Settings.NumSlots; i++)
         {
             Rune other = circle[i];
@@ -125,6 +150,15 @@ public class Player : MonoBehaviour
                 }
             }
         }
+        // Artifact
+        foreach (Artifact artifact in artifacts)
+        {
+            if (artifact != null && artifact.Buff != null)
+            {
+                auraPower += artifact.Buff.Invoke(index, this);
+            }
+        }
+
         int totalPower = rune.Power + stats.Power + auraPower;
         stats.Power = Mathf.RoundToInt(totalPower * multiplier) - (rune.Power + auraPower);
         temporaryStats[rune] = stats;
@@ -153,7 +187,7 @@ public class Player : MonoBehaviour
     {
         hand.Remove(rune);
         circle[slot] = rune;
-        if (rune.Aura != null)
+        if (rune.Aura != null || HasArtifactBuff())
         {
             runeBoard.ForceUpdateVisuals();
         }
@@ -165,7 +199,7 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return new();
 
-        if (circle[index].Aura != null)
+        if (circle[index].Aura != null || HasArtifactBuff())
         {
             runeBoard.ForceUpdateVisuals();
         }
@@ -193,7 +227,7 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return;
 
-        if (circle[index].Aura != null)
+        if (circle[index].Aura != null || HasArtifactBuff())
         {
             runeBoard.ForceUpdateVisuals();
         }
@@ -207,7 +241,7 @@ public class Player : MonoBehaviour
         if (circle[index] == null)
             return new();
 
-        if (circle[index].Aura != null)
+        if (circle[index].Aura != null || HasArtifactBuff())
         {
             runeBoard.ForceUpdateVisuals();
         }
@@ -389,10 +423,15 @@ public class Player : MonoBehaviour
         while (health > 0)
         {
             HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
-            HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+            runeBoard.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             ResetTempStats();
             Draw(true);
+            if(set == 0)
+            {
+                yield return runeBoard.BeginRound();
+            }
+            ArtifactDraw();
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
 
@@ -404,28 +443,28 @@ public class Player : MonoBehaviour
 
                 var events = Activate(i);
 
+                yield return runeBoard.BeginResolve(i);
                 yield return runeBoard.Resolve(i, events);
                 yield return runeBoard.FinishResolve(i, circlePower);
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
             opponentHealth -= circlePower;
-            HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             ClearCircle();
             yield return runeBoard.EndSummon();
             yield return runeBoard.UpdateScore(circlePower);
-
+            yield return runeBoard.EndDamage(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             if (opponentHealth <= 0)
             {
+                yield return runeBoard.EndRound();
+
                 set = 0;
                 health += Regen;
                 currentRound++;
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
-
-                currentRound += 1;
 
                 if(currentRound >= Settings.Rounds)
                 {
@@ -435,9 +474,6 @@ public class Player : MonoBehaviour
 
                 yield return runeBoard.Shop();
                 Restart();
-
-                opponentHealth = Settings.GetOpponentHealth(currentRound);
-                HUD.Instance.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
             }
             else
             {
