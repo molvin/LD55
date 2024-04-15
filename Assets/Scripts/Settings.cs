@@ -13,7 +13,7 @@ public static class Settings
     public static int RandomRunesAtStart = 0;
     public static int MinStartHandSize = 10;
 
-    private static int opponentHealthBase = 1;
+    private static int opponentHealthBase = 45;
     private static int opponentHealthBaseRamp = 15;
     private static int opponentHealthRoundRamp = 3;
 
@@ -30,5 +30,5 @@ public static class Settings
         return opponentHealthBase + (opponentHealthBaseRamp * currentRound) + (opponentHealthRoundRamp * multi);
     }
 
-    public static int GetOpponentDamage(int num) => 1;
+    public static int GetOpponentDamage(int num) => Mathf.Min(num, 1);
 }
