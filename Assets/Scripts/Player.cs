@@ -23,8 +23,15 @@ public class Player : MonoBehaviour
 
     public List<RuneRef> BaseDeck;
     public bool UseStarters;
+    public Action<int, int> OnHealthChanged;
     private int health;
-    public int Health => health;
+    public int Health {  
+        get { return health; } 
+        private set {
+            OnHealthChanged?.Invoke(value, value - health);
+            health = value; 
+        }
+    }
 
     private List<Rune> deckRef = new();
     private List<Rune> bag = new();
@@ -173,7 +180,7 @@ public class Player : MonoBehaviour
     }
     public void AddLife(int value)
     {
-        health = Mathf.Clamp(health + value, 0, 5);
+        Health = Mathf.Clamp(Health + value, 0, 5);
     }
     public void PlaceArtifact(int index, Artifact artifact)
     {
@@ -415,14 +422,14 @@ public class Player : MonoBehaviour
     private IEnumerator Game()
     {
         currentRound = 0;
-        health = Settings.PlayerMaxHealth;
+        Health = Settings.PlayerMaxHealth;
         int opponentHealth = Settings.GetOpponentHealth(currentRound);
         int set = 0;
         bool win = false;
 
-        while (health > 0)
+        while (Health > 0)
         {
-            HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
+            HUD.Instance.PlayerHealth.Set(Health, Settings.PlayerMaxHealth);
             runeBoard.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             ResetTempStats();
@@ -461,7 +468,7 @@ public class Player : MonoBehaviour
                 yield return runeBoard.EndRound();
 
                 set = 0;
-                health += Regen;
+                Health += Regen;
                 currentRound++;
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
@@ -478,9 +485,12 @@ public class Player : MonoBehaviour
             else
             {
                 int damage = Settings.GetOpponentDamage(set);
-                health -= damage;
+                if(damage >= 1) 
+                    yield return FindObjectOfType<HandVisualizer>().ViewSelf(health, false);
+
+                Health -= damage;
                 set++;
-                HUD.Instance.PlayerHealth.Set(health, Settings.PlayerMaxHealth);
+                HUD.Instance.PlayerHealth.Set(Health, Settings.PlayerMaxHealth);
                 Debug.Log($"TAKING DAMAGE: {damage}");
 
                 yield return new WaitForSeconds(1.0f);
