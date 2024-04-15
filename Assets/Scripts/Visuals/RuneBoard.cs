@@ -1068,8 +1068,8 @@ public class RuneBoard : MonoBehaviour
         List<Rune> runes = new List<Rune>();
         for (int i = 0; i < num; i++)
         {
-            bool rare = Random.value > 0.7f;
-            bool legendary = rare && Random.value > 0.7f;
+            bool rare = Random.value > 0.5f;
+            bool legendary = rare && Random.value > 0.5f;
             List<Rune> allRunes = legendary
                 ? Runes.GetAllRunes(r => r.Rarity != Rarity.None)
                 : rare
