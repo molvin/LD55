@@ -581,7 +581,7 @@ public static class Runes
         Name  = "Fetch",
         Power = 8,
         Rarity = Rarity.Common,
-        Text  = "On Play: Conjure 2 Energy to hand",
+        Text  = "On Play: Conjure 2 £ to hand",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<Rune> drawn = new();
@@ -614,7 +614,7 @@ public static class Runes
         Name  = "Floods",
         Power = 18,
         Rarity = Rarity.Rare,
-        Text  = "On Activate: Conjure 4 Dams to your Shard pouch",
+        Text  = "On Activate: Conjure 4 ¢ to your Shard pouch",
         OnActivate = (int selfIndex, Player player) =>
         {
             for (int i = 0; i < 4; i++)
@@ -893,7 +893,7 @@ public static class Runes
         Name = "Light",
         Power = 20,
         Rarity = Rarity.Rare,
-        Text = "Counts as Energy",
+        Text = "Counts as £",
         Keywords = { Keywords.Energy },
     };
     // M
@@ -921,7 +921,7 @@ public static class Runes
         Name  = "Multi",
         Power = 5,
         Rarity = Rarity.Common,
-        Text  = "On Play: Destroy all Energies; Draw a Shard for each Energy destroyed this way",
+        Text  = "On Play: Destroy all Energies; Draw a Shard for each £ destroyed this way",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -1064,7 +1064,7 @@ public static class Runes
         Name = "Power",
         Power = 40,
         Rarity = Rarity.Legendary,
-        Text = "Counts as Energy",
+        Text = "Counts as £",
         Keywords = { Keywords.Energy },
     };
     private static Rune Prune => new()
@@ -1358,7 +1358,7 @@ public static class Runes
         Name  = "Serate",
         Power = 10,
         Rarity = Rarity.Rare,
-        Text  = "All Energy Shards has +10 Power",
+        Text  = "All £ Shards has +10 Power",
         Aura = new()
         {
             new()
@@ -1447,7 +1447,7 @@ public static class Runes
         Name  = "Strongheart",
         Power = 10,
         Rarity = Rarity.Rare,
-        Text  = "On Activate: Conjure 2 Vigor to your Shard pouch",
+        Text  = "On Activate: Conjure 2 ¥ to your Shard pouch",
         OnActivate = (int selfIndex, Player player) =>
         {
             for (int i = 0; i < 2; i++)
@@ -1652,7 +1652,7 @@ public static class Runes
         Name = "Vigor",
         Power = 15,
         Rarity = Rarity.None,
-        Text = "Counts as Energy",
+        Text = "Counts as £",
         Keywords = { Keywords.Energy },
     };
     // W

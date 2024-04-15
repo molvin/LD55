@@ -47,7 +47,7 @@ public static class Artifacts
     private static Artifact Aquamarine => new()
     {
         Name = "Aquamarine",
-        Text  = "When Energy activates it's Power is multiplied by 2",
+        Text  = "When £ activates it's Power is multiplied by 2",
         Limit = 2,
         RuneTrigger = (TriggerType trigger, int runeIndex, Player player) =>
         {
@@ -68,7 +68,7 @@ public static class Artifacts
     private static Artifact Azurite => new()
     {
         Name = "Azurite",
-        Text = "Energy Shards has +2 Power for each other Energy Shard. Conjure a Energy Shard every summon",
+        Text = "£ Shards has +2 Power for each other £ Shard. Conjure a £ Shard every summon",
         Limit = 4,
         Draw = () =>
         {
