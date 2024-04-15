@@ -522,7 +522,7 @@ public class RuneBoard : MonoBehaviour
         slots[index].Held.GetComponent<Animator>().enabled = true;
 
         slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(0.2f);
 
         yield return null;
     }
@@ -621,18 +621,17 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator SpawnAndAnimateFlyingNumber(int index) //TODO add rotation
     {
-        //yield return new WaitForSeconds(2f);
 
         TextMeshProUGUI power = slots[index].Held.Power;
         Vector3 startPoint = power.transform.position;
         Vector3 startPointLocal = power.transform.localPosition;
         Debug.Log("pause");
         float time = 0;
-        float duration = 0.3f;
+        float duration = 0.5f;
         while (time < duration)
         {
             time += Time.deltaTime;
-            power.transform.position = startPoint + ((startPoint + new Vector3(0,0.1f,0) - startPoint) * (time / duration));
+            power.transform.position = startPoint + ((startPoint + new Vector3(0,0.2f,0) - startPoint) * (time / duration));
             yield return null;
 
         }
@@ -655,7 +654,6 @@ public class RuneBoard : MonoBehaviour
     
     public IEnumerator AddPowerToSummonAnim(int index, int power) //TODO add rotation
     {
-        //yield return new WaitForSeconds(2f);
 
         TextMeshProUGUI powerText = slots[index].Held.Power;
         Vector3 startPoint = powerText.transform.position;
@@ -663,7 +661,7 @@ public class RuneBoard : MonoBehaviour
         string og_power = powerText.text;
         powerText.text = power+"";
         float time = 0;
-        float duration = 0.35f;
+        float duration = 0.6f;
         while (time < duration)
         {
             time += Time.deltaTime;
@@ -751,7 +749,7 @@ public class RuneBoard : MonoBehaviour
     {
         ScoreText.text = $"{circlePower}";
         
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
     }
 
     public IEnumerator EndDamage(int health, int maxHealth)
