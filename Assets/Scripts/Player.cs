@@ -131,7 +131,7 @@ public class Player : MonoBehaviour
     }
     public void AddLife(int value)
     {
-        health += value;
+        health = Mathf.Clamp(health + value, 0, 5);
     }
     public List<EventHistory> PlaceArtifact(int index, Artifact artifact)
     {
