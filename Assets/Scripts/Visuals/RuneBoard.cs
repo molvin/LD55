@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class RuneBoard : MonoBehaviour
 {
@@ -79,6 +80,10 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration dropShardSound;
     public AudioOneShotClipConfiguration startSummonSound;
     public AudioOneShotClipConfiguration replaceSound;
+    public AudioOneShotClipConfiguration addPowerToCircleSound;
+    public AudioOneShotClipConfiguration raiseShardAnimSound;
+
+    
 
     private Audioman audioman;
 
@@ -522,6 +527,8 @@ public class RuneBoard : MonoBehaviour
         slots[index].Held.GetComponent<Animator>().enabled = true;
 
         slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
+        FindAnyObjectByType<Audioman>().PlaySound(raiseShardAnimSound, ScoreText.transform.position);
+
         yield return new WaitForSeconds(0.2f);
 
         yield return null;
@@ -625,6 +632,9 @@ public class RuneBoard : MonoBehaviour
         TextMeshProUGUI power = slots[index].Held.Power;
         Vector3 startPoint = power.transform.position;
         Vector3 startPointLocal = power.transform.localPosition;
+        Quaternion starRotLocal = power.transform.localRotation;
+        Quaternion starRot = power.transform.rotation;
+
         Debug.Log("pause");
         float time = 0;
         float duration = 0.5f;
@@ -635,9 +645,23 @@ public class RuneBoard : MonoBehaviour
             yield return null;
 
         }
+        time = 0;
+        var targetDirection = ScoreText.transform.position - startPoint;
+
+        var startForward = power.transform.up;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            //TODO WTFF
+            power.transform.rotation = Quaternion.Slerp(Quaternion.LookRotation(targetDirection), Quaternion.LookRotation(startForward, Vector3.up), time / duration);
+
+            yield return null;
+
+        }
 
         Vector3 secondStartPoint = power.transform.position;
         yield return null;
+        FindAnyObjectByType<Audioman>().PlaySound(addPowerToCircleSound, ScoreText.transform.position);
 
         time = 0;
         while(time < textPointsResolveDuration)
@@ -648,6 +672,8 @@ public class RuneBoard : MonoBehaviour
 
         }
         power.transform.localPosition = startPointLocal;
+        power.transform.localRotation = starRotLocal;
+
         StartCoroutine(FadeInShardPower(power));
     }
 
@@ -717,7 +743,8 @@ public class RuneBoard : MonoBehaviour
             }
         }
         yield return new WaitForSeconds(0.3f);
-   
+        FindAnyObjectByType<Audioman>().PlaySound(placeInSlotSound, ScoreText.transform.position);
+
 
         List<IEnumerator> deathAnims = new();
         foreach (RuneVisuals vis in runes)
@@ -748,7 +775,6 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator UpdateScore(int circlePower)
     {
         ScoreText.text = $"{circlePower}";
-        
         yield return new WaitForSeconds(0.2f);
     }
 
