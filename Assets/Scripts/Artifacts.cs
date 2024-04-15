@@ -69,7 +69,7 @@ public static class Artifacts
     private static Artifact Azurite => new()
     {
         Name = "Azurite",
-        Text = "£ Shards has +2 Power for each other £ Shard. Conjure a £ Shard every summon",
+        Text = "£ Shards has +3 Power for each other £ Shard. Conjure a £ Shard every summon",
         Limit = 4,
         Draw = () =>
         {
@@ -95,7 +95,7 @@ public static class Artifacts
                     buff++;
                 }
             }
-            return buff * 2;
+            return buff * 3;
         },
     };
     // M
@@ -130,7 +130,7 @@ public static class Artifacts
     {
         Name = "Smoky Quartz",
         Text = "Resummon up to 1 finger at the start of each new summon",
-        Limit = 2,
+        Limit = 1,
         Stats = new()
         {
             Regen = 1,
