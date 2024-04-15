@@ -62,7 +62,7 @@ public class RuneBoard : MonoBehaviour
     private Draggable previousHover;
 
     public Animator CameraAnim;
-    public Health OpponentHealth;
+    public TextMeshProUGUI OpponentHealth;
     public ProgressView Progress;
 
     private List<Draggable> allDragables => shopObjects.Union(runes).Union(Gems).Union(new[] {StartGem}).ToList();
@@ -752,7 +752,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator EndDamage(int health, int maxHealth)
     {
-        OpponentHealth.Set(health, maxHealth);
+        OpponentHealth.text = $"{health}";
 
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);
