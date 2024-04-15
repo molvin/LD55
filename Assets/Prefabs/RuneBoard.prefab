@@ -630,7 +630,7 @@ Transform:
   m_GameObject: {fileID: 1415451787858403521}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.119, y: 0.109, z: -0.463}
+  m_LocalPosition: {x: -1.2, y: 0.109, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1057,6 +1057,7 @@ MonoBehaviour:
   CameraAnim: {fileID: 0}
   OpponentHealth: {fileID: 5601017831151284845}
   Progress: {fileID: 5785081445040461043}
+  TutorialObject: {fileID: 0}
   textPointsResolveAnim:
     serializedVersion: 2
     m_Curve:
@@ -1542,7 +1543,7 @@ Transform:
   m_GameObject: {fileID: 3305343782881650720}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.4100003, y: 0.109, z: -0.46399993}
+  m_LocalPosition: {x: -2, y: 0.109, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8130,7 +8131,7 @@ Transform:
   m_GameObject: {fileID: 8016090967781360383}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.387, y: 0.109, z: -1.918}
+  m_LocalPosition: {x: -2, y: 0.109, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8162,7 +8163,7 @@ Transform:
   m_GameObject: {fileID: 8282206816536290951}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.132, y: 0.109, z: -1.89}
+  m_LocalPosition: {x: -1.2, y: 0.109, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
