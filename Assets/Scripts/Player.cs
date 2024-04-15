@@ -26,11 +26,11 @@ public class Player : MonoBehaviour
     public bool UseStarters;
     public Action<int, int> OnHealthChanged;
     private int health;
-    public int Health {  
-        get { return health; } 
+    public int Health {
+        get { return health; }
         private set {
             OnHealthChanged?.Invoke(value, value - health);
-            health = value; 
+            health = value;
         }
     }
 
@@ -48,6 +48,11 @@ public class Player : MonoBehaviour
 
     public int CurrentRound => currentRound;
     private RuneBoard runeBoard;
+
+    [Header("Audio")]
+    public AudioOneShotClipConfiguration VictorySound;
+
+    private Audioman AudioMan;
 
     public int Regen => artifacts
         .Where(a => a != null)
@@ -424,8 +429,8 @@ public class Player : MonoBehaviour
                 deckRef.Add(rune);
             }
         }
-        
 
+        AudioMan = FindObjectOfType<Audioman>();
         Restart();
         StartCoroutine(Game());
     }
@@ -477,12 +482,19 @@ public class Player : MonoBehaviour
             Debug.Log($"DEALING DAMAGE: {circlePower}");
             opponentHealth -= circlePower;
 
+
             ClearCircle();
             yield return runeBoard.EndSummon();
             if(circlePower != 0)
             {
                 yield return runeBoard.UpdateScore(circlePower);
             }
+
+            if (opponentHealth <= 0)
+            {
+                AudioMan.PlaySound(VictorySound, transform.position);
+            }
+
             yield return runeBoard.EndDamage(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             if (opponentHealth <= 0)
@@ -495,6 +507,7 @@ public class Player : MonoBehaviour
                     yield return FindObjectOfType<HandVisualizer>().ViewSelf(health, true);
                 }
                 currentRound++;
+                
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
 
