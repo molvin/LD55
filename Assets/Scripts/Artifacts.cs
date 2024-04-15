@@ -29,6 +29,7 @@ public static class Artifacts
     }
     public static Artifact GetAquamarine => Aquamarine;
     public static Artifact GetMuscovite => Muscovite;
+    public static Artifact GetScheelite => Scheelite;
     public static Artifact GetWitherite => Witherite;
 
     // A
@@ -99,6 +100,35 @@ public static class Artifacts
         Stats = new()
         {
             Regen = -1,
+        },
+    };
+    private static Artifact Scheelite => new()
+    {
+        Name = "Scheelite",
+        Text = "Permanently conjure 2 random Shards whenever a Shard is exiled",
+        Limit = 2,
+        RuneTrigger = (TriggerType trigger, int runeIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            
+            if (trigger == TriggerType.OnExile)
+            {
+                List<Rune> runes = Runes.GetAllRunes();
+                List<Rune> drawn = new();
+                for (int i = 0; i < 2; i++)
+                {
+                    int idx = UnityEngine.Random.Range(0, runes.Count);
+                    Rune rune = runes[idx];
+                    runes.RemoveAt(idx);
+
+                    player.Buy(rune);
+                    player.AddNewRuneToHand(rune);
+                    drawn.Add(rune);
+                }
+                history.Add(EventHistory.Draw(drawn.ToArray()));
+            }
+
+            return history;
         },
     };
     // W
