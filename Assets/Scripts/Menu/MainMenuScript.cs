@@ -1,10 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 

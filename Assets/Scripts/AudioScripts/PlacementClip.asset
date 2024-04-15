@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc02903647b24794981184b6992edb5a, type: 3}
   m_Name: PlacementClip
   m_EditorClassIdentifier: 
-  clips: []
-  vol_min: 0.5
+  clips:
+  - {fileID: 8300000, guid: 9b051f67c812bd641a65c88e883e1846, type: 3}
+  - {fileID: 8300000, guid: 4942ac35ff350f34e858384a1f89d05e, type: 3}
+  - {fileID: 8300000, guid: 9276d240a69884e4caddedca1d90b446, type: 3}
+  mixer: {fileID: 0}
+  vol_min: 0.8
   vol_max: 1
-  pitch_min: 0
-  pitch_max: 1
+  pitch_min: 1.1
+  pitch_max: 0.9

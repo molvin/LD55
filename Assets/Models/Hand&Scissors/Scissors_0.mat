@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CommonEdge
+  m_Name: Scissors_0
   m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -27,11 +27,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: 11b63f4a372dd714badf4f6fe68d53ad, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5fdb2f385cdddf540b5821f8c5b5e781, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: c012d59afec84c04baf674cf2069774e, type: 3}
+        m_Texture: {fileID: 2800000, guid: f3136f6421f2c0042a82eee3eeb746f9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -51,11 +51,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 11b63f4a372dd714badf4f6fe68d53ad, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5fdb2f385cdddf540b5821f8c5b5e781, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
-        m_Texture: {fileID: 2800000, guid: c9952680c237332419d0f525d907391a, type: 3}
+        m_Texture: {fileID: 2800000, guid: 571e453ca225ee74280b2448e988a960, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:

@@ -1,4 +1,4 @@
-
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -36,3 +36,4 @@ public class MinMaxSlider : EditorWindow
             Debug.LogError("Select a GameObject to randomize its position.");
     }
 }
+#endif
