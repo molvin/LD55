@@ -63,6 +63,7 @@ public class RuneBoard : MonoBehaviour
 
     public Animator CameraAnim;
     public Health OpponentHealth;
+    public ProgressView Progress;
 
     private List<Draggable> allDragables => shopObjects.Union(runes).Union(Gems).Union(new[] {StartGem}).ToList();
     private List<Slot> allSlots => new Slot[] { StartSlot }.Union(slots).Union(GemSlots).ToList(); //slots.Union(ShopSlots).ToList();
@@ -215,10 +216,7 @@ public class RuneBoard : MonoBehaviour
         {
             if (hovered != previousHover && previousHover != null && previousHover is RuneVisuals vis)
             {
-                if (vis.HoverParticles.isPlaying)
-                {
-                    vis.HoverParticles.Stop();
-                }
+                vis.Hover = false;
             }
             previousHover = hovered;
         }
@@ -271,9 +269,9 @@ public class RuneBoard : MonoBehaviour
             }
             else
             {
-                if(hovered is RuneVisuals vis && !vis.HoverParticles.isPlaying)
+                if(hovered is RuneVisuals vis)
                 {
-                    vis.HoverParticles.Play();
+                    vis.Hover = true;
                 }
             }
         }
@@ -312,7 +310,7 @@ public class RuneBoard : MonoBehaviour
             {
                 yield return ViewOpponent();
             }
-            if (Input.mousePosition.y < (Screen.height * 0.15))
+            if (Input.mousePosition.y < (Screen.height * 0.05))
             {
                 yield return ViewSelf();
             }
@@ -324,10 +322,7 @@ public class RuneBoard : MonoBehaviour
         {
             if (previousHover != null && previousHover is RuneVisuals vis)
             {
-                if (vis.HoverParticles.isPlaying)
-                {
-                    vis.HoverParticles.Stop();
-                }
+                vis.Hover = false;
             }
             previousHover = null;
         }
@@ -461,9 +456,12 @@ public class RuneBoard : MonoBehaviour
 
         if (inspect is RuneVisuals vis)
         {
+            vis.Hover = false;
+        }
 
-            if (vis.HoverParticles.isPlaying)
-                vis.HoverParticles.Stop();
+        if (inspect is Gem gis)
+        {
+            Debug.Log(gis.ToString());
         }
 
         yield return null;
@@ -515,6 +513,7 @@ public class RuneBoard : MonoBehaviour
         CameraAnim.SetTrigger("ToSummon");
         yield return new WaitForSeconds(1.0f);
     }
+
     public IEnumerator BeginResolve(int index)
     {
 
@@ -524,9 +523,8 @@ public class RuneBoard : MonoBehaviour
         yield return null;
     }
 
-
     public IEnumerator Resolve(int index, List<EventHistory> events)
-    { //VISUAL ON SUMMON HERE, TODO SHAKY HSAKY LIGHY SOYND
+    { 
         if (events == null || events.Count == 0)
         {
         }
@@ -540,6 +538,7 @@ public class RuneBoard : MonoBehaviour
                     case EventType.None:
                         break;
                     case EventType.PowerToSummon:
+                        yield return AddPowerToSummonAnim(index, e.Power);
                         yield return UpdateScore(e.Power); //TODO floaty number animation
                         break;
                     case EventType.PowerToRune:
@@ -605,8 +604,6 @@ public class RuneBoard : MonoBehaviour
 
     }
 
-
-
     public IEnumerator FinishResolve(int index, int circlePower) // TODO floaty number animation
     {
         if(slots[index].Held != null) {
@@ -651,6 +648,43 @@ public class RuneBoard : MonoBehaviour
         StartCoroutine(FadeInShardPower(power));
     }
 
+    
+    public IEnumerator AddPowerToSummonAnim(int index, int power) //TODO add rotation
+    {
+        //yield return new WaitForSeconds(2f);
+
+        TextMeshProUGUI powerText = slots[index].Held.Power;
+        Vector3 startPoint = powerText.transform.position;
+        Vector3 startPointLocal = powerText.transform.localPosition;
+        string og_power = powerText.text;
+        powerText.text = power+"";
+        float time = 0;
+        float duration = 0.7f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            powerText.transform.position = startPoint + ((startPoint + new Vector3(0, 0.1f, 0) - startPoint) * (time / duration));
+            yield return null;
+
+        }
+
+        Vector3 secondStartPoint = powerText.transform.position;
+        yield return null;
+
+        time = 0;
+        while (time < textPointsResolveDuration)
+        {
+            time += Time.deltaTime;
+            powerText.transform.position = secondStartPoint + ((ScoreText.transform.position - secondStartPoint) * textPointsResolveAnim.Evaluate(time / textPointsResolveDuration));
+            yield return null;
+
+        }
+        powerText.text = og_power;
+
+        powerText.transform.localPosition = startPointLocal;
+    }
+
+
 
     public IEnumerator FadeInShardPower(TextMeshProUGUI power)
     {
@@ -668,7 +702,6 @@ public class RuneBoard : MonoBehaviour
 
         }
     }
-
 
     public IEnumerator EndSummon()
     {
@@ -713,6 +746,7 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator UpdateScore(int circlePower)
     {
         ScoreText.text = $"{circlePower}";
+        
         yield return new WaitForSeconds(1f);
     }
 
@@ -841,6 +875,19 @@ public class RuneBoard : MonoBehaviour
 
         slots[index].Held.Init(rune, Player.Instance);
         yield return null;
+    }
+
+    public IEnumerator ViewProgress(int currentRound)
+    {
+        ScrollAnimation.Play("OpenScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
+
+        yield return Progress.Set(currentRound);
+
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
     }
 
     public IEnumerator Shop()

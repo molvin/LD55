@@ -453,7 +453,10 @@ public class Player : MonoBehaviour
 
             ClearCircle();
             yield return runeBoard.EndSummon();
-            yield return runeBoard.UpdateScore(circlePower);
+            if(circlePower != 0)
+            {
+                yield return runeBoard.UpdateScore(circlePower);
+            }
             yield return runeBoard.EndDamage(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             if (opponentHealth <= 0)
@@ -472,8 +475,10 @@ public class Player : MonoBehaviour
                     break;
                 }
 
+                yield return runeBoard.ViewProgress(currentRound);
                 yield return runeBoard.Shop();
                 Restart();
+                opponentHealth = Settings.GetOpponentHealth(currentRound);
             }
             else
             {
