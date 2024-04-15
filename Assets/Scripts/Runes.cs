@@ -1280,7 +1280,7 @@ public static class Runes
         Name = "Run",
         Power = 0,
         Rarity = Rarity.Common,
-        Text = "On Play: Flip a coin; if successful, permanently conjure a Rare or Legendary Shard. Exile this Shard",
+        Text = "On Play: 50% chance to permanently conjure a Rare or Legendary Shard. Exile this Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
