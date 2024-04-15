@@ -1247,7 +1247,7 @@ public static class Runes
             if (player.HandSize > 0)
             {
                 player.AddCirclePower(player.HandSize * 8);
-                return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower(), player.HandSize * 8) };
             }
 
             return new();
