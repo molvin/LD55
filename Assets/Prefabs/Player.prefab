@@ -51,6 +51,7 @@ MonoBehaviour:
   - Index: 74
   - Index: 73
   UseStarters: 1
+  VictorySound: {fileID: 11400000, guid: 6c9b241ce51b4704c960c79c67f52670, type: 2}
 --- !u!114 &7214113616316314965
 MonoBehaviour:
   m_ObjectHideFlags: 0
