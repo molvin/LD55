@@ -11077,6 +11077,10 @@ PrefabInstance:
       propertyPath: m_Intensity
       value: 9.11
       objectReference: {fileID: 0}
+    - target: {fileID: 7658754258152191033, guid: 7bea8678811c63847921da0499156750, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 09a34e30088d67e4788d626002a99856, type: 2}
     - target: {fileID: 8190838562682033496, guid: 7bea8678811c63847921da0499156750, type: 3}
       propertyPath: m_Name
       value: Demon
