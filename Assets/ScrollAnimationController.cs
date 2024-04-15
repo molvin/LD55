@@ -53,6 +53,14 @@ public class ScrollAnimationController : MonoBehaviour
 
         if(mat != -1)
             PaperRenderer.material = PaperMaterials[mat];
+
+        if (mat == -1)
+        {
+            PlayRollOutSound(0);
+        }
+        else
+            PlayRollOutSound(1);
+
         Anim.Play(name);
     }
 
