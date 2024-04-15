@@ -486,7 +486,7 @@ public static class Runes
         Name  = "Energy",
         Power = 10,
         Rarity = Rarity.Starter,
-        StartCount = 5,
+        StartCount = 4,
         Keywords = { Keywords.Energy },
         Text  = "",
     };
@@ -689,7 +689,7 @@ public static class Runes
             if (type == TriggerType.OnActivate && (other == prev || other == next))
             {
                 player.AddCirclePower(4);
-                return new() { EventHistory.PowerToSummon(4, 4) };//TODO delta as circle power
+                return new() { EventHistory.PowerToSummon(4, 4, selfIndex) };//TODO delta as circle power
             }
 
             return new();

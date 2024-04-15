@@ -402,6 +402,19 @@ public class Player : MonoBehaviour
                     deckRef.Add(rune.Clone() as Rune);
                 }
             }
+            // Add variation
+            for (int i = 0; i < Settings.RandomRunesAtStart; i++)
+            {
+                deckRef.Shuffle();
+                deckRef.RemoveAt(deckRef.Count - 1);
+            }
+            var common = Runes.GetAllRunes(r => r.Rarity == Rarity.Common);
+            while (deckRef.Count < Settings.MinStartHandSize)
+            {
+                common.Shuffle();
+                deckRef.Add(common[common.Count - 1]);
+                common.RemoveAt(common.Count - 1);
+            }
         }
         else
         {
