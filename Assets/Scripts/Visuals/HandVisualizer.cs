@@ -19,10 +19,13 @@ public class HandVisualizer : MonoBehaviour
         m_Animator.SetInteger("health", health);
         m_Animator.SetTrigger(heal ? "heal" : "damage");
 
+        /*
         while(m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 || m_Animator.IsInTransition(0))
         {
             yield return null;
         }
+        */
+        yield return new WaitForSeconds(3.0f);
 
         m_CameraAnimator.SetTrigger("BackFromSelf");
         yield return new WaitForSeconds(1.0f);
