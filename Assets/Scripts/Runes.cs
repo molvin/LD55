@@ -1046,7 +1046,7 @@ public static class Runes
         Name  = "Pool",
         Power = 5,
         Rarity = Rarity.Starter,
-        StartCount = 2,
+        StartCount = 1,
         Text  = "On Play: Draw 2 Shards",
         OnEnter = (int selfIndex, Player player) =>
         {
