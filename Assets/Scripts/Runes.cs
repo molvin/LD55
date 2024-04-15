@@ -203,7 +203,7 @@ public static class Runes
         Name = "Bud",
         Power = 5,
         Rarity = Rarity.Common,
-        Text = "On Play: Permanently add +1 Power to the previous Shard",
+        Text = "On Play: Permanently add +1 Power to the § Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             Rune prev = player.GetRuneInCircle(selfIndex - 1);
@@ -222,7 +222,7 @@ public static class Runes
         Name = "Bounce",
         Power = 6,
         Rarity = Rarity.Common,
-        Text = "On Play: Return the previous Shard to hand",
+        Text = "On Play: Return the § Shard to hand",
         OnEnter = (int selfIndex, Player player) =>
         {
             int prev = Player.CircularIndex(selfIndex - 1);
@@ -254,7 +254,7 @@ public static class Runes
         Name = "Burn",
         Power = 6,
         Rarity = Rarity.Rare,
-        Text = "On Play: Add the previous Shards Power to the summon then destroy the previous",
+        Text = "On Play: Add the § Shards Power to the summon then destroy the § Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -395,7 +395,7 @@ public static class Runes
         Name = "Divinity",
         Power = 30,
         Rarity = Rarity.Legendary,
-        Text = "On Play: Transform All other Shards in circle to random Shards. All Shards has +5 Power",
+        Text = "On Play: Transform All other Shards in the summon to random Shards. All Shards has +5 Power",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -520,7 +520,7 @@ public static class Runes
         Name = "Faces",
         Power = 2,
         Rarity = Rarity.Rare,
-        Text = "On Activate: Transform next Shard to the previous Shard",
+        Text = "On Activate: Transform ¦ Shard to the § Shard",
         OnActivate = (int selfIndex, Player player) =>
         {
             int prev = Player.CircularIndex(selfIndex - 1);
@@ -552,7 +552,7 @@ public static class Runes
         Name = "Fake",
         Power = 8,
         Rarity = Rarity.Common,
-        Text = "On Activate: Transform next Shard to a random Shard",
+        Text = "On Activate: Transform ¦ Shard to a random Shard",
         OnActivate = (int selfIndex, Player player) =>
         {
             int index = selfIndex + 1;
@@ -797,7 +797,7 @@ public static class Runes
         Name = "Help",
         Power = 5,
         Rarity = Rarity.Common,
-        Text = "On Play: Next Shards Power is multiplied by 2",
+        Text = "On Play: ¦ Shards Power is multiplied by 2",
         OnEnter = (int selfIndex, Player player) =>
         {
             int index = Player.CircularIndex(selfIndex + 1);
@@ -817,7 +817,7 @@ public static class Runes
         Name = "Inspire",
         Power = 8,
         Rarity = Rarity.Common,
-        Text = "On Activate: Add +7 to the summon if the previous Shard is of higher rarity",
+        Text = "On Activate: Add +7 to the summon if the § Shard is of higher rarity",
         OnActivate = (int selfIndex, Player player) =>
         {
             Rune self = player.GetRuneInCircle(selfIndex);
@@ -839,7 +839,7 @@ public static class Runes
         Name = "Investment",
         Power = 2,
         Rarity = Rarity.Common,
-        Text = "On Activate: Add +15 to the next summon",
+        Text = "On Activate: Add +15 to the ¦ summon",
         OnActivate = (int selfIndex, Player player) =>
         {
             player.AddCirclePowerPromise(15);
@@ -872,7 +872,7 @@ public static class Runes
         Name  = "Kill",
         Power = -20,
         Rarity = Rarity.Legendary,
-        Text  = "On Activate: Exile next Shard",
+        Text  = "On Activate: Exile ¦ Shard",
         OnActivate = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -902,7 +902,7 @@ public static class Runes
         Name  = "Martyr",
         Power = 8,
         Rarity = Rarity.Common,
-        Text  = "On Exile: Permanently add +10 Power to the previous Shard",
+        Text  = "On Exile: Permanently add +10 Power to the § Shard",
         OnExile = (int selfIndex, Player player) =>
         {
             Rune prev = player.GetRuneInCircle(selfIndex - 1);
@@ -1025,7 +1025,7 @@ public static class Runes
         Name = "Pain",
         Power = 0,
         Rarity = Rarity.None,
-        Text = "On Play: Destroy the next Shard. Exile this Shard",
+        Text = "On Play: Destroy the ¦. Exile this Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -1072,7 +1072,7 @@ public static class Runes
         Name  = "Prune",
         Power = 0,
         Rarity = Rarity.None,
-        Text  = "On Activate: Exile previous Shard. Exile this Shard",
+        Text  = "On Activate: Exile § Shard. Exile this Shard",
         OnActivate = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -1148,7 +1148,7 @@ public static class Runes
         Name = "Ravage",
         Power = 4,
         Rarity = Rarity.Common,
-        Text = "On Play: Activate the Shard two steps prior to this one",
+        Text = "On Play: Activate the Shard two steps § to this one",
         OnEnter = (int selfIndex, Player player) =>
         {
             return player.Activate(selfIndex - 2, true);
@@ -1216,7 +1216,7 @@ public static class Runes
         Name = "Repeat",
         Power = 10,
         Rarity = Rarity.Common,
-        Text = "Has +20 Power if there is no Shard in the next slot",
+        Text = "Has +20 Power if there is no Shard in the ¦ slot",
         Aura = new()
         {
             new()
@@ -1276,7 +1276,7 @@ public static class Runes
         Name = "Retry",
         Power = 10,
         Rarity = Rarity.Rare,
-        Text = "On Play: Activate the Previous Shard",
+        Text = "On Play: Activate the § Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             int previusIndex = Player.CircularIndex(selfIndex - 1);
@@ -1325,7 +1325,7 @@ public static class Runes
         Name = "Sacrifice",
         Power = -10,
         Rarity = Rarity.Common,
-        Text = "On Activate: Next Shards Power is multiplied by 3",
+        Text = "On Activate: ¦ Shards Power is multiplied by 3",
         OnActivate = (int selfIndex, Player player) =>
         {
             int index = Player.CircularIndex(selfIndex + 1);
@@ -1396,7 +1396,7 @@ public static class Runes
         Name = "Shore",
         Power = 0,
         Rarity = Rarity.Common,
-        Text = "On Activate: Permanently add +2 Power to the previous Shard",
+        Text = "On Activate: Permanently add +2 Power to the § Shard",
         OnActivate = (int selfIndex, Player player) =>
         {
             Rune prev = player.GetRuneInCircle(selfIndex - 1);
@@ -1523,7 +1523,7 @@ public static class Runes
         Name  = "Tides",
         Power = 7,
         Rarity = Rarity.Common,
-        Text  = "On Play: Swap the next Shard with the previous Shard",
+        Text  = "On Play: Swap the ¦ Shard with the § Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             int idx1 = Player.CircularIndex(selfIndex - 1);
@@ -1537,7 +1537,7 @@ public static class Runes
         Name  = "Trickle",
         Power = 3,
         Rarity = Rarity.Common,
-        Text  = "On Play: Add +5 Power to the next Shard and +2 Power to the Shard after that",
+        Text  = "On Play: Add +5 Power to the ¦ Shard and +2 Power to the ¦ Shard after that",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -1708,10 +1708,4 @@ public static class Runes
             return history;
         },
     };
-
-  
-
-   
-
-    
 }
