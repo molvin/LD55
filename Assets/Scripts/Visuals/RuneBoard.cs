@@ -519,6 +519,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator BeginResolve(int index)
     {
+        slots[index].Held.GetComponent<Animator>().enabled = true;
 
         slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
         yield return new WaitForSeconds(0.4f);
@@ -541,7 +542,7 @@ public class RuneBoard : MonoBehaviour
                     case EventType.None:
                         break;
                     case EventType.PowerToSummon:
-                        yield return AddPowerToSummonAnim(index, e.Power);
+                        yield return AddPowerToSummonAnim(e.Actor >= 0 ? e.Actor : index, e.Delta);
                         yield return UpdateScore(e.Power); //TODO floaty number animation
                         break;
                     case EventType.PowerToRune:
