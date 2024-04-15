@@ -29,54 +29,34 @@ public static class Artifacts
     }
 
     // A
-
     private static Artifact Acanthite => new()
     {
         Name = "Acanthite",
         Text = "Increase Shop actions by 1",
-        OnEnter = (int selfIndex, Player player) =>
+        Stats = new()
         {
-            player.ShopActions++;
-            return new();
-        },
-        OnExit = (int selfIndex, Player player) =>
-        {
-            player.ShopActions--;
-            return new();
+            ShopActions = 1,
         },
     };
-
     // M
+    public static Artifact GetMalechite => Malechite;
     private static Artifact Malechite => new()
     {
         Name = "Malechite",
         Text = "Draw an additional Shard each Summon",
-        OnEnter = (int selfIndex, Player player) =>
+        Stats = new()
         {
-            player.MaxHandSize++;
-            return new();
-        },
-        OnExit = (int selfIndex, Player player) =>
-        {
-            player.MaxHandSize--;
-            return new();
+            HandSize = 1,
         },
     };
-
     // S
     private static Artifact SmokyQuartz => new()
     {
         Name = "Smoky Quartz",
-        Text = "Regenerate 1 Health at the start of a Round",
-        OnEnter = (int selfIndex, Player player) =>
+        Text = "Resummon up to 1 finger at the start of each new summon",
+        Stats = new()
         {
-            player.Regen++;
-            return new();
-        },
-        OnExit = (int selfIndex, Player player) =>
-        {
-            player.Regen--;
-            return new();
+            Regen = -1,
         },
     };
 }
