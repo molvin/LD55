@@ -396,6 +396,7 @@ public class Player : MonoBehaviour
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
 
+            yield return runeBoard.BeginSummon();
             for (int i = 0; i < circle.Count; i++)
             {
                 if (circle[i] == null)
