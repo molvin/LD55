@@ -48,7 +48,7 @@ public static class Runes
             if (player.HandSize > 0)
             {
                 player.AddCirclePower(player.HandSize * 10);
-                return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower(), player.HandSize * 10) };
             }
 
             return new();
@@ -113,7 +113,7 @@ public static class Runes
         {
             int circlePower = player.GetCirclePower();
             player.AddCirclePower(circlePower * 2);
-            return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            return new() { EventHistory.PowerToSummon(player.GetCirclePower(), circlePower) };
         },
     };
     // B
@@ -195,7 +195,7 @@ public static class Runes
             }
 
             player.AddCirclePower(5 * activations);
-            return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            return new() { EventHistory.PowerToSummon(player.GetCirclePower(), 5 * activations) };
         },
     };
     private static Rune Bud => new()
@@ -264,7 +264,7 @@ public static class Runes
             {
                 int power = player.GetRunePower(prev);
                 player.AddCirclePower(power);
-                history.Add(EventHistory.PowerToSummon(player.GetCirclePower()));
+                history.Add(EventHistory.PowerToSummon(player.GetCirclePower(), power, prev));
 
                 history.Add(EventHistory.Destroy(prev));
                 history.AddRange(player.Remove(prev));
@@ -313,7 +313,7 @@ public static class Runes
             List<EventHistory> history = new();
 
             player.AddCirclePower(10);
-            history.Add(EventHistory.PowerToSummon(player.GetCirclePower()));
+            history.Add(EventHistory.PowerToSummon(player.GetCirclePower(), 10));
             history.Add(EventHistory.Exile(selfIndex));
             history.AddRange(player.Exile(selfIndex));
 
@@ -364,9 +364,9 @@ public static class Runes
     private static Rune Displacement => new()
     {
         Name = "Displacement",
-        Power = 16,
+        Power = 0,
         Rarity = Rarity.Rare,
-        Text = "On Play: return Opposite Shards to hand",
+        Text = "On Play: return Opposite Shards to hand then destroy this Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -383,6 +383,10 @@ public static class Runes
                 history.Add(EventHistory.ReturnToHand(op_2));
 
             }
+
+            history.Add(EventHistory.Destroy(selfIndex));
+            history.AddRange(player.Remove(selfIndex));
+
             return history;
         },
     };
@@ -507,7 +511,7 @@ public static class Runes
         OnDestroy = (int selfIndex, Player player) =>
         {
             player.AddCirclePower(10);
-            return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            return new() { EventHistory.PowerToSummon(player.GetCirclePower(), 10) };
         },
     };
     // F
@@ -685,7 +689,7 @@ public static class Runes
             if (type == TriggerType.OnActivate && (other == prev || other == next))
             {
                 player.AddCirclePower(4);
-                return new() { EventHistory.PowerToSummon(4) };
+                return new() { EventHistory.PowerToSummon(4, 4) };//TODO delta as circle power
             }
 
             return new();
@@ -730,7 +734,7 @@ public static class Runes
         {
             int circlePower = player.GetCirclePower();
             player.AddCirclePower(circlePower);
-            return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            return new() { EventHistory.PowerToSummon(player.GetCirclePower(), circlePower) };
         },
     };
     private static Rune Guidance => new()
@@ -823,7 +827,7 @@ public static class Runes
                 if ((int)rune.Rarity > (int)self.Rarity)
                 {
                     player.AddCirclePower(7);
-                    return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+                    return new() { EventHistory.PowerToSummon(player.GetCirclePower(), 7) };
                 }
             }
 
@@ -1159,8 +1163,8 @@ public static class Runes
         OnEnter = (int selfIndex, Player player) =>
         {
             int circlePower = player.GetCirclePower();
-            player.AddCirclePower(circlePower * 2);
-            return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            player.AddCirclePower(circlePower * 2); 
+            return new() { EventHistory.PowerToSummon(player.GetCirclePower(), circlePower * 2) };
         },
     };
     private static Rune Rebellious => new()
@@ -1228,15 +1232,25 @@ public static class Runes
     private static Rune Rescue => new()
     {
         Name = "Rescue",
-        Power = 7,
+        Power = 0,
         Rarity = Rarity.Common,
-        Text = "On Play: Conjure a Pool to your hand",
+        Text = "On Play: Conjure a Pool to your hand. On Activate: Add 8 times the number of Shards in hand to the summon",
         OnEnter = (int selfIndex, Player player) =>
         {
             Rune pool = Pool;
             pool.Token = true;
             player.AddNewRuneToHand(pool);
             return new() { EventHistory.Draw(pool) };
+        },
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            if (player.HandSize > 0)
+            {
+                player.AddCirclePower(player.HandSize * 8);
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower(), player.HandSize * 8) };
+            }
+
+            return new();
         },
     };
     private static Rune Restore => new()
@@ -1425,7 +1439,7 @@ public static class Runes
         OnEnter = (int selfIndex, Player player) =>
         {
             player.AddCirclePower(5);
-            return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            return new() { EventHistory.PowerToSummon(player.GetCirclePower(), 5) };
         },
     };
     private static Rune Strongheart => new()
@@ -1451,8 +1465,8 @@ public static class Runes
         Name = "Supporter",
         Power = 6,
         Rarity = Rarity.Common,
-        Text = "On Activate: Add +10 to the summon if this Shard has the lowest Power",
-        OnActivate = (int selfIndex, Player player) =>
+        Text = "On Play: Add +6 to the summon if this Shard has the lowest Power",
+        OnEnter = (int selfIndex, Player player) =>
         {
             bool lowest = true;
             int power = player.GetRunePower(selfIndex);
@@ -1475,7 +1489,7 @@ public static class Runes
             if (lowest)
             {
                 player.AddCirclePower(10);
-                return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower(), 6) };
             }
 
             return new();

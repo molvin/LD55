@@ -62,7 +62,7 @@ public class RuneBoard : MonoBehaviour
     private Draggable previousHover;
 
     public Animator CameraAnim;
-    public Health OpponentHealth;
+    public TextMeshProUGUI OpponentHealth;
     public ProgressView Progress;
 
     private List<Draggable> allDragables => shopObjects.Union(runes).Union(Gems).Union(new[] {StartGem}).ToList();
@@ -458,10 +458,9 @@ public class RuneBoard : MonoBehaviour
         {
             vis.Hover = false;
         }
-
-        if (inspect is Gem gis)
+        else if (inspect is Gem g)
         {
-            Debug.Log(gis.ToString());
+            g.ToggleText(true);
         }
 
         yield return null;
@@ -474,7 +473,10 @@ public class RuneBoard : MonoBehaviour
             inspect.transform.localRotation = Quaternion.RotateTowards(inspect.transform.localRotation, target.rotation, InspectRotationSpeed * Time.deltaTime);
             yield return null;
         }
-
+        if (inspect is Gem gem)
+        {
+            gem.ToggleText(false);
+        }
         while (Vector3.Distance(inspect.transform.position, cachedPos) > 0.1f || Quaternion.Angle(inspect.transform.localRotation, cachedRot) > 1)
         {
             inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, cachedPos, ref runeVelocity, InspectMoveSmoothing);
@@ -495,6 +497,7 @@ public class RuneBoard : MonoBehaviour
         {
             containingList.Add(inspect);
         }
+
     }
 
     public void ForceUpdateVisuals()
@@ -516,6 +519,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator BeginResolve(int index)
     {
+        slots[index].Held.GetComponent<Animator>().enabled = true;
 
         slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
         yield return new WaitForSeconds(0.4f);
@@ -538,7 +542,7 @@ public class RuneBoard : MonoBehaviour
                     case EventType.None:
                         break;
                     case EventType.PowerToSummon:
-                        yield return AddPowerToSummonAnim(index, e.Power);
+                        yield return AddPowerToSummonAnim(e.Actor >= 0 ? e.Actor : index, e.Delta);
                         yield return UpdateScore(e.Power); //TODO floaty number animation
                         break;
                     case EventType.PowerToRune:
@@ -624,7 +628,7 @@ public class RuneBoard : MonoBehaviour
         Vector3 startPointLocal = power.transform.localPosition;
         Debug.Log("pause");
         float time = 0;
-        float duration = 0.7f;
+        float duration = 0.3f;
         while (time < duration)
         {
             time += Time.deltaTime;
@@ -659,7 +663,7 @@ public class RuneBoard : MonoBehaviour
         string og_power = powerText.text;
         powerText.text = power+"";
         float time = 0;
-        float duration = 0.7f;
+        float duration = 0.35f;
         while (time < duration)
         {
             time += Time.deltaTime;
@@ -690,7 +694,7 @@ public class RuneBoard : MonoBehaviour
     {
         Color originalColor = power.color;
         float time = 0;
-        float fadeInDuration = 2f;
+        float fadeInDuration = 1f;
         while (time < fadeInDuration)
         {
             time += Time.deltaTime;
@@ -752,7 +756,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator EndDamage(int health, int maxHealth)
     {
-        OpponentHealth.Set(health, maxHealth);
+        OpponentHealth.text = $"{health}";
 
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);
