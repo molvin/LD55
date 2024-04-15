@@ -533,6 +533,9 @@ public class Player : MonoBehaviour
         else
         {
             Debug.Log("You lose");
+            runeBoard.CameraAnim.SetTrigger("Die");
+            yield return new WaitForSeconds(3.0f);
+            yield return HUD.Instance.FadeToBlack(1f);
             SceneManager.LoadScene(0);
         }
 

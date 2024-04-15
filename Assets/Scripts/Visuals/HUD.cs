@@ -9,9 +9,25 @@ public class HUD : MonoBehaviour
     public Button EndTurnButton;
     public Health PlayerHealth;
     //public Health OpponentHealth;
+    public Image FadePanel;
 
     private void Awake()
     {
         Instance = this;
+    }
+
+    public IEnumerator FadeToBlack(float duration)
+    {
+        float t = 0.0f;
+        while (t < duration)
+        {
+            Color col = FadePanel.color;
+            col.a = (t / duration);
+            FadePanel.color = col;
+
+            t += Time.deltaTime;
+            yield return null;
+        }
+        FadePanel.color = Color.black;
     }
 }
