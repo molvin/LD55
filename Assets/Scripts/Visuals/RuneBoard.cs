@@ -790,7 +790,7 @@ public class RuneBoard : MonoBehaviour
             vis.Init(Runes.GetPrune(), Player.Instance);
             shopObjects.Add(vis);
         }
-        //if((Player.Instance.CurrentRound % 3) == 0)
+        if ((Player.Instance.CurrentRound % 3) == 0)
         {
             for(int i = 0; i < 3; i++)
             {

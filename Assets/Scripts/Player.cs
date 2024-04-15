@@ -386,8 +386,6 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        artifacts[0] = Artifacts.GetAzurite;
-        artifacts[1] = Artifacts.GetAzurite;
         if(UseStarters)
         {
             deckRef = new();
@@ -466,8 +464,6 @@ public class Player : MonoBehaviour
                 currentRound++;
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
-
-                currentRound += 1;
 
                 if(currentRound >= Settings.Rounds)
                 {
