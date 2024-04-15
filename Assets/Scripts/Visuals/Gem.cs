@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Gem : Draggable
@@ -13,6 +14,8 @@ public class Gem : Draggable
     public List<GemColor> Colors;
     public MeshRenderer Renderer;
 
+    public TextMeshProUGUI Description;
+
     public Artifact Artifact;
 
     public void Init(Artifact artifact)
@@ -23,6 +26,14 @@ public class Gem : Draggable
         Renderer.material.color = color;
 
         Artifact = artifact;
+
+        Description.text = $"{artifact.Name}: {artifact.Text}";
+        Description.enabled = false;
+    }
+
+    public void ToggleText(bool on)
+    {
+        Description.enabled = on;
     }
 
 }
