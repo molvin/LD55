@@ -70,7 +70,9 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration placeInSlotSound;
     public AudioOneShotClipConfiguration dropShardSound;
     public AudioOneShotClipConfiguration startSummonSound;
+    public AudioOneShotClipConfiguration replaceSound;
 
+    private Audioman audioman;
 
     private void Start()
     {
@@ -95,6 +97,7 @@ public class RuneBoard : MonoBehaviour
 
         ShopObject.SetActive(false);
 
+        audioman = FindObjectOfType<Audioman>();
 
     }
 
@@ -689,6 +692,7 @@ public class RuneBoard : MonoBehaviour
         float t = 0.0f;
         float duration = 0.25f;
 
+        audioman.PlaySound(replaceSound, vis.transform.position);
         Vector3 startEuler = vis.transform.rotation.eulerAngles;
         bool done = false;
         while(t < duration)
