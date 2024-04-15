@@ -770,13 +770,13 @@ public static class Runes
         Name = "Hallowed",
         Power = 15,
         Rarity = Rarity.Rare,
-        Text = "On Destroy: Exile this Shard and its neighbours",
+        Text = "On Destroy: Exile this Shard and Opposite Shards",
         OnDestroy = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
 
-            int prev = Player.CircularIndex(selfIndex - 1);
-            int next = Player.CircularIndex(selfIndex + 1);
+            int prev = Player.CircularIndex(selfIndex - 2);
+            int next = Player.CircularIndex(selfIndex + 2);
 
             if (player.HasRuneAtIndex(prev))
             {

@@ -130,7 +130,7 @@ public static class Artifacts
     {
         Name = "Smoky Quartz",
         Text = "Resummon up to 1 finger at the start of each new summon",
-        Limit = 2,
+        Limit = 1,
         Stats = new()
         {
             Regen = 1,
