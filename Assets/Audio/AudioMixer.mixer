@@ -271,6 +271,25 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!243 &-1954991892300658432
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Victory
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: b799701f5c20f4f4196a0b2a4f4825b2
+  m_Children: []
+  m_Volume: e072fe2d3b3bd9249a3f930c0cc1b9e9
+  m_Pitch: d706eb7a9fa05c34f982784fc8530bf0
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: 1039866519530728817}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
 --- !u!244 &-1494209229630755194
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -373,6 +392,7 @@ AudioMixerController:
     - eac4b72cedc86a449be6a74fb52bd2db
     - 6467986c63c1e81479c1143bb507b0f0
     - b38c1d2a8a7812740bcf27764745e763
+    - b799701f5c20f4f4196a0b2a4f4825b2
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -422,10 +442,25 @@ AudioMixerSnapshotController:
   m_SnapshotID: 22789ba741d1f3349967ae8c7655ba6f
   m_FloatValues:
     95dbd27058913d34889d325ac41ea61a: -2
+    3bb15a6156bb45e44818c9430c771255: -7.7
     e7d5c8c1ce6783741964508135aa7c87: -4.8
     fbe990549ee21d74e9da258010023999: -25
     bbeee16fdc94a93458a53b74ee26807c: 2573
   m_TransitionOverrides: {}
+--- !u!244 &1039866519530728817
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: b7e628107f5e6e34494ace87c2091d69
+  m_EffectName: Attenuation
+  m_MixLevel: f9a19891838aed341b8884ba502de7f3
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &1320806951040514733
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -602,6 +637,7 @@ AudioMixerGroupController:
   - {fileID: -8481883155548677001}
   - {fileID: -7069094555200107113}
   - {fileID: -6106622184497648700}
+  - {fileID: -1954991892300658432}
   m_Volume: 8ce0ed4d43b4a69449d42284eeb6172f
   m_Pitch: c8a3385a0b8586d48aa045cf8a75c740
   m_Send: 00000000000000000000000000000000
