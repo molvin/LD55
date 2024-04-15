@@ -845,7 +845,7 @@ public static class Runes
     private static Rune Iron => new()
     {
         Name  = "Iron",
-        Power = 3,
+        Power = 5,
         Rarity = Rarity.Starter,
         StartCount = 1,
         Text  = "Neighbouring Shards has +5 Power",
@@ -1091,7 +1091,7 @@ public static class Runes
     private static Rune Prysm => new()
     {
         Name  = "Prysm",
-        Power = 3,
+        Power = 4,
         Rarity = Rarity.Starter,
         StartCount = 1,
         Text  = "On Activate: Power is multiplied by 2",
