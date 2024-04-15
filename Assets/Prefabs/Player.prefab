@@ -46,12 +46,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseDeck:
-  - Index: 13
-  - Index: 13
-  - Index: 13
-  - Index: 15
+  - Index: 19
+  - Index: 19
+  - Index: 74
+  - Index: 73
   UseStarters: 1
-  MaxHandSize: 5
 --- !u!114 &7214113616316314965
 MonoBehaviour:
   m_ObjectHideFlags: 0
