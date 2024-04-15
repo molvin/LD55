@@ -14,6 +14,8 @@ public class HandVisualizer : MonoBehaviour
     {
         m_CameraAnimator.SetTrigger("ViewSelf");
 
+        yield return new WaitForSeconds(1.0f);
+
         m_Animator.SetInteger("health", health);
         m_Animator.SetTrigger(heal ? "heal" : "damage");
 

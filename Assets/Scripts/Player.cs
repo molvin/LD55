@@ -430,7 +430,7 @@ public class Player : MonoBehaviour
         while (Health > 0)
         {
             HUD.Instance.PlayerHealth.Set(Health, Settings.PlayerMaxHealth);
-            runeBoard.OpponentHealth.Set(opponentHealth, Settings.GetOpponentHealth(currentRound));
+            runeBoard.OpponentHealth.text = opponentHealth.ToString();
 
             ResetTempStats();
             Draw(true);
