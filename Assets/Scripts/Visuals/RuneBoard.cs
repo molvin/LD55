@@ -132,6 +132,13 @@ public class RuneBoard : MonoBehaviour
 
         audioman = FindObjectOfType<Audioman>();
         handVisualizer = FindObjectOfType<HandVisualizer>();
+
+        // Give starting artifact
+        Vector3 pos = StartGem.transform.position;
+        Gem gem = Instantiate(GemPrefab, pos, Quaternion.identity);
+        gem.Init(Artifacts.GetSmokeyQuartz);
+        gem.GetComponent<Rigidbody>().AddForce(Random.onUnitSphere, ForceMode.VelocityChange);
+        Gems.Add(gem);
     }
 
     public IEnumerator ActivateLight(int index, bool turnOn)
@@ -1028,7 +1035,8 @@ public class RuneBoard : MonoBehaviour
             shopObjects.Add(cardPack);
         }
 
-        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length);
+        // NOTE: We use the sell slot for a last random
+        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length + 1);
         for (int i = 0; i < RandomRuneSlots.Length; i++)
         {
             Transform origin = RandomRuneSlots[i];
@@ -1038,13 +1046,17 @@ public class RuneBoard : MonoBehaviour
             shopObjects.Add(vis);
         }
         {
+            bool healRune = Random.value > 0.6f;
+            Rune rune = healRune ? Runes.GetRestore() : Runes.GetPrune();
             RuneVisuals vis = Instantiate(RunePrefab, HealSlot.position, Quaternion.identity);
-            vis.Init(Runes.GetRestore(), Player.Instance);
+            vis.Init(rune, Player.Instance);
             shopObjects.Add(vis);
         }
+        // NOTE: We use the sell slot for a last random
         {
             RuneVisuals vis = Instantiate(RunePrefab, SellSlot.position, Quaternion.identity);
-            vis.Init(Runes.GetPrune(), Player.Instance);
+            vis.Init(randomRuneShop.Last(), Player.Instance);
+            //vis.Init(Runes.GetPrune(), Player.Instance);
             shopObjects.Add(vis);
         }
 
