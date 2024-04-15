@@ -398,7 +398,7 @@ public class Player : MonoBehaviour
             ClearCircle();
             yield return runeBoard.EndSummon();
             yield return runeBoard.UpdateScore(circlePower);
-
+            yield return runeBoard.EndDamage();
 
             if (opponentHealth <= 0)
             {

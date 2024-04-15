@@ -475,7 +475,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator BeginSummon()
     {
-        //CameraAnim.SetTrigger("ToSummon");
+        CameraAnim.SetTrigger("ToSummon");
         yield return new WaitForSeconds(1.0f);
     }
 
@@ -585,23 +585,28 @@ public class RuneBoard : MonoBehaviour
             }
         }
         yield return RunConcurently(0.1f, deathAnims.ToArray());
-
+        
+        CameraAnim.SetTrigger("SummonDone");
+        yield return new WaitForSeconds(1);
+        
         ScoreText.text = "";
 
         ScrollAnimation.Play("CloseScroll");
         while (ScrollAnimation.isPlaying)
             yield return null;
-
-        //CameraAnim.SetTrigger("EndSummon");
-        yield return new WaitForSeconds(1);
     }
 
     public IEnumerator UpdateScore(int circlePower)
     {
-
         ScoreText.text = $"{circlePower}";
         yield return new WaitForSeconds(1f);
+    }
 
+    public IEnumerator EndDamage()
+    {
+        CameraAnim.SetTrigger("BackToIdle");
+        yield return new WaitForSeconds(1.5f);
+        CameraAnim.SetTrigger("Idle");
     }
 
     private IEnumerator RunConcurently(float delay, params IEnumerator[] corouties)
