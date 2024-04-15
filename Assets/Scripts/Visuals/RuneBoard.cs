@@ -83,6 +83,7 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration replaceSound;
     public AudioOneShotClipConfiguration addPowerToCircleSound;
     public AudioOneShotClipConfiguration raiseShardAnimSound;
+    public AudioOneShotClipConfiguration drawShardsSound;
 
     
 
@@ -1173,6 +1174,8 @@ public class RuneBoard : MonoBehaviour
         */
         var rigidBody = vis.GetComponent<Rigidbody>();
         rigidBody.AddForce(RuneSpawn.forward * 3 + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
+
+        FindObjectOfType<Audioman>().PlaySound(drawShardsSound, rigidBody.position);
 
         yield return new WaitForSeconds(0.2f);
     }
