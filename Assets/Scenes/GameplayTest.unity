@@ -480,6 +480,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 753dd122e791f8643931c5a1ae9a4df6, type: 3}
+--- !u!4 &701717951 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 156749549436576044, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+  m_PrefabInstance: {fileID: 4471929155943880039}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1622039962
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -558,6 +563,37 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 492616683916520028, guid: 88422222e2773b14099ef781226be1e2, type: 3}
   m_PrefabInstance: {fileID: 8346096694761778502}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1793119941
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1793119942}
+  m_Layer: 0
+  m_Name: ShopActons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1793119942
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1793119941}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.797, y: 0.172, z: -2.126}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 701717951}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4471929155943880039
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -570,6 +606,18 @@ PrefabInstance:
       propertyPath: CameraAnim
       value: 
       objectReference: {fileID: 1768783344}
+    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: ShopActionOffset
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: ShopActionOrigin
+      value: 
+      objectReference: {fileID: 1793119941}
+    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: ShopActionPrefab
+      value: 
+      objectReference: {fileID: 3832330930585462532, guid: b76cc4901862ec6419dfb634342278ee, type: 3}
     - target: {fileID: 2188590060883278622, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_Name
       value: RuneBoard
@@ -616,7 +664,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 156749549436576044, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1793119942}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1094113221589360314, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       insertIndex: -1
