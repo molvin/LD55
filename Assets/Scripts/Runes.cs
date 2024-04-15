@@ -1137,7 +1137,7 @@ public static class Runes
                 availableRunes.RemoveAt(rand);
                 int randIdx = player.GetIndexOfRune(randRune);
 
-                history.AddRange(player.Activate(randIdx));
+                history.AddRange(player.Activate(randIdx, true));
             }
 
             return history;
@@ -1151,7 +1151,7 @@ public static class Runes
         Text = "On Play: Activate the Shard two steps prior to this one",
         OnEnter = (int selfIndex, Player player) =>
         {
-            return player.Activate(selfIndex - 2);
+            return player.Activate(selfIndex - 2, true);
         },
     };
     private static Rune Reap => new()
@@ -1287,7 +1287,7 @@ public static class Runes
             if(previus.Name == "Retry")
                 return null;
 
-            return player.Activate(previusIndex);
+            return player.Activate(previusIndex, true);
         },
     };
     private static Rune Run => new()
