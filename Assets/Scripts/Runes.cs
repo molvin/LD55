@@ -28,6 +28,7 @@ public static class Runes
         return runes;
     }
 
+    public static Rune GetEnergy() => Energy;
     public static Rune GetRestore() => Restore;
     public static Rune GetPrune() => Prune;
 
