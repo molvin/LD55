@@ -921,7 +921,7 @@ public static class Runes
         Name  = "Multi",
         Power = 5,
         Rarity = Rarity.Common,
-        Text  = "On Play: Destroy all Energies; Draw a Shard for each £ destroyed this way",
+        Text  = "On Play: Destroy all £; Draw a Shard for each £ destroyed this way",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
