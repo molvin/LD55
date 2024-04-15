@@ -862,11 +862,14 @@ public class RuneBoard : MonoBehaviour
             Draggable cardPack = Instantiate(CardPackPrefab, origin.position, Quaternion.identity);
             shopObjects.Add(cardPack);
         }
-        foreach(Transform origin in RandomRuneSlots)
+
+        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length);
+        for (int i = 0; i < RandomRuneSlots.Length; i++)
         {
+            Transform origin = RandomRuneSlots[i];
             RuneVisuals vis = Instantiate(RunePrefab, origin.position, Quaternion.identity);
-            var allRunes = Runes.GetAllRunes();
-            vis.Init(allRunes[Random.Range(0, allRunes.Count)], Player.Instance);
+            Rune rune = randomRuneShop[i];
+            vis.Init(rune, Player.Instance);
             shopObjects.Add(vis);
         }
         {
@@ -928,17 +931,10 @@ public class RuneBoard : MonoBehaviour
  
     }
 
-    private IEnumerator ShopRunes(Vector3 origin)
+    private List<Rune> GetRunesToBuy(int num)
     {
-        if(ShopFeedback.isPlaying)
-            ShopFeedback.Stop();
-        bool buying = true;
-
-        HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
-        HUD.Instance.EndTurnButton.onClick.AddListener(() => buying = false);
-
         List<Rune> runes = new List<Rune>();
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < num; i++)
         {
             bool rare = Random.value > 0.7f;
             bool legendary = rare && Random.value > 0.7f;
@@ -953,7 +949,20 @@ public class RuneBoard : MonoBehaviour
 
             runes.Add(allRunes[Random.Range(0, allRunes.Count)]);
         }
+        return runes;
+    }
 
+    private IEnumerator ShopRunes(Vector3 origin)
+    {
+        if(ShopFeedback.isPlaying)
+            ShopFeedback.Stop();
+        bool buying = true;
+
+        HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
+        HUD.Instance.EndTurnButton.onClick.AddListener(() => buying = false);
+
+
+        List<Rune> runes = GetRunesToBuy(5);
         List<RuneVisuals> shopRunes = new();
         foreach (Rune rune in runes)
         {
