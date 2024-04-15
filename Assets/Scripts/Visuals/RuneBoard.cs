@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
-using static UnityEngine.GraphicsBuffer;
 
 public class RuneBoard : MonoBehaviour
 {
@@ -1059,7 +1057,8 @@ public class RuneBoard : MonoBehaviour
             shopObjects.Add(cardPack);
         }
 
-        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length);
+        // NOTE: We use the sell slot for a last random
+        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length + 1);
         for (int i = 0; i < RandomRuneSlots.Length; i++)
         {
             Transform origin = RandomRuneSlots[i];
@@ -1069,13 +1068,16 @@ public class RuneBoard : MonoBehaviour
             shopObjects.Add(vis);
         }
         {
+            bool healRune = Random.value > 0.6f;
+            Rune rune = healRune ? Runes.GetRestore() : Runes.GetPrune();
             RuneVisuals vis = Instantiate(RunePrefab, HealSlot.position, Quaternion.identity);
-            vis.Init(Runes.GetRestore(), Player.Instance);
+            vis.Init(rune, Player.Instance);
             shopObjects.Add(vis);
         }
+        // NOTE: We use the sell slot for a last random
         {
             RuneVisuals vis = Instantiate(RunePrefab, SellSlot.position, Quaternion.identity);
-            vis.Init(Runes.GetPrune(), Player.Instance);
+            vis.Init(randomRuneShop.Last(), Player.Instance);
             shopObjects.Add(vis);
         }
 
