@@ -170,7 +170,7 @@ public class RuneBoard : MonoBehaviour
             if (gemSlot.Held)
                 gemSlot.ActiveParticles.Play();
         }
-        ScrollAnimation.Play("OpenScroll");
+        ScrollAnimation.Play("OpenScrollStar");
         while (ScrollAnimation.isPlaying)
             yield return null;
     }
@@ -671,7 +671,7 @@ public class RuneBoard : MonoBehaviour
         {
             time += Time.deltaTime;
             //TODO WTFF
-            power.transform.rotation = Quaternion.Slerp(Quaternion.LookRotation(targetDirection), Quaternion.LookRotation(startForward, Vector3.up), time / duration);
+            power.transform.rotation = Quaternion.Slerp(starRot.normalized, Quaternion.LookRotation(targetDirection, Vector3.up), time / duration);
 
             yield return null;
 
@@ -922,7 +922,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator ViewProgress(int currentRound)
     {
-        ScrollAnimation.Play("OpenScroll");
+        ScrollAnimation.Play("OpenScrollPath");
         while (ScrollAnimation.isPlaying)
             yield return null;
 
@@ -938,7 +938,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Shop()
     {
-        ScrollAnimation.Play("OpenScroll");
+        ScrollAnimation.Play("OpenScrollShop");
         while (ScrollAnimation.isPlaying)
             yield return null;
 
