@@ -853,6 +853,7 @@ public class RuneBoard : MonoBehaviour
             t += Time.deltaTime;
             yield return null;
         }
+        runes.Remove(vis);
         Destroy(vis.gameObject);
         yield return new WaitForSeconds(0.5f);
     }
