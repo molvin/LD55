@@ -14,7 +14,15 @@ public class Gem : Draggable
     public List<GemColor> Colors;
     public MeshRenderer Renderer;
 
+    public TextMeshProUGUI Description;
+    public GameObject TextBackground;
+
     public Artifact Artifact;
+
+    private void Start()
+    {
+        ToggleText(false);
+    }
 
     public void Init(Artifact artifact)
     {
@@ -24,6 +32,14 @@ public class Gem : Draggable
         Renderer.material.color = color;
 
         Artifact = artifact;
+
+        Description.text = $"{artifact.Name}: {artifact.Text}";
+    }
+
+    public void ToggleText(bool on)
+    {
+        Description.enabled = on;
+        TextBackground.SetActive(on);
     }
 
 }

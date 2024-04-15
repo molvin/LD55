@@ -65,12 +65,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Lorem ipsm dolor { { {
-
-    asd gnjs ohias ohsdo oasasnias'
+  m_text: "\xA2 \xA3 \xA4 \xA5 \xA6 \xA7"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 29f74adf67b66f048b18f840ab8c262f, type: 2}
-  m_sharedMaterial: {fileID: 5138676112005005436, guid: 29f74adf67b66f048b18f840ab8c262f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b7b1832faafd4024997c186841e64f34, type: 2}
+  m_sharedMaterial: {fileID: 4123456259540507225, guid: b7b1832faafd4024997c186841e64f34, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5479,7 +5477,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6415316939845821887}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 995608cc7893377449e1e910e8d4447f, type: 2}
   m_CullingMode: 0

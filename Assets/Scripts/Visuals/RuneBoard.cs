@@ -458,6 +458,10 @@ public class RuneBoard : MonoBehaviour
         {
             vis.Hover = false;
         }
+        else if (inspect is Gem g)
+        {
+            g.ToggleText(true);
+        }
 
         yield return null;
 
@@ -469,7 +473,10 @@ public class RuneBoard : MonoBehaviour
             inspect.transform.localRotation = Quaternion.RotateTowards(inspect.transform.localRotation, target.rotation, InspectRotationSpeed * Time.deltaTime);
             yield return null;
         }
-
+        if (inspect is Gem gem)
+        {
+            gem.ToggleText(false);
+        }
         while (Vector3.Distance(inspect.transform.position, cachedPos) > 0.1f || Quaternion.Angle(inspect.transform.localRotation, cachedRot) > 1)
         {
             inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, cachedPos, ref runeVelocity, InspectMoveSmoothing);
@@ -490,6 +497,7 @@ public class RuneBoard : MonoBehaviour
         {
             containingList.Add(inspect);
         }
+
     }
 
     public void ForceUpdateVisuals()
@@ -511,9 +519,10 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator BeginResolve(int index)
     {
+        slots[index].Held.GetComponent<Animator>().enabled = true;
 
         slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(0.2f);
 
         yield return null;
     }
@@ -533,7 +542,7 @@ public class RuneBoard : MonoBehaviour
                     case EventType.None:
                         break;
                     case EventType.PowerToSummon:
-                        yield return AddPowerToSummonAnim(index, e.Power);
+                        yield return AddPowerToSummonAnim(e.Actor >= 0 ? e.Actor : index, e.Delta);
                         yield return UpdateScore(e.Power); //TODO floaty number animation
                         break;
                     case EventType.PowerToRune:
@@ -612,18 +621,17 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator SpawnAndAnimateFlyingNumber(int index) //TODO add rotation
     {
-        //yield return new WaitForSeconds(2f);
 
         TextMeshProUGUI power = slots[index].Held.Power;
         Vector3 startPoint = power.transform.position;
         Vector3 startPointLocal = power.transform.localPosition;
         Debug.Log("pause");
         float time = 0;
-        float duration = 0.7f;
+        float duration = 0.5f;
         while (time < duration)
         {
             time += Time.deltaTime;
-            power.transform.position = startPoint + ((startPoint + new Vector3(0,0.1f,0) - startPoint) * (time / duration));
+            power.transform.position = startPoint + ((startPoint + new Vector3(0,0.2f,0) - startPoint) * (time / duration));
             yield return null;
 
         }
@@ -646,7 +654,6 @@ public class RuneBoard : MonoBehaviour
     
     public IEnumerator AddPowerToSummonAnim(int index, int power) //TODO add rotation
     {
-        //yield return new WaitForSeconds(2f);
 
         TextMeshProUGUI powerText = slots[index].Held.Power;
         Vector3 startPoint = powerText.transform.position;
@@ -654,7 +661,7 @@ public class RuneBoard : MonoBehaviour
         string og_power = powerText.text;
         powerText.text = power+"";
         float time = 0;
-        float duration = 0.7f;
+        float duration = 0.6f;
         while (time < duration)
         {
             time += Time.deltaTime;
@@ -685,7 +692,7 @@ public class RuneBoard : MonoBehaviour
     {
         Color originalColor = power.color;
         float time = 0;
-        float fadeInDuration = 2f;
+        float fadeInDuration = 1f;
         while (time < fadeInDuration)
         {
             time += Time.deltaTime;
@@ -742,7 +749,7 @@ public class RuneBoard : MonoBehaviour
     {
         ScoreText.text = $"{circlePower}";
         
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
     }
 
     public IEnumerator EndDamage(int health, int maxHealth)

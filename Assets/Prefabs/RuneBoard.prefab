@@ -1090,7 +1090,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  textPointsResolveDuration: 1
+  textPointsResolveDuration: 0.6
   placeInSlotSound: {fileID: 11400000, guid: 5c1af88d0e2e611428efb9f5f140479d, type: 2}
   dropShardSound: {fileID: 11400000, guid: 9c0b0c1077c88b742899628165b56984, type: 2}
   startSummonSound: {fileID: 11400000, guid: c012d6acd7c5e0444b44f6b2afd70a74, type: 2}
@@ -8255,7 +8255,7 @@ Transform:
   m_GameObject: {fileID: 8490528798504637723}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.145, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9098,6 +9098,14 @@ PrefabInstance:
     - target: {fileID: 2426167951513081066, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
       propertyPath: Colors.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8864650983443425757, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
+      propertyPath: m_text
+      value: Place in summoning circle to begin summoning
+      objectReference: {fileID: 0}
+    - target: {fileID: 8864650983443425757, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
+      propertyPath: m_fontSize
+      value: 0.75
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -118,7 +118,7 @@ public static class Artifacts
             if (trigger == TriggerType.OnDestroy)
             {
                 player.AddCirclePower(10);
-                return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower(), 10) };
             }
 
             return new();
