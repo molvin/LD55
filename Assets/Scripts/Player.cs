@@ -427,6 +427,10 @@ public class Player : MonoBehaviour
 
             ResetTempStats();
             Draw(true);
+            if(set == 0)
+            {
+                yield return runeBoard.BeginRound();
+            }
             ArtifactDraw();
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
@@ -450,10 +454,12 @@ public class Player : MonoBehaviour
             ClearCircle();
             yield return runeBoard.EndSummon();
             yield return runeBoard.UpdateScore(circlePower);
-
+            yield return runeBoard.EndDamage();
 
             if (opponentHealth <= 0)
             {
+                yield return runeBoard.EndRound();
+
                 set = 0;
                 health += Regen;
                 currentRound++;
