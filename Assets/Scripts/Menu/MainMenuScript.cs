@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
+using static MainMenuScript;
+using static PauseMenuScript;
 
 public class MainMenuScript : MonoBehaviour
 {
@@ -32,14 +34,123 @@ public class MainMenuScript : MonoBehaviour
     }
     ;
 
+    public FadeOutConfig fadeOutConfig;
+
+    [System.Serializable]
+    public struct FadeOutConfig
+    {
+        public Image image;
+        public float fadeDuration;
+        public AnimationCurve fadeCurve;
+        public RectMask2D treeMask;
+        public int treeMaskFadeValue;
+        public float animDuration;
+        public AnimationCurve scaleCurve;
+        public Transform menuTransfrom;
+        public GameObject button_group_main;
+    }
+   ;
+
+
+    public ApearConfig apearConfig;
+
+    [System.Serializable]
+    public struct ApearConfig
+    {
+        public float animDuration;
+        public AnimationCurve scaleCurve;
+        public Transform menuTransfrom;
+        public GameObject button_group_main;
+    }
+   ;
+
+    bool stopRotation = true;
+
     void Start()
     {
         //spawnButtons();
+        StartCoroutine(Appear());
+
     }
     public void Play()
     {
-        SceneManager.LoadScene(1);
+
+        StartCoroutine(FadeOut());
     }
+    public IEnumerator FadeOut()
+    {
+
+        float time = 0;
+
+        while (time < fadeOutConfig.fadeDuration)
+        {
+            time += Time.deltaTime;
+            Color color = fadeOutConfig.image.color;
+            color.a = fadeOutConfig.fadeCurve.Evaluate(time/fadeOutConfig.fadeDuration);
+            fadeOutConfig.image.color = color;
+            var softnessValue = Mathf.FloorToInt(fadeOutConfig.fadeCurve.Evaluate(time / fadeOutConfig.fadeDuration) * fadeOutConfig.treeMaskFadeValue);
+            fadeOutConfig.treeMask.softness = new Vector2Int(softnessValue, softnessValue);
+            yield return null;
+        }
+        stopRotation = true;
+        time = 0;
+        while (time < fadeOutConfig.animDuration)
+        {
+            time += Time.deltaTime;
+            foreach (Rotator r in rotators)
+            {
+                Vector3 angles = r.image.rectTransform.eulerAngles;
+                angles.z = angles.z - r.roateSpeed * 30
+                    * Time.deltaTime
+                    * (r.direction ? 1 : -1);
+                r.image.rectTransform.eulerAngles = angles;
+            }
+            var floatRange = (time / fadeOutConfig.animDuration);
+
+            float scale = 1 * fadeOutConfig.scaleCurve.Evaluate(floatRange);
+            fadeOutConfig.menuTransfrom.localScale = new Vector3(
+                 scale, scale, scale
+             );
+            if (floatRange > 0.8f )
+            {
+                fadeOutConfig.button_group_main.SetActive(false);
+            }
+            yield return null;
+        }
+        SceneManager.LoadScene(1);
+
+    }
+
+    public IEnumerator Appear()
+    {
+        float time = 0;
+
+        while (time < apearConfig.animDuration)
+        {
+            time += Time.deltaTime;
+            foreach (Rotator r in rotators)
+            {
+                Vector3 angles = r.image.rectTransform.eulerAngles;
+                angles.z = angles.z - r.roateSpeed * 30
+                    * Time.deltaTime
+                    * (r.direction ? 1 : -1);
+                r.image.rectTransform.eulerAngles = angles;
+            }
+            var floatRange = (time / apearConfig.animDuration);
+
+            float scale = 1 * apearConfig.scaleCurve.Evaluate(floatRange);
+            apearConfig.menuTransfrom.localScale = new Vector3(
+                 scale, scale, scale
+             );
+            if (floatRange > 0.8f)
+            {
+                apearConfig.button_group_main.SetActive(true);
+            }
+            yield return null;
+        }
+        stopRotation = false;
+    }
+  
     public void Quit()
     {
         Application.Quit();
@@ -49,12 +160,16 @@ public class MainMenuScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        foreach (Rotator r in  rotators)
+        if(!stopRotation)
         {
-            Vector3 angles = r.image.rectTransform.eulerAngles;
-            angles.z = angles.z - r.roateSpeed * Time.deltaTime * (r.direction ? 1 : -1); 
-            r.image.rectTransform.eulerAngles = angles;
+            foreach (Rotator r in rotators)
+            {
+                Vector3 angles = r.image.rectTransform.eulerAngles;
+                angles.z = angles.z - r.roateSpeed * Time.deltaTime * (r.direction ? 1 : -1);
+                r.image.rectTransform.eulerAngles = angles;
+            }
         }
+       
     }
 
 
