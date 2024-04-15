@@ -17,5 +17,5 @@ MonoBehaviour:
   mixer: {fileID: -1323307860415501869, guid: b5ae5806a793eee458f3f1ac68c6cf0a, type: 2}
   vol_min: 0.9
   vol_max: 1
-  pitch_min: 0.9
-  pitch_max: 1.1
+  pitch_min: 0.8
+  pitch_max: 1.2
