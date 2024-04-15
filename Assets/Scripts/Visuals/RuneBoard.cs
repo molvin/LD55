@@ -459,6 +459,11 @@ public class RuneBoard : MonoBehaviour
             vis.Hover = false;
         }
 
+        if (inspect is Gem gis)
+        {
+            Debug.Log(gis.ToString());
+        }
+
         yield return null;
 
         Vector3 cachedPos = inspect.transform.position;
