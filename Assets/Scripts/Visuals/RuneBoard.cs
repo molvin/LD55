@@ -46,7 +46,7 @@ public class RuneBoard : MonoBehaviour
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
     public Animation ScrollAnimation;
-    public TextMeshPro ScoreText;
+    public TextMeshProUGUI ScoreText;
 
     private RuneSlot[] slots;
     private List<RuneVisuals> runes = new();
