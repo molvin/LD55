@@ -10,6 +10,21 @@ public class HandVisualizer : MonoBehaviour
     [SerializeField]
     private Animator m_CameraAnimator;
 
+    [SerializeField]
+    private AudioOneShotClipConfiguration m_CutSound;
+
+    private Audioman m_AudioMan;
+
+    void Start()
+    {
+        m_AudioMan = FindObjectOfType<Audioman>();
+    }
+
+    public void PlayCutSound()
+    {
+        m_AudioMan.PlaySound(m_CutSound, transform.position);
+    }
+
     public IEnumerator ViewSelf(int health, bool heal)
     {
         m_CameraAnimator.SetTrigger("ViewSelf");

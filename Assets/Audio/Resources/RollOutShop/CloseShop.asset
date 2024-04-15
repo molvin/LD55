@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc02903647b24794981184b6992edb5a, type: 3}
-  m_Name: RollShop
+  m_Name: CloseShop
   m_EditorClassIdentifier: 
   clips:
   - {fileID: 8300000, guid: 1aaeaab6b3cce4348920b10df48fcb47, type: 3}
