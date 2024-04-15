@@ -443,6 +443,7 @@ public class Player : MonoBehaviour
 
                 var events = Activate(i);
 
+                yield return runeBoard.BeginResolve(i);
                 yield return runeBoard.Resolve(i, events);
                 yield return runeBoard.FinishResolve(i, circlePower);
             }
