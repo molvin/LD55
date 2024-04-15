@@ -104,19 +104,4 @@ public class Audioman : MonoBehaviour
         }
         sfx_queue.Enqueue(source);
     }
-
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            PlaySound(clip_config_test, new Vector3(1, 1, 1));
-
-        }
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            PlayLoop(loop_config_test, new Vector3(1, 1, 1));
-        }
-
-    }
-
 }
