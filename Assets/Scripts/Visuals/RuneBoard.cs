@@ -640,6 +640,15 @@ public class RuneBoard : MonoBehaviour
             slots[index].Active.Play();
             yield return SpawnAndAnimateFlyingNumber(index);
             yield return UpdateScore(circlePower);
+          
+            if (!slots[index].Open)
+            {
+                slots[index].Held.GetComponent<Animator>().SetTrigger("lower");
+
+            }
+            
+            yield return new WaitForSeconds(0.3f);
+            FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, ScoreText.transform.position);
             slots[index].Active.Stop();
         }
     }
@@ -749,16 +758,7 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator EndSummon()
     {
 
-        for (int i = 0; i < 5; i++)
-        {
-            if (!slots[i].Open)
-            {
-                slots[i].Held.GetComponent<Animator>().SetTrigger("lower");
-
-            }
-        }
-        yield return new WaitForSeconds(0.3f);
-        FindAnyObjectByType<Audioman>().PlaySound(placeInSlotSound, ScoreText.transform.position);
+       
 
 
         List<IEnumerator> deathAnims = new();
