@@ -359,6 +359,7 @@ public class Player : MonoBehaviour
         health = Settings.PlayerMaxHealth;
         int opponentHealth = Settings.GetOpponentHealth(currentRound);
         int set = 0;
+        bool win = false;
 
         while (health > 0)
         {
@@ -400,6 +401,12 @@ public class Player : MonoBehaviour
 
                 currentRound += 1;
 
+                if(currentRound >= Settings.Rounds)
+                {
+                    win = true;
+                    break;
+                }
+
                 yield return runeBoard.Shop();
                 Restart();
 
@@ -418,7 +425,14 @@ public class Player : MonoBehaviour
             }
         }
 
-        Debug.Log("You lose");
+        if(win)
+        {
+            Debug.Log("You win");
+        }
+        else
+        {
+            Debug.Log("You lose");
+        }
 
         yield return null;
     }

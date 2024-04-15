@@ -35,7 +35,9 @@ public class RuneBoard : MonoBehaviour
     public Transform ExilePile;
     public Transform RuneSpawn;
     public Transform[] ShopGemPoints;
-
+    public BoxCollider PlayArea;
+    public Transform StartGemOrigin;
+    public float StartGemUpForce;
     // public BoxCollider InspectDeck;
     // public BoxCollider InspectDiscard;
 
@@ -87,8 +89,6 @@ public class RuneBoard : MonoBehaviour
         {
             if (draggable is not RuneVisuals && draggable is not Gem)
                 shopObjects.Add(draggable);
-            if (draggable is Gem gem)
-                Gems.Add(gem);
         }
 
         PentagramObject.gameObject.SetActive(true);
@@ -96,6 +96,33 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
 
+    }
+
+    private void Update()
+    {
+        List<Transform> relevantTransforms = runes.Select(r => r.transform)
+                                            .Union(Gems.Select(g => g.transform))
+                                            .ToList();
+        if (StartGem != null)
+            relevantTransforms.Add(StartGem.transform);
+        foreach(Transform t in relevantTransforms)
+        {
+            if(!PlayArea.bounds.Contains(t.position))
+            {
+                t.position = PlayArea.bounds.ClosestPoint(t.position);
+            }
+        }
+
+        if(StartGem != null && StartGem.isActiveAndEnabled && !StartGem.Rigidbody.isKinematic)
+        {
+            Vector3 force = (StartGemOrigin.position - StartGem.transform.position);
+            float maxForce = 5;
+            if(force.magnitude > 0.1)
+            {
+                force = Vector3.ClampMagnitude(force, maxForce * Time.deltaTime);
+                StartGem.Rigidbody.AddForce(force + Vector3.up * (StartGemUpForce * Time.deltaTime), ForceMode.VelocityChange);
+            }
+        }
     }
 
     public IEnumerator Play()
@@ -191,7 +218,25 @@ public class RuneBoard : MonoBehaviour
                     var slot = GemSlots.FirstOrDefault(slot => slot.Held == gem);
                     resetPhysics = slot == null;
                 }
-                yield return Inspect(hovered, resetPhysics, Quaternion.identity);
+
+                if(hovered is RuneVisuals vis && runes.Contains(vis))
+                {
+                    yield return Inspect(vis, resetPhysics, Quaternion.identity, runes);
+                }
+                else if (hovered is Gem g && Gems.Contains(g))
+                {
+                    yield return Inspect(g, resetPhysics, Quaternion.identity, Gems);
+                }
+                else if(hovered == StartGem)
+                {
+                    StartGem = null;
+                    yield return Inspect(hovered, resetPhysics, Quaternion.identity, null);
+                    StartGem = hovered as Gem;
+                }
+                else
+                {
+                    yield return Inspect(hovered, resetPhysics, Quaternion.identity, null);
+                }
                 HUD.Instance.EndTurnButton.interactable = true;
             }
             else
@@ -212,7 +257,7 @@ public class RuneBoard : MonoBehaviour
                     if (Input.GetMouseButtonDown(1))
                     {
                         HUD.Instance.EndTurnButton.interactable = false;
-                        yield return Inspect(slot.Held, false, slot.Held.transform.rotation);
+                        yield return Inspect(slot.Held, false, slot.Held.transform.rotation, null);
                         HUD.Instance.EndTurnButton.interactable = true;
                     }
                 }
@@ -363,12 +408,18 @@ public class RuneBoard : MonoBehaviour
         }
     }
 
-    private IEnumerator Inspect(Draggable inspect, bool enablePhysicsWhenDone, Quaternion cachedRot)
+    private IEnumerator Inspect<T>(T inspect, bool enablePhysicsWhenDone, Quaternion cachedRot, List<T> containingList) where T : Draggable
     {
         inspect.Rigidbody.isKinematic = true;
 
-        if(inspect is RuneVisuals vis)
+        if (containingList != null)
         {
+            containingList.Remove(inspect);
+        }
+
+        if (inspect is RuneVisuals vis)
+        {
+
             if (vis.HoverParticles.isPlaying)
                 vis.HoverParticles.Stop();
         }
@@ -398,6 +449,11 @@ public class RuneBoard : MonoBehaviour
         {
             inspect.Rigidbody.isKinematic = false;
             inspect.Rigidbody.velocity = runeVelocity;
+        }
+
+        if (containingList != null)
+        {
+            containingList.Add(inspect);
         }
     }
 
@@ -510,9 +566,9 @@ public class RuneBoard : MonoBehaviour
         {
             deathAnims.Add(DestroyRune(vis, false));
         }
-        yield return RunConcurently(0.1f, deathAnims.ToArray());
-
         runes.Clear();
+
+        yield return RunConcurently(0.1f, deathAnims.ToArray());
 
         deathAnims = new();
         for (int i = 0; i < 5; i++)
@@ -810,7 +866,7 @@ public class RuneBoard : MonoBehaviour
                     }
                     if(Input.GetMouseButtonDown(1))
                     {
-                        yield return Inspect(vis, false, vis.transform.rotation);
+                        yield return Inspect(vis, false, vis.transform.rotation, null);
                     }
                 }
             }
