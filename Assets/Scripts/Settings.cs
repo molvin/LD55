@@ -10,6 +10,8 @@ public static class Settings
     public static int PlayerMaxHealth = 5;
     public static int ShopActions = 3;
     public static int Rounds = 15;
+    public static int RandomRunesAtStart = 2;
+    public static int MinStartHandSize = 10;
 
     private static int opponentHealthBase = 48;
     private static int opponentHealthBaseRamp = 20;
