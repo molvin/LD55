@@ -65,10 +65,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: asdasdasd asda sda asd asd asda sda sdas adas
+  m_text: " \xA2 \xA3 \xA4 \xA5 \xA6 \xA7\r\n\r\nright arrow \xA6\r\nleft arrow \xA7
+    \r\n\r\npain \xA8 \r\nraid \xA9 \r\npool \xAA "
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b7b1832faafd4024997c186841e64f34, type: 2}
-  m_sharedMaterial: {fileID: 4123456259540507225, guid: b7b1832faafd4024997c186841e64f34, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a6eb7114a2666d2428a3dd81b58a2d28, type: 2}
+  m_sharedMaterial: {fileID: 8401878204526361635, guid: a6eb7114a2666d2428a3dd81b58a2d28, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -92,7 +93,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3.1
+  m_fontSize: 1.6
   m_fontSizeBase: 3
   m_fontWeight: 400
   m_enableAutoSizing: 1
