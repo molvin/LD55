@@ -88,7 +88,7 @@ public static class Runes
         Name  = "Assist",
         Power = 4,
         Rarity = Rarity.Common,
-        Text  = "On Play: Conjure 2 Pain to hand",
+        Text  = "On Play: Conjure 2 ¨ to hand",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<Rune> drawn = new();
@@ -1122,7 +1122,7 @@ public static class Runes
         Name = "Raid",
         Power = 8,
         Rarity = Rarity.Common,
-        Text = "On Activate: Activate 2 random Shards not named Raid",
+        Text = "On Activate: Activate 2 random Shards not named ©",
         OnActivate = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -1245,7 +1245,7 @@ public static class Runes
         Name = "Rescue",
         Power = 0,
         Rarity = Rarity.Common,
-        Text = "On Play: Conjure a Pool to your hand. On Activate: Add 8 times the number of Shards in hand to the summon",
+        Text = "On Play: Conjure a ª to your hand. On Activate: Add 8 times the number of Shards in hand to the summon",
         OnEnter = (int selfIndex, Player player) =>
         {
             Rune pool = Pool;
@@ -1426,7 +1426,7 @@ public static class Runes
         Name  = "Slow",
         Power = 5,
         Rarity = Rarity.Common,
-        Text  = "On Play: Conjure 2 Flow to hand",
+        Text  = "On Play: Conjure 2 ¤ to hand",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<Rune> drawn = new();

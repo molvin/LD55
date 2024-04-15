@@ -392,6 +392,15 @@ public class Player : MonoBehaviour
         Instance = this;
         runeBoard = FindObjectOfType<RuneBoard>();
         RuneIcons.Init();
+
+        List<Rune> allRunes = Runes.GetAllRunes();
+        foreach (Rune rune in allRunes)
+        {
+            if (!RuneIcons.Has(rune.Name))
+            {
+                Debug.LogWarning($"Missing rune icon for {rune.Name}");
+            }
+        }
     }
 
     private void Start()
@@ -480,6 +489,7 @@ public class Player : MonoBehaviour
             }
 
             Debug.Log($"DEALING DAMAGE: {circlePower}");
+            int prevHealth = opponentHealth;
             opponentHealth -= circlePower;
 
 
@@ -489,13 +499,13 @@ public class Player : MonoBehaviour
             {
                 yield return runeBoard.UpdateScore(circlePower);
             }
+           
 
             if (opponentHealth <= 0)
             {
                 AudioMan.PlaySound(VictorySound, transform.position);
             }
-
-            yield return runeBoard.EndDamage(opponentHealth, Settings.GetOpponentHealth(currentRound));
+            yield return runeBoard.EndDamage(opponentHealth, prevHealth, Settings.GetOpponentHealth(currentRound));
 
             if (opponentHealth <= 0)
             {
@@ -504,6 +514,7 @@ public class Player : MonoBehaviour
                 set = 0;
                 if(Regen > 0)
                 {
+                    health += Regen;
                     yield return FindObjectOfType<HandVisualizer>().ViewSelf(health, true);
                 }
                 currentRound++;
@@ -517,8 +528,9 @@ public class Player : MonoBehaviour
                     break;
                 }
 
-                yield return runeBoard.ViewProgress(currentRound);
                 yield return runeBoard.Shop();
+                yield return runeBoard.ViewProgress(currentRound);
+
                 Restart();
                 opponentHealth = Settings.GetOpponentHealth(currentRound);
             }
