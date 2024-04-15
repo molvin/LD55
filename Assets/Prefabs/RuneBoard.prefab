@@ -1095,6 +1095,8 @@ MonoBehaviour:
   dropShardSound: {fileID: 11400000, guid: 9c0b0c1077c88b742899628165b56984, type: 2}
   startSummonSound: {fileID: 11400000, guid: c012d6acd7c5e0444b44f6b2afd70a74, type: 2}
   replaceSound: {fileID: 11400000, guid: e2588c31eef869644bcaf09386adbbff, type: 2}
+  addPowerToCircleSound: {fileID: 11400000, guid: e2588c31eef869644bcaf09386adbbff, type: 2}
+  raiseShardAnimSound: {fileID: 11400000, guid: c6583012f7acbcd44a0e4a6f0ee535af, type: 2}
 --- !u!1 &2794618316508520973
 GameObject:
   m_ObjectHideFlags: 0
