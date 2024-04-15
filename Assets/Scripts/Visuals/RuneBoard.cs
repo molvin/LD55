@@ -49,6 +49,8 @@ public class RuneBoard : MonoBehaviour
     public GemSlot[] GemSlots;
     public ScrollAnimationController ScrollAnimation;
     public TextMeshPro ScoreText;
+    public DeckVisualazation DeckVisual;
+
 
     private RuneSlot[] slots;
     private List<GameObject> slotLights = new();
@@ -188,6 +190,9 @@ public class RuneBoard : MonoBehaviour
                 StartGem.Rigidbody.AddForce(force + Vector3.up * (StartGemUpForce * Time.deltaTime), ForceMode.VelocityChange);
             }
         }
+
+        //Update Deck size visual
+        DeckVisual.SetDeckSize(Player.Instance.Bag.Count);
     }
 
     public IEnumerator Tutorial()
@@ -1228,6 +1233,7 @@ public class RuneBoard : MonoBehaviour
         var rigidBody = vis.GetComponent<Rigidbody>();
         rigidBody.AddForce(RuneSpawn.forward * 4 + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
 
+        DeckVisual.SetDeckSize(Player.Instance.Bag.Count);
         audioman.PlaySound(drawShardsSound, rigidBody.position);
 
         yield return new WaitForSeconds(0.2f);
