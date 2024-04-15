@@ -627,7 +627,7 @@ public class RuneBoard : MonoBehaviour
         Vector3 startPointLocal = power.transform.localPosition;
         Debug.Log("pause");
         float time = 0;
-        float duration = 0.7f;
+        float duration = 0.3f;
         while (time < duration)
         {
             time += Time.deltaTime;
@@ -662,7 +662,7 @@ public class RuneBoard : MonoBehaviour
         string og_power = powerText.text;
         powerText.text = power+"";
         float time = 0;
-        float duration = 0.7f;
+        float duration = 0.35f;
         while (time < duration)
         {
             time += Time.deltaTime;
@@ -693,7 +693,7 @@ public class RuneBoard : MonoBehaviour
     {
         Color originalColor = power.color;
         float time = 0;
-        float fadeInDuration = 2f;
+        float fadeInDuration = 1f;
         while (time < fadeInDuration)
         {
             time += Time.deltaTime;
