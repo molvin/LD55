@@ -28,8 +28,5 @@ public static class Settings
         return opponentHealthBase + (opponentHealthBaseRamp * currentRound) + (opponentHealthRoundRamp * multi);
     }
 
-    public static int GetOpponentDamage(int num)
-    {
-        return opponentDamageBase + opponentDamageRamp * num;
-    }
+    public static int GetOpponentDamage(int num) => 1;
 }
