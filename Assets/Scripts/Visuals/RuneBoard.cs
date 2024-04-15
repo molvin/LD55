@@ -308,6 +308,10 @@ public class RuneBoard : MonoBehaviour
             {
                 yield return ViewOpponent();
             }
+            if (Input.mousePosition.y < (Screen.height * 0.15))
+            {
+                yield return ViewSelf();
+            }
         }
     }
 
@@ -981,6 +985,20 @@ public class RuneBoard : MonoBehaviour
             yield return null;
 
         CameraAnim.SetTrigger("BackToIdle");
+        yield return new WaitForSeconds(1.0f);
+        CameraAnim.SetTrigger("Idle");
+
+    }
+
+    private IEnumerator ViewSelf()
+    {
+        CameraAnim.SetTrigger("ViewSelf");
+        yield return new WaitForSeconds(1.0f);
+
+        while (Input.mousePosition.y < Screen.height * 0.25f)
+            yield return null;
+
+        CameraAnim.SetTrigger("BackFromSelf");
         yield return new WaitForSeconds(1.0f);
         CameraAnim.SetTrigger("Idle");
 
