@@ -280,6 +280,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4026198392969673105, guid: 163ad5acd1763ed478b765d1c0a258de, type: 3}
+      propertyPath: m_CameraAnimator
+      value: 
+      objectReference: {fileID: 1768783344}
     - target: {fileID: 8573190787665683997, guid: 163ad5acd1763ed478b765d1c0a258de, type: 3}
       propertyPath: m_Name
       value: PlayerHealthHand
@@ -712,6 +716,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 109140992866733746, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4634518751829452625, guid: 88422222e2773b14099ef781226be1e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.735

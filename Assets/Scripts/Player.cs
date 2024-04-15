@@ -490,13 +490,14 @@ public class Player : MonoBehaviour
             else
             {
                 int damage = Settings.GetOpponentDamage(set);
-                if(damage >= 1) 
+                Health -= damage;
+                Debug.Log($"TAKING DAMAGE: {damage}");
+
+                if (damage >= 1) 
                     yield return FindObjectOfType<HandVisualizer>().ViewSelf(health, false);
 
-                Health -= damage;
                 set++;
-                HUD.Instance.PlayerHealth.Set(Health, Settings.PlayerMaxHealth);
-                Debug.Log($"TAKING DAMAGE: {damage}");
+                //HUD.Instance.PlayerHealth.Set(Health, Settings.PlayerMaxHealth);
 
                 yield return new WaitForSeconds(1.0f);
             }
