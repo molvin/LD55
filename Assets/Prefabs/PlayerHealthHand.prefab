@@ -128,6 +128,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 2c4a8adaf5ceb854686cb421f185ab95, type: 2}
+    - target: {fileID: 630787935609668476, guid: d7ea860ecd048284881d344ed48e09be, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00000003444513
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d7ea860ecd048284881d344ed48e09be, type: 3}
       propertyPath: m_Name
       value: HandSeperated
