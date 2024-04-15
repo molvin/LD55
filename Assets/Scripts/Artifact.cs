@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 
 public delegate List<EventHistory> ArtifactRuneTrigger(TriggerType trigger, int runeIndex, Player player);
+public delegate Rune ArtifactDraw();
+public delegate int ArtifactBuff(int runeIndex, Player player);
 
 public struct ArtifactStats
 {
@@ -21,6 +23,8 @@ public class Artifact : ICloneable
 
     public ArtifactStats Stats;
     public ArtifactRuneTrigger RuneTrigger;
+    public ArtifactDraw Draw;
+    public ArtifactBuff Buff;
 
     public object Clone()
     {
