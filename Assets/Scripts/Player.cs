@@ -460,7 +460,10 @@ public class Player : MonoBehaviour
 
             ClearCircle();
             yield return runeBoard.EndSummon();
-            yield return runeBoard.UpdateScore(circlePower);
+            if(circlePower != 0)
+            {
+                yield return runeBoard.UpdateScore(circlePower);
+            }
             yield return runeBoard.EndDamage(opponentHealth, Settings.GetOpponentHealth(currentRound));
 
             if (opponentHealth <= 0)
@@ -479,8 +482,10 @@ public class Player : MonoBehaviour
                     break;
                 }
 
+                yield return runeBoard.ViewProgress(currentRound);
                 yield return runeBoard.Shop();
                 Restart();
+                opponentHealth = Settings.GetOpponentHealth(currentRound);
             }
             else
             {
@@ -508,7 +513,7 @@ public class Player : MonoBehaviour
 
         yield return null;
     }
-    public List<EventHistory> Activate(int index)
+    public List<EventHistory> Activate(int index, bool indirect = false)
     {
         index = CircularIndex(index);
         if (circle[index] == null)
@@ -520,6 +525,10 @@ public class Player : MonoBehaviour
         {
             int power = GetRunePower(index);
             circlePower += power;
+            if (indirect)
+            {
+                events.Add(EventHistory.PowerToSummon(circlePower, power, index));
+            }
         }
 
         return events;

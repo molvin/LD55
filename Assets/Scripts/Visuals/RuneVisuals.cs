@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class RuneVisuals : Draggable
 {
@@ -18,9 +19,16 @@ public class RuneVisuals : Draggable
     private Player player;
     public Transform visual;
 
+    public bool Hover;
+    private Vector3 hoverOrigin;
     public Rune Rune => rune;
 
     public bool InSlot;
+
+    private void Start()
+    {
+        hoverOrigin = transform.GetChild(0).localPosition;
+    }
 
     public void Init(Rune rune, Player player)
     {
@@ -58,5 +66,21 @@ public class RuneVisuals : Draggable
         int index = player.GetIndexOfRune(rune);
         int power = index >= 0 ? player.GetRunePower(index) : rune.Power;
         Power.text = $"{power}";
+    }
+
+    private void Update()
+    {
+        //float height = 0.05f;
+
+        if (Hover)
+        {
+            //.rotation = Quaternion.identity;
+            //transform.GetChild(0).localPosition = hoverOrigin + Vector3.up * height;
+        }
+        else
+        {
+            //transform.GetChild(0).localPosition = hoverOrigin;
+        }
+
     }
 }
