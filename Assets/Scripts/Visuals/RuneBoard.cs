@@ -310,7 +310,7 @@ public class RuneBoard : MonoBehaviour
             {
                 yield return ViewOpponent();
             }
-            if (Input.mousePosition.y < (Screen.height * 0.15))
+            if (Input.mousePosition.y < (Screen.height * 0.05))
             {
                 yield return ViewSelf();
             }
