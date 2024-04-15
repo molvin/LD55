@@ -46,7 +46,7 @@ public class RuneBoard : MonoBehaviour
     public List<Gem> Gems = new();
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
-    public Animation ScrollAnimation;
+    public ScrollAnimationController ScrollAnimation;
     public TextMeshPro ScoreText;
 
     private RuneSlot[] slots;
@@ -83,8 +83,10 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration replaceSound;
     public AudioOneShotClipConfiguration addPowerToCircleSound;
     public AudioOneShotClipConfiguration raiseShardAnimSound;
+    public AudioOneShotClipConfiguration drawShardsSound;
+    public AudioOneShotClipConfiguration inspecSound;
 
-    
+    private HandVisualizer handVisualizer;
 
     private Audioman audioman;
 
@@ -112,6 +114,7 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         audioman = FindObjectOfType<Audioman>();
+        handVisualizer = FindObjectOfType<HandVisualizer>();
     }
 
     private void Update()
@@ -423,7 +426,7 @@ public class RuneBoard : MonoBehaviour
                 runes.Remove(vis);
                 var events = Player.Instance.Place(vis.Rune, index);
                 vis.UpdateStats();
-                FindAnyObjectByType<Audioman>().PlaySound(placeInSlotSound, slot.transform.position);
+                audioman.PlaySound(placeInSlotSound, slot.transform.position);
                 yield return Resolve(index, events);
             }
             else if(hovered != null && held is Gem gem && hovered is GemSlot gemSlot && (gem == StartGem && gemSlot.IsStart || gem != StartGem && !gemSlot.IsStart))
@@ -436,7 +439,7 @@ public class RuneBoard : MonoBehaviour
                 {
                     running = false;
                     gemSlot.ActiveParticles.Play();
-                    FindAnyObjectByType<Audioman>().PlaySound(startSummonSound, gemSlot.transform.position);
+                    audioman.PlaySound(startSummonSound, gemSlot.transform.position);
                 }
                 else
                 {
@@ -456,7 +459,7 @@ public class RuneBoard : MonoBehaviour
                 {
                     held.Rigidbody.isKinematic = false;
                     held.Rigidbody.velocity = runeVelocity;
-                    FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, held.transform.position);
+                    audioman.PlaySound(dropShardSound, held.transform.position);
                 }
             }
             held = null;
@@ -487,6 +490,8 @@ public class RuneBoard : MonoBehaviour
     private IEnumerator Inspect<T>(T inspect, bool enablePhysicsWhenDone, Quaternion cachedRot, List<T> containingList) where T : Draggable
     {
         inspect.Rigidbody.isKinematic = true;
+
+        audioman.PlaySound(inspecSound, transform.position);
 
         if (containingList != null)
         {
@@ -561,7 +566,7 @@ public class RuneBoard : MonoBehaviour
         slots[index].Held.GetComponent<Animator>().enabled = true;
 
         slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
-        FindAnyObjectByType<Audioman>().PlaySound(raiseShardAnimSound, ScoreText.transform.position);
+        audioman.PlaySound(raiseShardAnimSound, ScoreText.transform.position);
 
         yield return new WaitForSeconds(0.2f);
 
@@ -610,8 +615,9 @@ public class RuneBoard : MonoBehaviour
                             yield return Draw(rune);
                         break;
                     case EventType.AddLife:
-                        HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
-                        yield return new WaitForSeconds(1.0f);
+                        // HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
+                        //yield return new WaitForSeconds(1.0f);
+                        yield return handVisualizer.ViewSelf(Player.Instance.Health, true);
                         break;
                     case EventType.ReturnToHand:
                         {
@@ -663,7 +669,7 @@ public class RuneBoard : MonoBehaviour
             }
             
             yield return new WaitForSeconds(0.3f);
-            FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, ScoreText.transform.position);
+            audioman.PlaySound(dropShardSound, ScoreText.transform.position);
             slots[index].Active.Stop();
         }
     }
@@ -703,7 +709,7 @@ public class RuneBoard : MonoBehaviour
 
         Vector3 secondStartPoint = power.transform.position;
         yield return null;
-        FindAnyObjectByType<Audioman>().PlaySound(addPowerToCircleSound, ScoreText.transform.position);
+        audioman.PlaySound(addPowerToCircleSound, ScoreText.transform.position);
 
         time = 0;
         while(time < textPointsResolveDuration)
@@ -810,7 +816,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator EndDamage(int health, int maxHealth)
     {
-        OpponentHealth.text = $"{health}";
+        OpponentHealth.text = $"{Mathf.Max(health, 0)}";
         yield return new WaitForSeconds(1.5f);
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);
@@ -944,9 +950,6 @@ public class RuneBoard : MonoBehaviour
 
         yield return Progress.Set(currentRound);
 
-        while (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
-            yield return null;
-
         ScrollAnimation.Play("CloseScroll");
         while (ScrollAnimation.isPlaying)
             yield return null;
@@ -1059,7 +1062,10 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
- 
+
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
     }
 
     private List<Rune> GetRunesToBuy(int num)
@@ -1067,8 +1073,8 @@ public class RuneBoard : MonoBehaviour
         List<Rune> runes = new List<Rune>();
         for (int i = 0; i < num; i++)
         {
-            bool rare = Random.value > 0.7f;
-            bool legendary = rare && Random.value > 0.7f;
+            bool rare = Random.value > 0.5f;
+            bool legendary = rare && Random.value > 0.5f;
             List<Rune> allRunes = legendary
                 ? Runes.GetAllRunes(r => r.Rarity != Rarity.None)
                 : rare
@@ -1173,6 +1179,8 @@ public class RuneBoard : MonoBehaviour
         */
         var rigidBody = vis.GetComponent<Rigidbody>();
         rigidBody.AddForce(RuneSpawn.forward * 3 + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
+
+        audioman.PlaySound(drawShardsSound, rigidBody.position);
 
         yield return new WaitForSeconds(0.2f);
     }

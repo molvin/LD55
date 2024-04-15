@@ -31,6 +31,7 @@ public static class Artifacts
     public static Artifact GetAzurite => Azurite;
     public static Artifact GetMuscovite => Muscovite;
     public static Artifact GetScheelite => Scheelite;
+    public static Artifact GetSmokeyQuartz => SmokyQuartz;
     public static Artifact GetWitherite => Witherite;
 
     // A
@@ -132,7 +133,7 @@ public static class Artifacts
         Limit = 2,
         Stats = new()
         {
-            Regen = -1,
+            Regen = 1,
         },
     };
     private static Artifact Scheelite => new()

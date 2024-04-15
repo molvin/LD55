@@ -366,10 +366,14 @@ public static class Runes
         Name = "Displacement",
         Power = 0,
         Rarity = Rarity.Rare,
-        Text = "On Play: return Opposite Shards to hand then destroy this Shard",
+        Text = "On Play: Add -10 to the summon and then return Opposite Shards to hand then destroy this Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
+
+            player.AddCirclePower(-10);
+            history.Add(EventHistory.PowerToSummon(player.GetCirclePower(), -10));
+
             int op_1 = Player.CircularIndex(selfIndex - 2);
             int op_2 = Player.CircularIndex(selfIndex + 2);
             if (player.HasRuneAtIndex(op_1))
