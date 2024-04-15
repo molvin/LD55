@@ -185,7 +185,7 @@ public class RuneBoard : MonoBehaviour
 
             if (held == null)
             {
-                yield return UpdateHover(ray);
+                yield return UpdateHover(ray, false);
             }
             else
             {
@@ -197,7 +197,7 @@ public class RuneBoard : MonoBehaviour
         HUD.Instance.EndTurnButton.interactable = false;
     }
 
-    private IEnumerator UpdateHover(Ray ray)
+    private IEnumerator UpdateHover(Ray ray, bool shopping)
     {
         runeVelocity = Vector3.zero;
         Draggable hovered = null;
@@ -305,14 +305,17 @@ public class RuneBoard : MonoBehaviour
             }
             */
 
-
-            if(Input.mousePosition.y > (Screen.height * 0.85))
+            if(!shopping)
             {
-                yield return ViewOpponent();
-            }
-            if (Input.mousePosition.y < (Screen.height * 0.05))
-            {
-                yield return ViewSelf();
+                bool withinXSpan = Input.mousePosition.x > Screen.width * 0.4f && Input.mousePosition.x < Screen.width * 0.6f;
+                if (withinXSpan && Input.mousePosition.y > (Screen.height * 0.85))
+                {
+                    yield return ViewOpponent();
+                }
+                if (withinXSpan && Input.mousePosition.y < (Screen.height * 0.05))
+                {
+                    yield return ViewSelf();
+                }
             }
         }
     }
@@ -616,7 +619,6 @@ public class RuneBoard : MonoBehaviour
             yield return UpdateScore(circlePower);
             slots[index].Active.Stop();
         }
-
     }
 
     public IEnumerator SpawnAndAnimateFlyingNumber(int index) //TODO add rotation
@@ -954,7 +956,7 @@ public class RuneBoard : MonoBehaviour
                 if (ShopFeedback.isPlaying)
                     ShopFeedback.Stop();
 
-                yield return UpdateHover(ray);
+                yield return UpdateHover(ray, true);
             }
             else
             {
