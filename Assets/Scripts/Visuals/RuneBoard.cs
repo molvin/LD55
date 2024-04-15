@@ -62,6 +62,8 @@ public class RuneBoard : MonoBehaviour
     bool running;
     private Draggable previousHover;
 
+    public Animator CameraAnim;
+
     private List<Draggable> allDragables => shopObjects.Union(runes).Union(Gems).Union(new[] {StartGem}).ToList();
     private List<Slot> allSlots => new Slot[] { StartSlot }.Union(slots).Union(GemSlots).ToList(); //slots.Union(ShopSlots).ToList();
 
@@ -473,7 +475,8 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator BeginSummon()
     {
-        yield return null;
+        //CameraAnim.SetTrigger("ToSummon");
+        yield return new WaitForSeconds(1.0f);
     }
 
     public IEnumerator Resolve(int index, List<EventHistory> events)
@@ -588,14 +591,19 @@ public class RuneBoard : MonoBehaviour
         ScrollAnimation.Play("CloseScroll");
         while (ScrollAnimation.isPlaying)
             yield return null;
+
+        //CameraAnim.SetTrigger("EndSummon");
+        yield return new WaitForSeconds(1);
     }
 
     public IEnumerator UpdateScore(int circlePower)
     {
+
         ScoreText.text = $"{circlePower}";
         yield return new WaitForSeconds(1f);
+
     }
-    
+
     private IEnumerator RunConcurently(float delay, params IEnumerator[] corouties)
     {
         int count = corouties.Length;
