@@ -21,7 +21,7 @@ public class ScrollAnimationController : MonoBehaviour
 
     public void PlayRollOutSound(int open)
     {
-        if(open > 0)
+        if(open == 0)
         {
             m_AudioMan.PlaySound(m_RollOutSound, transform.position);
         }
@@ -53,13 +53,6 @@ public class ScrollAnimationController : MonoBehaviour
 
         if(mat != -1)
             PaperRenderer.material = PaperMaterials[mat];
-
-        if (mat == -1)
-        {
-            PlayRollOutSound(0);
-        }
-        else
-            PlayRollOutSound(1);
 
         Anim.Play(name);
     }
