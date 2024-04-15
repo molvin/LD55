@@ -19,6 +19,14 @@ public static class RuneIcons
         }
     }
 
+    public static bool Has(string name)
+    {
+        if (textures == null)
+        {
+            Init();
+        }
+        return textures.ContainsKey(name);
+    }
     public static Texture2D Get(string name)
     {
         if(textures == null)

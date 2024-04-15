@@ -387,6 +387,15 @@ public class Player : MonoBehaviour
         Instance = this;
         runeBoard = FindObjectOfType<RuneBoard>();
         RuneIcons.Init();
+
+        List<Rune> allRunes = Runes.GetAllRunes();
+        foreach (Rune rune in allRunes)
+        {
+            if (!RuneIcons.Has(rune.Name))
+            {
+                Debug.LogWarning($"Missing rune icon for {rune.Name}");
+            }
+        }
     }
 
     private void Start()
