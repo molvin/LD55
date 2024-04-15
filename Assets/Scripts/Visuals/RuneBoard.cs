@@ -657,7 +657,7 @@ public class RuneBoard : MonoBehaviour
         {
             time += Time.deltaTime;
             //TODO WTFF
-            power.transform.rotation = Quaternion.Slerp(Quaternion.LookRotation(targetDirection), Quaternion.LookRotation(startForward, Vector3.up), time / duration);
+            power.transform.rotation = Quaternion.Slerp(starRot.normalized, Quaternion.LookRotation(targetDirection, Vector3.up), time / duration);
 
             yield return null;
 
