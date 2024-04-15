@@ -84,6 +84,7 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration addPowerToCircleSound;
     public AudioOneShotClipConfiguration raiseShardAnimSound;
     public AudioOneShotClipConfiguration drawShardsSound;
+    public AudioOneShotClipConfiguration inspecSound;
 
     
 
@@ -424,7 +425,7 @@ public class RuneBoard : MonoBehaviour
                 runes.Remove(vis);
                 var events = Player.Instance.Place(vis.Rune, index);
                 vis.UpdateStats();
-                FindAnyObjectByType<Audioman>().PlaySound(placeInSlotSound, slot.transform.position);
+                audioman.PlaySound(placeInSlotSound, slot.transform.position);
                 yield return Resolve(index, events);
             }
             else if(hovered != null && held is Gem gem && hovered is GemSlot gemSlot && (gem == StartGem && gemSlot.IsStart || gem != StartGem && !gemSlot.IsStart))
@@ -437,7 +438,7 @@ public class RuneBoard : MonoBehaviour
                 {
                     running = false;
                     gemSlot.ActiveParticles.Play();
-                    FindAnyObjectByType<Audioman>().PlaySound(startSummonSound, gemSlot.transform.position);
+                    audioman.PlaySound(startSummonSound, gemSlot.transform.position);
                 }
                 else
                 {
@@ -457,7 +458,7 @@ public class RuneBoard : MonoBehaviour
                 {
                     held.Rigidbody.isKinematic = false;
                     held.Rigidbody.velocity = runeVelocity;
-                    FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, held.transform.position);
+                    audioman.PlaySound(dropShardSound, held.transform.position);
                 }
             }
             held = null;
@@ -488,6 +489,8 @@ public class RuneBoard : MonoBehaviour
     private IEnumerator Inspect<T>(T inspect, bool enablePhysicsWhenDone, Quaternion cachedRot, List<T> containingList) where T : Draggable
     {
         inspect.Rigidbody.isKinematic = true;
+
+        audioman.PlaySound(inspecSound, transform.position);
 
         if (containingList != null)
         {
@@ -562,7 +565,7 @@ public class RuneBoard : MonoBehaviour
         slots[index].Held.GetComponent<Animator>().enabled = true;
 
         slots[index].Held.GetComponent<Animator>().SetTrigger("raise");
-        FindAnyObjectByType<Audioman>().PlaySound(raiseShardAnimSound, ScoreText.transform.position);
+        audioman.PlaySound(raiseShardAnimSound, ScoreText.transform.position);
 
         yield return new WaitForSeconds(0.2f);
 
@@ -664,7 +667,7 @@ public class RuneBoard : MonoBehaviour
             }
             
             yield return new WaitForSeconds(0.3f);
-            FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, ScoreText.transform.position);
+            audioman.PlaySound(dropShardSound, ScoreText.transform.position);
             slots[index].Active.Stop();
         }
     }
@@ -704,7 +707,7 @@ public class RuneBoard : MonoBehaviour
 
         Vector3 secondStartPoint = power.transform.position;
         yield return null;
-        FindAnyObjectByType<Audioman>().PlaySound(addPowerToCircleSound, ScoreText.transform.position);
+        audioman.PlaySound(addPowerToCircleSound, ScoreText.transform.position);
 
         time = 0;
         while(time < textPointsResolveDuration)
@@ -1175,7 +1178,7 @@ public class RuneBoard : MonoBehaviour
         var rigidBody = vis.GetComponent<Rigidbody>();
         rigidBody.AddForce(RuneSpawn.forward * 3 + Random.onUnitSphere * 0.3f, ForceMode.VelocityChange);
 
-        FindObjectOfType<Audioman>().PlaySound(drawShardsSound, rigidBody.position);
+        audioman.PlaySound(drawShardsSound, rigidBody.position);
 
         yield return new WaitForSeconds(0.2f);
     }
