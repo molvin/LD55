@@ -4,38 +4,35 @@ using UnityEngine;
 
 public class ProgressView : MonoBehaviour
 {
-    public ProgressPoint[] Points;
+    public GameObject YouAreHere;
+    public GameObject[] Points;
 
     private void Start()
     {
-        foreach (ProgressPoint p in Points)
+        foreach (GameObject p in Points)
         {
             p.gameObject.SetActive(false);
-            p.Toggle.enabled = false;
         }
+        YouAreHere.gameObject.SetActive(false);
     }
 
     public IEnumerator Set(int progress)
     {
-        foreach (ProgressPoint p in Points)
-        {
-            p.gameObject.SetActive(true);
-            p.Toggle.enabled = false;
-        }
-
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(.5f);
 
         for (int i = 0; i < progress; i++)
         {
-            Points[i].Toggle.enabled = true;
-            yield return new WaitForSeconds(0.5f);
+            Points[i].SetActive(true);
+            yield return new WaitForSeconds(0.2f);
         }
-        yield return new WaitForSeconds(1);
+        YouAreHere.gameObject.SetActive(true);
+        YouAreHere.transform.position = Points[progress].transform.position + Vector3.forward * 0.1f;
+        yield return new WaitForSeconds(2);
 
-        foreach (ProgressPoint p in Points)
+        foreach (GameObject p in Points)
         {
             p.gameObject.SetActive(false);
-            p.Toggle.enabled = false;
         }
+        YouAreHere.gameObject.SetActive(false);
     }
 }
