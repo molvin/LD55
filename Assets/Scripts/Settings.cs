@@ -11,7 +11,7 @@ public static class Settings
     public static int ShopActions = 2;
     public static int Rounds = 15;
 
-    private static int opponentBaseHealth = 60;
+    private static int opponentBaseHealth = 50;
     private static int opponentHealthRamp = 30;
 
     private static int opponentDamageBase = 0;

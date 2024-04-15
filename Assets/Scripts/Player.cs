@@ -475,8 +475,10 @@ public class Player : MonoBehaviour
                     break;
                 }
 
+                yield return runeBoard.ViewProgress(currentRound);
                 yield return runeBoard.Shop();
                 Restart();
+                opponentHealth = Settings.GetOpponentHealth(currentRound);
             }
             else
             {
