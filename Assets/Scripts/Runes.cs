@@ -843,7 +843,7 @@ public static class Runes
         Name = "Investment",
         Power = 2,
         Rarity = Rarity.Common,
-        Text = "On Activate: Add +15 to the ¦ summon",
+        Text = "On Activate: Add +15 to the next summon",
         OnActivate = (int selfIndex, Player player) =>
         {
             player.AddCirclePowerPromise(15);
