@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
-using Unity.VisualScripting;
 
 public struct TempStats
 {
@@ -40,20 +39,29 @@ public class Player : MonoBehaviour
     private List<Artifact> artifacts = new(new Artifact[4]);
 
     public int CurrentRound => currentRound;
-    public int ShopActions = Settings.ShopActions;
     private RuneBoard runeBoard;
 
-    public int Regen = 0;
+    public int Regen => artifacts
+        .Where(a => a != null)
+        .Select(a => a.Stats.Regen)
+        .Sum();
+    public int MaxHandSize => Settings.HandSize + artifacts
+        .Where(a => a != null)
+        .Select(a => a.Stats.HandSize)
+        .Sum();
+    public int ShopActions => Settings.ShopActions + artifacts
+        .Where(a => a != null)
+        .Select(a => a.Stats.ShopActions)
+        .Sum();
 
     public List<Rune> Bag => bag;
     public List<Rune> DiscardPile => discardPile;
 
 
+    public int HandSize => hand.Count;
     public bool AreNeighbours(int first, int second) => CircularIndex(first + 1) == second || CircularIndex(first - 1) == second;
     public bool AreOpposites(int first, int second) => first != second && !AreNeighbours(first, second);
     public bool CircleIsFull => circle.All(rune => rune != null);
-    public int HandSize => hand.Count;
-    public int MaxHandSize = Settings.HandSize;
     public bool HasRuneAtIndex(int index) => circle[CircularIndex(index)] != null;
     public Rune GetRuneInCircle(int index) => circle[CircularIndex(index)];
     public int GetCirclePower() => circlePower;
@@ -133,13 +141,13 @@ public class Player : MonoBehaviour
     {
         health = Mathf.Clamp(health + value, 0, 5);
     }
-    public List<EventHistory> PlaceArtifact(int index, Artifact artifact)
+    public void PlaceArtifact(int index, Artifact artifact)
     {
-        return new();
+        artifacts[index] = artifact;
     }
     public void TakeArtifact(int index)
     {
-
+        artifacts[index] = null;
     }
     public List<EventHistory> Place(Rune rune, int slot)
     {
