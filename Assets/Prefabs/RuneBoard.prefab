@@ -1182,6 +1182,8 @@ MonoBehaviour:
   replaceSound: {fileID: 11400000, guid: e2588c31eef869644bcaf09386adbbff, type: 2}
   addPowerToCircleSound: {fileID: 11400000, guid: b7a180d4142de2f43800b529970179fb, type: 2}
   raiseShardAnimSound: {fileID: 11400000, guid: c6583012f7acbcd44a0e4a6f0ee535af, type: 2}
+  drawShardsSound: {fileID: 11400000, guid: 7bd193c679f152b4bb4c1aa62cb0568c, type: 2}
+  inspecSound: {fileID: 11400000, guid: ce7143d528b01ff4c955f2703e6b93c9, type: 2}
 --- !u!1 &2794618316508520973
 GameObject:
   m_ObjectHideFlags: 0
@@ -11092,6 +11094,10 @@ PrefabInstance:
       propertyPath: m_Intensity
       value: 9.11
       objectReference: {fileID: 0}
+    - target: {fileID: 7658754258152191033, guid: 7bea8678811c63847921da0499156750, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 09a34e30088d67e4788d626002a99856, type: 2}
     - target: {fileID: 8190838562682033496, guid: 7bea8678811c63847921da0499156750, type: 3}
       propertyPath: m_Name
       value: Demon
