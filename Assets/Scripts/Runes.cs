@@ -334,6 +334,7 @@ public static class Runes
                 Rune rune = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
                 if(rune != null)
                 {
+                    rune.Token = true;
                     player.Replace(rune, selfIndex);
                     return new() { EventHistory.Replace(selfIndex, rune) };
                 }

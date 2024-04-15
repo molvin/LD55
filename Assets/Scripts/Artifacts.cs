@@ -33,17 +33,18 @@ public static class Artifacts
     {
         Name = "Acanthite",
         Text = "Increase Shop actions by 1",
+        Limit = 2,
         Stats = new()
         {
             ShopActions = 1,
         },
     };
     // M
-    public static Artifact GetMalechite => Malechite;
     private static Artifact Malechite => new()
     {
         Name = "Malechite",
         Text = "Draw an additional Shard each Summon",
+        Limit = 3,
         Stats = new()
         {
             HandSize = 1,
@@ -54,9 +55,26 @@ public static class Artifacts
     {
         Name = "Smoky Quartz",
         Text = "Resummon up to 1 finger at the start of each new summon",
+        Limit = 2,
         Stats = new()
         {
             Regen = -1,
+        },
+    };
+    private static Artifact Witherite => new()
+    {
+        Name = "Witherite",
+        Text = "Draw a Shard whenever a Shard is destroyed",
+        Limit = 2,
+        RuneTrigger = (TriggerType trigger, int runeIndex, Player player) =>
+        {
+            if (trigger == TriggerType.OnDestroy)
+            {
+                var drawn = player.Draw(1);
+                return new() { EventHistory.Draw(drawn.ToArray()) };
+            }
+
+            return new();
         },
     };
 }
