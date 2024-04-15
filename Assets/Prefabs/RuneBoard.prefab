@@ -1183,6 +1183,7 @@ MonoBehaviour:
   addPowerToCircleSound: {fileID: 11400000, guid: b7a180d4142de2f43800b529970179fb, type: 2}
   raiseShardAnimSound: {fileID: 11400000, guid: c6583012f7acbcd44a0e4a6f0ee535af, type: 2}
   drawShardsSound: {fileID: 11400000, guid: 7bd193c679f152b4bb4c1aa62cb0568c, type: 2}
+  inspecSound: {fileID: 11400000, guid: ce7143d528b01ff4c955f2703e6b93c9, type: 2}
 --- !u!1 &2794618316508520973
 GameObject:
   m_ObjectHideFlags: 0
