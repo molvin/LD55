@@ -364,9 +364,9 @@ public static class Runes
     private static Rune Displacement => new()
     {
         Name = "Displacement",
-        Power = 16,
+        Power = 0,
         Rarity = Rarity.Rare,
-        Text = "On Play: return Opposite Shards to hand",
+        Text = "On Play: return Opposite Shards to hand then destroy this Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -383,6 +383,10 @@ public static class Runes
                 history.Add(EventHistory.ReturnToHand(op_2));
 
             }
+
+            history.Add(EventHistory.Destroy(selfIndex));
+            history.AddRange(player.Remove(selfIndex));
+
             return history;
         },
     };
@@ -1228,15 +1232,25 @@ public static class Runes
     private static Rune Rescue => new()
     {
         Name = "Rescue",
-        Power = 7,
+        Power = 0,
         Rarity = Rarity.Common,
-        Text = "On Play: Conjure a Pool to your hand",
+        Text = "On Play: Conjure a Pool to your hand. On Activate: Add 8 times the number of Shards in hand to the summon",
         OnEnter = (int selfIndex, Player player) =>
         {
             Rune pool = Pool;
             pool.Token = true;
             player.AddNewRuneToHand(pool);
             return new() { EventHistory.Draw(pool) };
+        },
+        OnActivate = (int selfIndex, Player player) =>
+        {
+            if (player.HandSize > 0)
+            {
+                player.AddCirclePower(player.HandSize * 8);
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            }
+
+            return new();
         },
     };
     private static Rune Restore => new()
@@ -1451,8 +1465,8 @@ public static class Runes
         Name = "Supporter",
         Power = 6,
         Rarity = Rarity.Common,
-        Text = "On Activate: Add +10 to the summon if this Shard has the lowest Power",
-        OnActivate = (int selfIndex, Player player) =>
+        Text = "On Play: Add +6 to the summon if this Shard has the lowest Power",
+        OnEnter = (int selfIndex, Player player) =>
         {
             bool lowest = true;
             int power = player.GetRunePower(selfIndex);
@@ -1475,7 +1489,7 @@ public static class Runes
             if (lowest)
             {
                 player.AddCirclePower(10);
-                return new() { EventHistory.PowerToSummon(player.GetCirclePower(), 10) };
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower(), 6) };
             }
 
             return new();
