@@ -757,7 +757,7 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator EndDamage(int health, int maxHealth)
     {
         OpponentHealth.text = $"{health}";
-
+        yield return new WaitForSeconds(1.5f);
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);
         CameraAnim.SetTrigger("Idle");
