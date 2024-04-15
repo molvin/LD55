@@ -6,7 +6,7 @@ public class ProgressView : MonoBehaviour
 {
     public GameObject YouAreHere;
     public GameObject[] Points;
-
+    public AudioOneShotClipConfiguration WriteSound;
     private void Start()
     {
         foreach (GameObject p in Points)
@@ -23,6 +23,7 @@ public class ProgressView : MonoBehaviour
         for (int i = 0; i < progress; i++)
         {
             Points[i].SetActive(true);
+            FindObjectOfType<Audioman>().PlaySound(WriteSound, Points[i].transform.position);
             yield return new WaitForSeconds(0.2f);
         }
         YouAreHere.gameObject.SetActive(true);
