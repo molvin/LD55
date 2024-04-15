@@ -4,14 +4,35 @@ using UnityEngine;
 
 public class ScrollAnimationController : MonoBehaviour
 {
-
+    public Animation Anim;
     public SkinnedMeshRenderer PaperRenderer;
     public Material[] PaperMaterials;
 
-
-    public void SetMaterial(int mat)
+    public void Play(string name)
     {
-        PaperRenderer.material = PaperMaterials[mat];
+
+        int mat;
+        if(name == "OpenScrollStar")
+        {
+            mat = 0;
+        }
+        else if(name == "OpenScrollShop")
+        {
+            mat = 1;
+        }
+        else if (name == "OpenScrollPath")
+        {
+            mat = 2;
+        }
+        else
+        {
+            mat = -1;
+        }
+
+        if(mat != -1)
+            PaperRenderer.material = PaperMaterials[mat];
+        Anim.Play(name);
     }
 
+    public bool isPlaying => Anim.isPlaying;
 }

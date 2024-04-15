@@ -28,7 +28,8 @@ public class ProgressView : MonoBehaviour
         }
         YouAreHere.gameObject.SetActive(true);
         YouAreHere.transform.position = Points[progress].transform.position + Vector3.forward * 0.1f;
-        yield return new WaitForSeconds(2);
+        while (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
+            yield return null;
 
         foreach (GameObject p in Points)
         {

@@ -46,7 +46,7 @@ public class RuneBoard : MonoBehaviour
     public List<Gem> Gems = new();
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
-    public Animation ScrollAnimation;
+    public ScrollAnimationController ScrollAnimation;
     public TextMeshPro ScoreText;
 
     private RuneSlot[] slots;
@@ -928,9 +928,6 @@ public class RuneBoard : MonoBehaviour
 
         yield return Progress.Set(currentRound);
 
-        while (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
-            yield return null;
-
         ScrollAnimation.Play("CloseScroll");
         while (ScrollAnimation.isPlaying)
             yield return null;
@@ -1021,7 +1018,10 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
- 
+
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
     }
 
     private List<Rune> GetRunesToBuy(int num)
