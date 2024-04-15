@@ -46,7 +46,7 @@ public class RuneBoard : MonoBehaviour
     public List<Gem> Gems = new();
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
-    public Animation ScrollAnimation;
+    public ScrollAnimationController ScrollAnimation;
     public TextMeshPro ScoreText;
 
     private RuneSlot[] slots;
@@ -87,7 +87,7 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration inspecSound;
     public AudioOneShotClipConfiguration runeDestroySound;
 
-    
+    private HandVisualizer handVisualizer;
 
     private Audioman audioman;
 
@@ -115,6 +115,7 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         audioman = FindObjectOfType<Audioman>();
+        handVisualizer = FindObjectOfType<HandVisualizer>();
     }
 
     private void Update()
@@ -615,8 +616,9 @@ public class RuneBoard : MonoBehaviour
                             yield return Draw(rune);
                         break;
                     case EventType.AddLife:
-                        HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
-                        yield return new WaitForSeconds(1.0f);
+                        // HUD.Instance.PlayerHealth.Set(Player.Instance.Health, Settings.PlayerMaxHealth);
+                        //yield return new WaitForSeconds(1.0f);
+                        yield return handVisualizer.ViewSelf(Player.Instance.Health, true);
                         break;
                     case EventType.ReturnToHand:
                         {
@@ -815,7 +817,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator EndDamage(int health, int maxHealth)
     {
-        OpponentHealth.text = $"{health}";
+        OpponentHealth.text = $"{Mathf.Max(health, 0)}";
         yield return new WaitForSeconds(1.5f);
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);
@@ -950,9 +952,6 @@ public class RuneBoard : MonoBehaviour
 
         yield return Progress.Set(currentRound);
 
-        while (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
-            yield return null;
-
         ScrollAnimation.Play("CloseScroll");
         while (ScrollAnimation.isPlaying)
             yield return null;
@@ -1065,7 +1064,10 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
- 
+
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
     }
 
     private List<Rune> GetRunesToBuy(int num)
