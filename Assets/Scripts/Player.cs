@@ -245,6 +245,7 @@ public class Player : MonoBehaviour
             history.AddRange(hist);
         }
 
+        // Runes
         for (int i = 0; i < 5; i++)
         {
             if (circle[i] != null)
@@ -252,6 +253,22 @@ public class Player : MonoBehaviour
                 if (circle[i].OnOtherRuneTrigger != null)
                 {
                     List<EventHistory> h = circle[i].OnOtherRuneTrigger.Invoke(trigger, i, index, this);
+                    if (h != null && h.Count > 0)
+                    {
+                        history.AddRange(h);
+                    }
+                }
+            }
+        }
+
+        // Artifacts
+        for (int i = 0; i < 4; i++)
+        {
+            if (artifacts[i] != null)
+            {
+                if (artifacts[i].RuneTrigger != null)
+                {
+                    List<EventHistory> h = artifacts[i].RuneTrigger.Invoke(trigger, index, this);
                     if (h != null && h.Count > 0)
                     {
                         history.AddRange(h);
