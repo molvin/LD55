@@ -31,7 +31,6 @@ public class VolumeSettings : MonoBehaviour
 
     public void setMixerValue(SliderConfiguration sc)
     {
-        Debug.Log("Setting " + sc.mixer_value + " to " + sc.slider.value);
         AudioMixer.SetFloat(sc.mixer_value, Mathf.Log10(sc.slider.value) * 20);
 
     }

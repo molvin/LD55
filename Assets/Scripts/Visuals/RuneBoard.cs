@@ -85,6 +85,7 @@ public class RuneBoard : MonoBehaviour
     public AudioOneShotClipConfiguration raiseShardAnimSound;
     public AudioOneShotClipConfiguration drawShardsSound;
     public AudioOneShotClipConfiguration inspecSound;
+    public AudioOneShotClipConfiguration runeDestroySound;
 
     private HandVisualizer handVisualizer;
 
@@ -861,6 +862,7 @@ public class RuneBoard : MonoBehaviour
 
     private IEnumerator DestroyRune(RuneVisuals vis, bool exile)
     {
+        audioman.PlaySound(runeDestroySound, transform.position);
         yield return new WaitForSeconds(0.5f);
         float t = 0;
         float duration = 0.5f;
