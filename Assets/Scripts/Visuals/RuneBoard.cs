@@ -648,7 +648,7 @@ public class RuneBoard : MonoBehaviour
             }
             
             yield return new WaitForSeconds(0.3f);
-            FindAnyObjectByType<Audioman>().PlaySound(placeInSlotSound, ScoreText.transform.position);
+            FindAnyObjectByType<Audioman>().PlaySound(dropShardSound, ScoreText.transform.position);
             slots[index].Active.Stop();
         }
     }
