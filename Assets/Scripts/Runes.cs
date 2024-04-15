@@ -964,6 +964,13 @@ public static class Runes
             currentRune.Power = r.Power;
             currentRune.Rarity = r.Rarity;
             currentRune.Text = r.Text;
+            currentRune.Keywords = r.Keywords;
+            currentRune.OnEnter = r.OnEnter;
+            currentRune.OnActivate = r.OnActivate;
+            currentRune.OnDestroy = r.OnDestroy;
+            currentRune.OnExile = r.OnExile;
+            currentRune.OnOtherRuneTrigger = r.OnOtherRuneTrigger;
+            currentRune.Aura = r.Aura;
 
             history.Add(EventHistory.Replace(selfIndex, currentRune));
 
