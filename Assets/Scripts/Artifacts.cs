@@ -27,6 +27,11 @@ public static class Artifacts
 
         return artifacts;
     }
+    public static Artifact GetAquamarine => Aquamarine;
+    public static Artifact GetAzurite => Azurite;
+    public static Artifact GetMuscovite => Muscovite;
+    public static Artifact GetScheelite => Scheelite;
+    public static Artifact GetWitherite => Witherite;
 
     // A
     private static Artifact Acanthite => new()
@@ -37,6 +42,59 @@ public static class Artifacts
         Stats = new()
         {
             ShopActions = 1,
+        },
+    };
+    private static Artifact Aquamarine => new()
+    {
+        Name = "Aquamarine",
+        Text  = "When Energy activates it's Power is multiplied by 2",
+        Limit = 2,
+        RuneTrigger = (TriggerType trigger, int runeIndex, Player player) =>
+        {
+            Rune rune = player.GetRuneInCircle(runeIndex);
+            if (trigger == TriggerType.OnActivate && rune != null)
+            {
+                if (rune.Keywords != null && rune.Keywords.Contains(Keywords.Energy))
+                {
+                    int runePower = player.GetRunePower(runeIndex);
+                    player.MultiplyPower(runeIndex, 2);
+                    return new() { EventHistory.PowerToRune(runeIndex, runePower) };
+                }
+            }
+
+            return new();
+        },
+    };
+    private static Artifact Azurite => new()
+    {
+        Name = "Azurite",
+        Text = "Energy Shards has +2 Power for each other Energy Shard. Conjure a Energy Shard every summon",
+        Limit = 4,
+        Draw = () =>
+        {
+            return Runes.GetEnergy();
+        },
+        Buff = (int runeIndex, Player player) =>
+        {
+            Rune active = player.GetRuneInCircle(runeIndex);
+            if (active == null || active.Keywords == null || !active.Keywords.Contains(Keywords.Energy))
+            {
+                return 0;
+            }
+
+            int buff = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                if (i == runeIndex)
+                    continue;
+
+                Rune rune = player.GetRuneInCircle(i);
+                if (rune != null && rune.Keywords != null && rune.Keywords.Contains(Keywords.Energy))
+                {
+                    buff++;
+                }
+            }
+            return buff * 2;
         },
     };
     // M
@@ -50,6 +108,22 @@ public static class Artifacts
             HandSize = 1,
         },
     };
+    private static Artifact Muscovite => new()
+    {
+        Name = "Muscovite",
+        Text = "Add +10 to the summon whenever a Shard is destroyed",
+        Limit = 4,
+        RuneTrigger = (TriggerType trigger, int runeIndex, Player player) =>
+        {
+            if (trigger == TriggerType.OnDestroy)
+            {
+                player.AddCirclePower(10);
+                return new() { EventHistory.PowerToSummon(player.GetCirclePower()) };
+            }
+
+            return new();
+        },
+    };
     // S
     private static Artifact SmokyQuartz => new()
     {
@@ -61,17 +135,50 @@ public static class Artifacts
             Regen = -1,
         },
     };
+    private static Artifact Scheelite => new()
+    {
+        Name = "Scheelite",
+        Text = "Permanently conjure 2 random Shards whenever a Shard is exiled",
+        Limit = 2,
+        RuneTrigger = (TriggerType trigger, int runeIndex, Player player) =>
+        {
+            List<EventHistory> history = new();
+            
+            if (trigger == TriggerType.OnExile)
+            {
+                List<Rune> runes = Runes.GetAllRunes();
+                List<Rune> drawn = new();
+                for (int i = 0; i < 2; i++)
+                {
+                    int idx = UnityEngine.Random.Range(0, runes.Count);
+                    Rune rune = runes[idx];
+                    runes.RemoveAt(idx);
+
+                    player.Buy(rune);
+                    player.AddNewRuneToHand(rune);
+                    drawn.Add(rune);
+                }
+                history.Add(EventHistory.Draw(drawn.ToArray()));
+            }
+
+            return history;
+        },
+    };
+    // W
     private static Artifact Witherite => new()
     {
         Name = "Witherite",
-        Text = "Draw a Shard whenever a Shard is destroyed",
+        Text = "Conjure a random Shard whenever a Shard is destroyed",
         Limit = 2,
         RuneTrigger = (TriggerType trigger, int runeIndex, Player player) =>
         {
             if (trigger == TriggerType.OnDestroy)
             {
-                var drawn = player.Draw(1);
-                return new() { EventHistory.Draw(drawn.ToArray()) };
+                var runes = Runes.GetAllRunes();
+                Rune rune = runes[UnityEngine.Random.Range(0, runes.Count)];
+                rune.Token = true;
+                player.AddNewRuneToHand(rune);
+                return new() { EventHistory.Draw(rune) };
             }
 
             return new();

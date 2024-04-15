@@ -285,6 +285,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 753dd122e791f8643931c5a1ae9a4df6, type: 3}
+--- !u!95 &1768783344 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 492616683916520028, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+  m_PrefabInstance: {fileID: 8346096694761778502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4471929155943880039
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -294,13 +299,9 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: replaceSound
+      propertyPath: CameraAnim
       value: 
-      objectReference: {fileID: 11400000, guid: e2588c31eef869644bcaf09386adbbff, type: 2}
-    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: StartGemUpForce
-      value: 0
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1768783344}
     - target: {fileID: 2188590060883278622, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_Name
       value: RuneBoard

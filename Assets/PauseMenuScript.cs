@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -76,6 +77,7 @@ public class PauseMenuScript : MonoBehaviour
 
     public void Start()
     {
+        this.GetComponent<Canvas>().enabled = true;
         appear_timer = appear ? appearanceAnimationConfig.duration : 0;
     }
 

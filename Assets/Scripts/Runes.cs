@@ -28,6 +28,7 @@ public static class Runes
         return runes;
     }
 
+    public static Rune GetEnergy() => Energy;
     public static Rune GetRestore() => Restore;
     public static Rune GetPrune() => Prune;
 
@@ -360,7 +361,7 @@ public static class Runes
             return new();
         },
     };
-    private static Rune Displacement => new() //NOT WORK
+    private static Rune Displacement => new()
     {
         Name = "Displacement",
         Power = 16,
@@ -1211,12 +1212,12 @@ public static class Runes
         Name = "Repeat",
         Power = 10,
         Rarity = Rarity.Common,
-        Text = "Has +10 Power if there is no Shard in the next slot",
+        Text = "Has +20 Power if there is no Shard in the next slot",
         Aura = new()
         {
             new()
             {
-                Power = 10,
+                Power = 20,
                 Application = (int selfIndex, int other, Player player) =>
                 {
                     return selfIndex == other && !player.HasRuneAtIndex(selfIndex + 1);
@@ -1280,7 +1281,7 @@ public static class Runes
         Name = "Run",
         Power = 0,
         Rarity = Rarity.Common,
-        Text = "On Play: Flip a coin; if successful, permanently conjure a Rare or Legendary Shard. Exile this Shard",
+        Text = "On Play: 50% chance to permanently conjure a Rare or Legendary Shard. Exile this Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
@@ -1538,7 +1539,7 @@ public static class Runes
             if (player.HasRuneAtIndex(idx2))
             {
                 player.AddStats(idx2, new() { Power = 2 });
-                history.Add(EventHistory.PowerToRune(idx1, 2));
+                history.Add(EventHistory.PowerToRune(idx2, 2));
             }
 
             return history;
