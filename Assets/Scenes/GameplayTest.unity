@@ -20,11 +20,11 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.45062697, g: 0.50059897, b: 0.5749875, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -298,30 +298,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 324627605906079632, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9157685
-      objectReference: {fileID: 0}
-    - target: {fileID: 324627605906079632, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.40170655
-      objectReference: {fileID: 0}
-    - target: {fileID: 324627605906079632, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 324627605906079632, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 324627605906079632, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.517
-      objectReference: {fileID: 0}
-    - target: {fileID: 324627605906079632, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 47.37
-      objectReference: {fileID: 0}
     - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: CameraAnim
       value: 
@@ -329,10 +305,6 @@ PrefabInstance:
     - target: {fileID: 2188590060883278622, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_Name
       value: RuneBoard
-      objectReference: {fileID: 0}
-    - target: {fileID: 4610569728649933956, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
-      propertyPath: m_Mesh
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6084850725393783034, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalPosition.x
@@ -475,6 +447,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2383334796279636176, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425747422865202675, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+      propertyPath: m_BackGroundColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425747422865202675, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425747422865202675, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425747422865202675, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4634518751829452625, guid: 88422222e2773b14099ef781226be1e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.735
@@ -518,6 +510,14 @@ PrefabInstance:
     - target: {fileID: 6678298222525288268, guid: 88422222e2773b14099ef781226be1e2, type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 8364083647125167677, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+      propertyPath: m_Antialiasing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8364083647125167677, guid: 88422222e2773b14099ef781226be1e2, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
