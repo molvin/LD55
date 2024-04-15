@@ -393,6 +393,10 @@ public class Player : MonoBehaviour
 
             ResetTempStats();
             Draw(true);
+            if(set == 0)
+            {
+                yield return runeBoard.BeginRound();
+            }
             yield return runeBoard.Draw(hand);
             yield return runeBoard.Play();
 
@@ -419,6 +423,8 @@ public class Player : MonoBehaviour
 
             if (opponentHealth <= 0)
             {
+                yield return runeBoard.EndRound();
+
                 set = 0;
                 health += Regen;
                 currentRound++;

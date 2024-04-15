@@ -130,26 +130,46 @@ public class RuneBoard : MonoBehaviour
         }
     }
 
-    public IEnumerator Play()
+    public IEnumerator BeginRound()
     {
-        ScrollAnimation.Play("OpenScroll");
-        while (ScrollAnimation.isPlaying)
-            yield return null;
-
         PentagramObject.gameObject.SetActive(true);
-        foreach(GemSlot gemSlot in GemSlots)
+        StartGem.gameObject.SetActive(true);
+        foreach (Gem gem in Gems)
+        {
+            gem.gameObject.SetActive(true);
+        }
+        foreach (GemSlot gemSlot in GemSlots)
         {
             if (gemSlot.Held)
                 gemSlot.ActiveParticles.Play();
         }
+        ScrollAnimation.Play("OpenScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
+    }
 
-        running = true;
-        StartGem.Rigidbody.isKinematic = false;
+    public IEnumerator EndRound()
+    {
+        PentagramObject.gameObject.SetActive(false);
+        StartGem.gameObject.SetActive(false);
+        foreach (Gem gem in Gems)
+            gem.gameObject.SetActive(false);
+
+        ScrollAnimation.Play("CloseScroll");
+        while (ScrollAnimation.isPlaying)
+            yield return null;
+    }
+
+    public IEnumerator Play()
+    {
         Vector3 randomDir = Random.onUnitSphere;
         if (Vector3.Dot(randomDir, Vector3.up) < 0)
             randomDir *= -1;
+        StartGem.Rigidbody.isKinematic = false;
         StartGem.Rigidbody.AddForce(randomDir * 3 + Vector3.up * 1, ForceMode.VelocityChange);
-        StartSlot.ActiveParticles.Stop();
+        
+
+        running = true;
 
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
 
@@ -281,6 +301,12 @@ public class RuneBoard : MonoBehaviour
                 yield return InspectMany(Player.Instance.DiscardPile, InspectDiscard.transform);
             }
             */
+
+
+            if(Input.mousePosition.y > (Screen.height * 0.85))
+            {
+                yield return ViewOpponent();
+            }
         }
     }
 
@@ -308,11 +334,13 @@ public class RuneBoard : MonoBehaviour
         }
         if (shopping)
         {
-            shopHovered = ShopArea.Raycast(ray, out RaycastHit _, 1000.0f);
+            shopHovered = Input.mousePosition.y < Screen.height * 0.15f;
             if (shopHovered && !ShopFeedback.isPlaying)
                 ShopFeedback.Play();
             else if (!shopHovered && ShopFeedback.isPlaying)
                 ShopFeedback.Stop();
+
+            
         }
 
         if (!Input.GetMouseButton(0))
@@ -588,12 +616,8 @@ public class RuneBoard : MonoBehaviour
         
         CameraAnim.SetTrigger("SummonDone");
         yield return new WaitForSeconds(1);
-        
+        StartSlot.ActiveParticles.Stop();
         ScoreText.text = "";
-
-        ScrollAnimation.Play("CloseScroll");
-        while (ScrollAnimation.isPlaying)
-            yield return null;
     }
 
     public IEnumerator UpdateScore(int circlePower)
@@ -737,11 +761,8 @@ public class RuneBoard : MonoBehaviour
 
         boughtCount = 0;
 
-        PentagramObject.gameObject.SetActive(false);
         ShopObject.SetActive(true);
-        StartGem.gameObject.SetActive(false);
-        foreach (Gem gem in Gems)
-            gem.gameObject.SetActive(false);
+
 
         // Instantiate Shop Objects
         foreach(Transform origin in CardPackSlots)
@@ -809,14 +830,10 @@ public class RuneBoard : MonoBehaviour
         HUD.Instance.EndTurnButton.onClick.RemoveAllListeners();
         HUD.Instance.EndTurnButton.interactable = false;
 
-        PentagramObject.gameObject.SetActive(true);
         ShopObject.SetActive(false);
-        StartGem.gameObject.SetActive(true);
+
         HUD.Instance.EndTurnButton.gameObject.SetActive(false);
-        foreach (Gem gem in Gems)
-        {
-            gem.gameObject.SetActive(true);
-        }
+ 
     }
 
     private IEnumerator ShopRunes(Vector3 origin)
@@ -950,5 +967,19 @@ public class RuneBoard : MonoBehaviour
     {
         Player.Instance.TakeArtifact(Gems.IndexOf(gem));
         slot.ActiveParticles.Stop();
+    }
+
+    private IEnumerator ViewOpponent()
+    {
+        CameraAnim.SetTrigger("ViewOpponent");
+        yield return new WaitForSeconds(1.0f);
+
+        while (Input.mousePosition.y > Screen.height * 0.75f)
+            yield return null;
+
+        CameraAnim.SetTrigger("BackToIdle");
+        yield return new WaitForSeconds(1.0f);
+        CameraAnim.SetTrigger("Idle");
+
     }
 }
