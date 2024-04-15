@@ -160,7 +160,9 @@ public class MainMenuScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!stopRotation)
+
+  
+        if (!stopRotation)
         {
             foreach (Rotator r in rotators)
             {
