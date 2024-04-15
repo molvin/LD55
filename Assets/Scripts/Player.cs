@@ -443,7 +443,7 @@ public class Player : MonoBehaviour
         while (Health > 0)
         {
             HUD.Instance.PlayerHealth.Set(Health, Settings.PlayerMaxHealth);
-            runeBoard.OpponentHealth.text = opponentHealth.ToString();
+            runeBoard.OpponentHealth.text = Mathf.Max(opponentHealth, 0).ToString();
 
             ResetTempStats();
             Draw(true);
@@ -490,7 +490,10 @@ public class Player : MonoBehaviour
                 yield return runeBoard.EndRound();
 
                 set = 0;
-                Health += Regen;
+                if(Regen > 0)
+                {
+                    yield return FindObjectOfType<HandVisualizer>().ViewSelf(health, true);
+                }
                 currentRound++;
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
