@@ -87,9 +87,11 @@ MonoBehaviour:
   - Name: Smoky Quartz
     Color: {r: 0.764151, g: 0.081109405, b: 0.06127627, a: 1}
   Renderer: {fileID: 3144813096552825740}
+  Description: {fileID: 0}
   Artifact:
     Name: 
     Text: 
+    Limit: 1
 --- !u!65 &4847765858614642454
 BoxCollider:
   m_ObjectHideFlags: 0
