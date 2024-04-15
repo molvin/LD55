@@ -82,8 +82,6 @@ public class RuneBoard : MonoBehaviour
 
     private Audioman audioman;
 
-    private List<Artifact> AllArtifactsForSale = new();
-
     private void Start()
     {
         playSpace = new(Vector3.up, Vector3.up * PlaneHeight);
@@ -108,7 +106,6 @@ public class RuneBoard : MonoBehaviour
         ShopObject.SetActive(false);
 
         audioman = FindObjectOfType<Audioman>();
-
     }
 
     private void Update()
