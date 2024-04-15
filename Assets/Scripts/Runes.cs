@@ -1242,12 +1242,14 @@ public static class Runes
         Name = "Restore",
         Power = 0,
         Rarity = Rarity.None,
-        Text = "On Play: Add +2 life. Exile this Shard",
+        Text = "On Play: Resummon up to 2 fingers. Exile this Shard",
         OnEnter = (int selfIndex, Player player) =>
         {
             List<EventHistory> history = new();
+            int life = player.Health;
             player.AddLife(2);
-            history.Add(EventHistory.AddLife(2));
+            int delta = player.Health - life;
+            history.Add(EventHistory.AddLife(delta));
             history.Add(EventHistory.Exile(selfIndex));
             history.AddRange(player.Exile(selfIndex));
             return history;
