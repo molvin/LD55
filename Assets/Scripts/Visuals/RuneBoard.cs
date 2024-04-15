@@ -46,7 +46,7 @@ public class RuneBoard : MonoBehaviour
     public GemSlot StartSlot;
     public GemSlot[] GemSlots;
     public Animation ScrollAnimation;
-    public TextMeshProUGUI ScoreText;
+    public TextMeshPro ScoreText;
 
     private RuneSlot[] slots;
     private List<RuneVisuals> runes = new();
@@ -702,6 +702,7 @@ public class RuneBoard : MonoBehaviour
     public IEnumerator UpdateScore(int circlePower)
     {
         ScoreText.text = $"{circlePower}";
+        
         yield return new WaitForSeconds(1f);
     }
 
