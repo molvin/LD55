@@ -873,10 +873,18 @@ public class RuneBoard : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
     }
 
-    public IEnumerator EndDamage(int health, int maxHealth)
+    public IEnumerator EndDamage(int health, int prevHealth, int maxHealth)
     {
+        int delta = prevHealth - Mathf.Max(health, 0);
+        float timeStep = 1.5f / Mathf.Max(delta, 1);
+        while (delta > 0)
+        {
+            OpponentHealth.text = $"{Mathf.Max(health + delta, 0)}";
+            delta--;
+            yield return new WaitForSeconds(timeStep);
+        }
         OpponentHealth.text = $"{Mathf.Max(health, 0)}";
-        yield return new WaitForSeconds(1.5f);
+
         CameraAnim.SetTrigger("BackToIdle");
         yield return new WaitForSeconds(1.5f);
         CameraAnim.SetTrigger("Idle");
