@@ -718,7 +718,7 @@ public class RuneBoard : MonoBehaviour
 
             }
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
    
 
         List<IEnumerator> deathAnims = new();
