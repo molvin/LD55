@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc02903647b24794981184b6992edb5a, type: 3}
   m_Name: DrawShard
   m_EditorClassIdentifier: 
-  clips: []
-  mixer: {fileID: 0}
-  vol_min: 0.5
+  clips:
+  - {fileID: 8300000, guid: 2c6e87727b7d9c24486cb9360f17ebec, type: 3}
+  mixer: {fileID: 3728335868191553730, guid: b5ae5806a793eee458f3f1ac68c6cf0a, type: 2}
+  vol_min: 0.9
   vol_max: 1
-  pitch_min: 0
-  pitch_max: 1
+  pitch_min: 0.9
+  pitch_max: 1.1
