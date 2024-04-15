@@ -9099,6 +9099,10 @@ PrefabInstance:
       propertyPath: Colors.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8864650983443425757, guid: 0cc41a3627ccccf43b51717080b14868, type: 3}
+      propertyPath: m_text
+      value: Place in summoning circle to begin summoning
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
