@@ -46,6 +46,10 @@ public class ScrollAnimationController : MonoBehaviour
         {
             mat = 2;
         }
+        else if (name == "OpenScrollTutorial")
+        {
+            mat = 3;
+        }
         else
         {
             mat = -1;
