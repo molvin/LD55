@@ -1057,8 +1057,8 @@ public class RuneBoard : MonoBehaviour
             shopObjects.Add(cardPack);
         }
 
-        // NOTE: We use the sell slot for a last random
-        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length + 1);
+        // NOTE: Heal and Sell have a chance to be random
+        List<Rune> randomRuneShop = GetRunesToBuy(RandomRuneSlots.Length + 2);
         for (int i = 0; i < RandomRuneSlots.Length; i++)
         {
             Transform origin = RandomRuneSlots[i];
@@ -1068,16 +1068,17 @@ public class RuneBoard : MonoBehaviour
             shopObjects.Add(vis);
         }
         {
-            bool healRune = Random.value > 0.6f;
-            Rune rune = healRune ? Runes.GetRestore() : Runes.GetPrune();
+            bool healRune = Random.value > 0.3f;
+            Rune rune = healRune ? Runes.GetRestore() : randomRuneShop[RandomRuneSlots.Length - 2];
             RuneVisuals vis = Instantiate(RunePrefab, HealSlot.position, Quaternion.identity);
             vis.Init(rune, Player.Instance);
             shopObjects.Add(vis);
         }
-        // NOTE: We use the sell slot for a last random
         {
+            bool sellRune = Random.value > 0.3f;
+            Rune rune = sellRune ? Runes.GetPrune() : randomRuneShop[RandomRuneSlots.Length - 1];
             RuneVisuals vis = Instantiate(RunePrefab, SellSlot.position, Quaternion.identity);
-            vis.Init(randomRuneShop.Last(), Player.Instance);
+            vis.Init(rune, Player.Instance);
             shopObjects.Add(vis);
         }
 
