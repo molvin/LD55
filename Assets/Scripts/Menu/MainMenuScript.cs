@@ -142,7 +142,7 @@ public class MainMenuScript : MonoBehaviour
             apearConfig.menuTransfrom.localScale = new Vector3(
                  scale, scale, scale
              );
-            if (floatRange > 0.8f)
+            if (floatRange > 0.8f && apearConfig.button_group_main)
             {
                 apearConfig.button_group_main.SetActive(true);
             }

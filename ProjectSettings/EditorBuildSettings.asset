@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameplayTest.unity
     guid: bd1c63a3d8c68d54f89c9b08526ed39b
+  - enabled: 1
+    path: Assets/Scenes/VictoryScreen.unity
+    guid: 3523339ff1a102045a2076e3afd75e3e
   m_configObjects: {}
