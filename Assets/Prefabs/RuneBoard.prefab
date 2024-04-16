@@ -221,6 +221,37 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4702925393065980420, guid: 90c77485d3e454f468f2f376f780261b, type: 3}
+--- !u!1 &332599237642609746
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8127370112561461947}
+  m_Layer: 0
+  m_Name: end
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8127370112561461947
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 332599237642609746}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.09, y: 2.6, z: 6.65}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6084850725393783034}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &496523047029661690
 GameObject:
   m_ObjectHideFlags: 0
@@ -615,6 +646,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &930554603590652812
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7352335244305582981}
+  m_Layer: 0
+  m_Name: start
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7352335244305582981
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930554603590652812}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6084850725393783034}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1094113221589360314
 GameObject:
   m_ObjectHideFlags: 0
@@ -1177,6 +1239,8 @@ Transform:
   - {fileID: 5658934736920683117}
   - {fileID: 7193271541832913879}
   - {fileID: 5013697132851121533}
+  - {fileID: 7352335244305582981}
+  - {fileID: 8127370112561461947}
   - {fileID: 7382967888697176232}
   - {fileID: 2324752393738143829}
   - {fileID: 2906520884676056030}
@@ -11519,6 +11583,14 @@ PrefabInstance:
       propertyPath: m_Intensity
       value: 18.86
       objectReference: {fileID: 0}
+    - target: {fileID: 5945251957937568329, guid: 7bea8678811c63847921da0499156750, type: 3}
+      propertyPath: End
+      value: 
+      objectReference: {fileID: 8127370112561461947}
+    - target: {fileID: 5945251957937568329, guid: 7bea8678811c63847921da0499156750, type: 3}
+      propertyPath: Start
+      value: 
+      objectReference: {fileID: 7352335244305582981}
     - target: {fileID: 7658754258152191033, guid: 7bea8678811c63847921da0499156750, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

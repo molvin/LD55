@@ -407,7 +407,13 @@ public class Player : MonoBehaviour
     {
         bool challenge = PlayerPrefs.GetInt("challenge") > 0;
 
-        if(UseStarters && !challenge)
+        var mover = FindObjectOfType<DemonMover>();
+        if (mover)
+        {
+            mover.SetDemonPosition(0);
+        }
+
+        if (UseStarters && !challenge)
         {
             deckRef = new();
             var runes = Runes.GetAllRunes(r => r.Rarity == Rarity.Starter);
@@ -530,7 +536,15 @@ public class Player : MonoBehaviour
                     yield return FindObjectOfType<HandVisualizer>().ViewSelf(health, true);
                 }
                 currentRound++;
-                
+
+                var mover = FindObjectOfType<DemonMover>();
+                if (mover)
+                {
+                    mover.SetDemonPosition(currentRound / Settings.Rounds);
+                }
+            
+
+
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
 
