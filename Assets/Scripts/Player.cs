@@ -568,7 +568,7 @@ public class Player : MonoBehaviour
         if(win)
         {
             Debug.Log("You win");
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(2);
         }
         else
         {

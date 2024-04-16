@@ -82,12 +82,31 @@ MonoBehaviour:
   InspectOffset: {x: 0, y: 0, z: 0.5}
   Colors:
   - Name: Malechite
-    Color: {r: 0, g: 0.6320754, b: 0, a: 1}
+    Prefab: {fileID: 919132149155446097, guid: edb31c746117e5345994d3112f26e1ef, type: 3}
+    Material: {fileID: 2100000, guid: e06ab90070f86a54ab609a5571a598ee, type: 2}
   - Name: Acanthite
-    Color: {r: 0.9056604, g: 0.5211171, b: 0, a: 1}
+    Prefab: {fileID: 919132149155446097, guid: 6dd7e3ad07126fb47b762cdc904d7768, type: 3}
+    Material: {fileID: 2100000, guid: d48f1b62e0372454caf1fcd5216881b1, type: 2}
   - Name: Smoky Quartz
-    Color: {r: 0.764151, g: 0.081109405, b: 0.06127627, a: 1}
+    Prefab: {fileID: 919132149155446097, guid: 54b7ace925a303c4d8a8369127d4b926, type: 3}
+    Material: {fileID: 2100000, guid: 23efc1ebff0d6b041a8705f7f37be95c, type: 2}
+  - Name: Aquamarine
+    Prefab: {fileID: 919132149155446097, guid: dc3bd42dbe62f464899ddc0113d2e2d9, type: 3}
+    Material: {fileID: 2100000, guid: 4a1353eed5c131b47821c167b759e85d, type: 2}
+  - Name: Azurite
+    Prefab: {fileID: 919132149155446097, guid: 54b7ace925a303c4d8a8369127d4b926, type: 3}
+    Material: {fileID: 2100000, guid: 0a2989734b23faa468cd7b413cce01a0, type: 2}
+  - Name: Muscovite
+    Prefab: {fileID: 919132149155446097, guid: 54b7ace925a303c4d8a8369127d4b926, type: 3}
+    Material: {fileID: 2100000, guid: b30f0f65f24a990429ea12413f94b28d, type: 2}
+  - Name: Scheelite
+    Prefab: {fileID: 919132149155446097, guid: dc3bd42dbe62f464899ddc0113d2e2d9, type: 3}
+    Material: {fileID: 2100000, guid: 6b91910fe3ee72044b9f17272e617094, type: 2}
+  - Name: Witherite
+    Prefab: {fileID: 919132149155446097, guid: dc3bd42dbe62f464899ddc0113d2e2d9, type: 3}
+    Material: {fileID: 2100000, guid: 396758306dba826419c3a142a193f0c2, type: 2}
   Renderer: {fileID: 3144813096552825740}
+  Filter: {fileID: 0}
   Description: {fileID: 6666125463487873147}
   TextBackground: {fileID: 3294289646179297235}
   Artifact:
@@ -179,6 +198,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ec1e6a7cafb15bb4dab43793e3d819a2, type: 2}
+    - target: {fileID: -5754084199372789682, guid: 2a4d6f0e52f52844aaf6faf493bf6d1e, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 6664959949897491518, guid: 2a4d6f0e52f52844aaf6faf493bf6d1e, type: 3}
     - target: {fileID: 919132149155446097, guid: 2a4d6f0e52f52844aaf6faf493bf6d1e, type: 3}
       propertyPath: m_Name
       value: Gem

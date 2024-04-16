@@ -116,6 +116,7 @@ Animation:
   - {fileID: 7400000, guid: e581a4a25991fb74b8e5888c186f301d, type: 2}
   - {fileID: 7400000, guid: f1f0a519e0762a947a7d83c44f3c814e, type: 2}
   - {fileID: 7400000, guid: 740bc77670ab6a54ab427535a317cf51, type: 2}
+  - {fileID: 7400000, guid: f47a89975e8c4114cad3a43294d0aa43, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
@@ -138,6 +139,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 35d80c52c2f5c7540926b96eecdb0e9b, type: 2}
   - {fileID: 2100000, guid: 643761161d52179489db91395d1b81a3, type: 2}
   - {fileID: 2100000, guid: 71708db5e7ff3694fa5d1b0110bfda9c, type: 2}
+  - {fileID: 2100000, guid: 23c971b967ad409418acdf480af38424, type: 2}
   m_RollOutSound: {fileID: 11400000, guid: 350c73850091d00409882fc4bbcf3265, type: 2}
   m_CloseShopSound: {fileID: 11400000, guid: 5f5c8ebbc60e40a4087baf94e98e6724, type: 2}
 --- !u!1 &2372458260763968259

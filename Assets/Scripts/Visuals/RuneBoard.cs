@@ -199,7 +199,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Tutorial()
     {
-        ScrollAnimation.Play("OpenScrollStar");
+        ScrollAnimation.Play("OpenScrollTutorial");
         while (ScrollAnimation.isPlaying)
             yield return null;
 
@@ -565,6 +565,7 @@ public class RuneBoard : MonoBehaviour
         if (inspect is RuneVisuals vis)
         {
             vis.Hover = false;
+            vis.ShowDescription();
         }
         else if (inspect is Gem g)
         {
@@ -585,6 +586,10 @@ public class RuneBoard : MonoBehaviour
         {
             gem.ToggleText(false);
         }
+        if (inspect is RuneVisuals v)
+        {
+            v.HideDescriptions();
+        }
         while (Vector3.Distance(inspect.transform.position, cachedPos) > 0.1f || Quaternion.Angle(inspect.transform.localRotation, cachedRot) > 1)
         {
             inspect.transform.position = Vector3.SmoothDamp(inspect.transform.position, cachedPos, ref runeVelocity, InspectMoveSmoothing);
@@ -592,6 +597,8 @@ public class RuneBoard : MonoBehaviour
 
             yield return null;
         }
+
+
 
         inspect.transform.position = cachedPos;
         inspect.transform.localRotation = cachedRot;

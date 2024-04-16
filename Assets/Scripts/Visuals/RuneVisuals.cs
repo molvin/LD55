@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 
 public class RuneVisuals : Draggable
 {
@@ -25,9 +25,20 @@ public class RuneVisuals : Draggable
 
     public bool InSlot;
 
+    public FakeRune fakeRune;
+
+    [System.Serializable]
+    public class RuneRefByName
+    {
+        public string Name;
+        public RuneRef Ref;
+    }
+    public RuneRefByName[] DescribeRunes;
+
     private void Start()
     {
         hoverOrigin = transform.GetChild(0).localPosition;
+        fakeRune.gameObject.SetActive(false);
     }
 
     public void Init(Rune rune, Player player)
@@ -59,6 +70,23 @@ public class RuneVisuals : Draggable
         }
         Icon.sprite = Sprite.Create(RuneIcons.Get(rune.Name), Icon.sprite.rect, Icon.sprite.pivot);
         UpdateStats();
+    }
+
+    public void ShowDescription()
+    {
+        foreach(RuneRefByName runeRef in DescribeRunes)
+        {
+            if (rune.Text.Contains(runeRef.Name))
+            {
+                fakeRune.gameObject.SetActive(true);
+                fakeRune.Init(runeRef.Ref.Get());
+            }
+        }
+        
+    }
+    public void HideDescriptions()
+    {
+        fakeRune.gameObject.SetActive(false);
     }
 
     public void UpdateStats()
