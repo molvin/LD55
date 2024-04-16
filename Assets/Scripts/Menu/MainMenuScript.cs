@@ -11,6 +11,7 @@ public class MainMenuScript : MonoBehaviour
     // Start is called before the first frame update
     public Rotator[] rotators;
     public TransitionAnimationConfig transitionConfig;
+    public GameObject alt_main;
 
     [System.Serializable]
     public struct TransitionAnimationConfig
@@ -68,9 +69,24 @@ public class MainMenuScript : MonoBehaviour
 
     void Start()
     {
+        int playerProgress = PlayerPrefs.GetInt("progress");
+        if (playerProgress > 5)
+        {
+            transitionConfig.button_group_main = alt_main;
+            fadeOutConfig.button_group_main = alt_main;
+            apearConfig.button_group_main = alt_main;
+        }
+
+        PlayerPrefs.SetInt("challenge", 0);
+
         //spawnButtons();
         StartCoroutine(Appear());
 
+    }
+    public void Challenge()
+    {
+        PlayerPrefs.SetInt("challenge", 1);
+        Play();
     }
     public void Play()
     {

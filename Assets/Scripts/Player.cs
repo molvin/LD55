@@ -405,7 +405,9 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        if(UseStarters)
+        bool challenge = PlayerPrefs.GetInt("challenge") > 0;
+
+        if(UseStarters && !challenge)
         {
             deckRef = new();
             var runes = Runes.GetAllRunes(r => r.Rarity == Rarity.Starter);
@@ -423,6 +425,16 @@ public class Player : MonoBehaviour
                 deckRef.RemoveAt(deckRef.Count - 1);
             }
             var common = Runes.GetAllRunes(r => r.Rarity == Rarity.Common);
+            while (deckRef.Count < Settings.MinStartHandSize)
+            {
+                common.Shuffle();
+                deckRef.Add(common[common.Count - 1]);
+                common.RemoveAt(common.Count - 1);
+            }
+        }
+        else if (challenge)
+        {
+            var common = Runes.GetAllRunes(r => r.Rarity == Rarity.Starter || r.Rarity == Rarity.Common);
             while (deckRef.Count < Settings.MinStartHandSize)
             {
                 common.Shuffle();
@@ -521,6 +533,9 @@ public class Player : MonoBehaviour
                 
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
+
+                int playerProgress = PlayerPrefs.GetInt("progress");
+                PlayerPrefs.SetInt("progress", Mathf.Max(playerProgress, currentRound));
 
                 if(currentRound >= Settings.Rounds)
                 {
