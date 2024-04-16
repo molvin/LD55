@@ -9,10 +9,12 @@ public class Gem : Draggable
     public class GemColor
     {
         public string Name;
-        public Color Color;
+        public GameObject Prefab;
+        public Material Material;
     }
     public List<GemColor> Colors;
     public MeshRenderer Renderer;
+    public MeshFilter Filter;
 
     public TextMeshProUGUI Description;
     public GameObject TextBackground;
@@ -27,10 +29,14 @@ public class Gem : Draggable
     public void Init(Artifact artifact)
     {
         var col = Colors.Find(c => c.Name == artifact.Name);
-        Color color = col == null ? Color.black : col.Color;
-        Renderer.material = Instantiate(Renderer.material);
-        Renderer.material.color = color;
-
+        //Filter.mesh = col.Mesh;
+        //Renderer.material = Instantiate(col.Material);
+        Destroy(transform.GetChild(0).gameObject);
+        var go = Instantiate(col.Prefab, transform);
+        go.transform.localScale = Vector3.one * 10;
+        go.GetComponent<MeshRenderer>().material = col.Material;
+        Collider = go.GetComponentInChildren<MeshCollider>();
+        Collider.convex = true;
         Artifact = artifact;
 
         Description.text = $"{artifact.Name}: {artifact.Text}";

@@ -904,6 +904,14 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 8719266063352163306, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: m_Size.x
+      value: 4.41786
+      objectReference: {fileID: 0}
+    - target: {fileID: 8719266063352163306, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: m_Center.x
+      value: 0.017003179
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -922,7 +930,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: UseStarters
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: BaseDeck.Array.data[2].Index
@@ -930,7 +938,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1181616254195016193, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: BaseDeck.Array.data[3].Index
-      value: 58
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 4183897307495662369, guid: 9d420a85165a5c542879aa4fd5f944b7, type: 3}
       propertyPath: m_LocalPosition.x
