@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 18595363}
   - component: {fileID: 18595362}
   - component: {fileID: 18595365}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: WordRing_outer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 356148169}
   - component: {fileID: 356148171}
   - component: {fileID: 356148170}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Pentagram
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,7 +297,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 359522278}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: t
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,7 +337,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 435068822}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Backgorund
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5357,7 +5357,7 @@ GameObject:
   - component: {fileID: 529090090}
   - component: {fileID: 529090092}
   - component: {fileID: 529090091}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5432,7 +5432,7 @@ GameObject:
   - component: {fileID: 697992064}
   - component: {fileID: 697992063}
   - component: {fileID: 697992062}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: WordRing_inne
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5507,7 +5507,7 @@ GameObject:
   - component: {fileID: 732316283}
   - component: {fileID: 732316285}
   - component: {fileID: 732316284}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5717,7 +5717,7 @@ GameObject:
   - component: {fileID: 829889786}
   - component: {fileID: 829889785}
   - component: {fileID: 829889784}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5926,8 +5926,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: b1a581cdcbc3eae4bb45615b358310de, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -5955,7 +5955,7 @@ GameObject:
   - component: {fileID: 944092313}
   - component: {fileID: 944092315}
   - component: {fileID: 944092314}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Image (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6028,7 +6028,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1021248525}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: UIMEnu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6067,7 +6067,7 @@ GameObject:
   - component: {fileID: 1117386244}
   - component: {fileID: 1117386246}
   - component: {fileID: 1117386245}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Image (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6142,7 +6142,7 @@ GameObject:
   - component: {fileID: 1561291577}
   - component: {fileID: 1561291579}
   - component: {fileID: 1561291578}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6552,7 +6552,7 @@ GameObject:
   - component: {fileID: 1849362895}
   - component: {fileID: 1849362897}
   - component: {fileID: 1849362896}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Image (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

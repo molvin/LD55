@@ -407,7 +407,13 @@ public class Player : MonoBehaviour
     {
         bool challenge = PlayerPrefs.GetInt("challenge") > 0;
 
-        if(UseStarters && !challenge)
+        var mover = FindObjectOfType<DemonMover>();
+        if (mover)
+        {
+            mover.SetDemonPosition(0);
+        }
+
+        if (UseStarters && !challenge)
         {
             deckRef = new();
             var runes = Runes.GetAllRunes(r => r.Rarity == Rarity.Starter);
@@ -489,18 +495,11 @@ public class Player : MonoBehaviour
 
                 var events = Activate(i);
 
-                StartCoroutine(runeBoard.ActivateLight(i, true));
                 yield return runeBoard.BeginResolve(i);
                 yield return runeBoard.Resolve(i, events);
                 yield return runeBoard.FinishResolve(i, circlePower);
             }
 
-            for (int i = 0; i < circle.Count; i++)
-            {
-                StartCoroutine(runeBoard.ActivateLight(i, false));
-            }
-
-            Debug.Log($"DEALING DAMAGE: {circlePower}");
             int prevHealth = opponentHealth;
             opponentHealth -= circlePower;
 
@@ -530,7 +529,15 @@ public class Player : MonoBehaviour
                     yield return FindObjectOfType<HandVisualizer>().ViewSelf(health, true);
                 }
                 currentRound++;
-                
+
+                var mover = FindObjectOfType<DemonMover>();
+                if (mover)
+                {
+                    mover.SetDemonPosition(currentRound / Settings.Rounds);
+                }
+            
+
+
                 Debug.Log("You defeated opponent!");
                 yield return new WaitForSeconds(1.0f);
 
@@ -553,7 +560,6 @@ public class Player : MonoBehaviour
             {
                 int damage = Settings.GetOpponentDamage(set);
                 Health -= damage;
-                Debug.Log($"TAKING DAMAGE: {damage}");
 
                 if (damage >= 1) 
                     yield return FindObjectOfType<HandVisualizer>().ViewSelf(health, false);
@@ -567,12 +573,10 @@ public class Player : MonoBehaviour
 
         if(win)
         {
-            Debug.Log("You win");
             SceneManager.LoadScene(2);
         }
         else
         {
-            Debug.Log("You lose");
             runeBoard.CameraAnim.SetTrigger("Die");
             yield return new WaitForSeconds(3.0f);
             yield return HUD.Instance.FadeToBlack(1f);

@@ -51,7 +51,6 @@ public class RuneBoard : MonoBehaviour
 
 
     private RuneSlot[] slots;
-    private List<GameObject> slotLights = new();
     private List<RuneVisuals> runes = new();
     private List<Draggable> shopObjects = new();
     private Draggable held;
@@ -106,18 +105,6 @@ public class RuneBoard : MonoBehaviour
             slots[i] = Instantiate(SlotPrefab, PentagramOrigin.position, PentagramOrigin.localRotation);
             slots[i].transform.parent = PentagramObject.transform;
             slots[i].transform.localRotation = Quaternion.Euler(0, 36 + 72 * (i + 2), 0);
-
-            GameObject go = new GameObject();
-            go.transform.parent = PentagramObject.transform;
-            go.transform.localPosition = Vector3.zero;
-            go.transform.position += slots[i].transform.localRotation * Vector3.forward * 0.4f;
-            Light light = go.AddComponent<Light>();
-            light.color = Color.red;
-            light.intensity = 0.4f;
-            light.bounceIntensity = 0.0f;
-            light.range = 1.8f;
-            go.SetActive(false);
-            slotLights.Add(go);
         }
 
         runes = FindObjectsOfType<RuneVisuals>().ToList();
@@ -134,37 +121,6 @@ public class RuneBoard : MonoBehaviour
 
         audioman = FindObjectOfType<Audioman>();
         handVisualizer = FindObjectOfType<HandVisualizer>();
-    }
-
-    public IEnumerator ActivateLight(int index, bool turnOn)
-    {
-        if (turnOn)
-        {
-            slotLights[index].SetActive(true);
-
-            Light light = slotLights[index].GetComponent<Light>(); ;
-            float intensity = light.intensity;
-            light.intensity = 0.0f;
-            while (light.intensity < intensity)
-            {
-                light.intensity += Time.deltaTime;
-                yield return new WaitForEndOfFrame();
-            }
-            light.intensity = intensity;
-        }
-        else
-        {
-            Light light = slotLights[index].GetComponent<Light>(); ;
-            float intensity = light.intensity;
-            while (intensity > 0.0f)
-            {
-                light.intensity -= Time.deltaTime * 2.0f;
-                light.intensity = Mathf.Clamp(light.intensity, 0.0f, intensity);
-                yield return new WaitForEndOfFrame();
-            }
-            light.intensity = intensity;
-            slotLights[index].SetActive(false);
-        }
     }
 
     private void Update()
