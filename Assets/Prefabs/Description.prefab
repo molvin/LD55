@@ -167,7 +167,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Text goes here
+  m_text: Place at the bottom of the pentagram to start your summoning ritual
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 29f74adf67b66f048b18f840ab8c262f, type: 2}
   m_sharedMaterial: {fileID: 5138676112005005436, guid: 29f74adf67b66f048b18f840ab8c262f, type: 2}
@@ -194,7 +194,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.95
+  m_fontSize: 0.45
   m_fontSizeBase: 0.05
   m_fontWeight: 400
   m_enableAutoSizing: 1
