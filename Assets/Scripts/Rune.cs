@@ -86,6 +86,8 @@ public class Rune : ICloneable
     public string Text;
     public int StartCount = 1;
 
+    public List<string> StuffToExplain;
+
     public EventTrigger OnEnter;
     public EventTrigger OnActivate;
     public EventTrigger OnDestroy;
