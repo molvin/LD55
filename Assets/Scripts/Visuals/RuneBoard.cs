@@ -1076,14 +1076,14 @@ public class RuneBoard : MonoBehaviour
         }
         {
             bool healRune = Random.value > 0.3f;
-            Rune rune = healRune ? Runes.GetRestore() : randomRuneShop[RandomRuneSlots.Length - 2];
+            Rune rune = healRune ? Runes.GetRestore() : randomRuneShop[randomRuneShop.Count - 2];
             RuneVisuals vis = Instantiate(RunePrefab, HealSlot.position, Quaternion.identity);
             vis.Init(rune, Player.Instance);
             shopObjects.Add(vis);
         }
         {
             bool sellRune = Random.value > 0.3f;
-            Rune rune = sellRune ? Runes.GetPrune() : randomRuneShop[RandomRuneSlots.Length - 1];
+            Rune rune = sellRune ? Runes.GetPrune() : randomRuneShop[randomRuneShop.Count - 1];
             RuneVisuals vis = Instantiate(RunePrefab, SellSlot.position, Quaternion.identity);
             vis.Init(rune, Player.Instance);
             shopObjects.Add(vis);
