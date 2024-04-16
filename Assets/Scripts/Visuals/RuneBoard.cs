@@ -199,7 +199,7 @@ public class RuneBoard : MonoBehaviour
 
     public IEnumerator Tutorial()
     {
-        ScrollAnimation.Play("OpenScrollStar");
+        ScrollAnimation.Play("OpenScrollTutorial");
         while (ScrollAnimation.isPlaying)
             yield return null;
 
