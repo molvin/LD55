@@ -1216,7 +1216,7 @@ public class RuneBoard : MonoBehaviour
             {
                 RuneVisuals vis = shopRunes[i];
                 Transform target = CameraController.Instance.ShopPoint;
-                Quaternion targetRot = Quaternion.Euler(0, 36 + 72 * i, 0);
+                Quaternion targetRot = target.rotation * Quaternion.Euler(0, 36 + 72 * i, 0);
                 vis.transform.position = Vector3.Lerp(origin, target.position, t / duration);
                 vis.transform.rotation = Quaternion.Slerp(Quaternion.identity, targetRot, t / duration);
             }
