@@ -10,5 +10,6 @@ public class DemonMover : MonoBehaviour
     public void SetDemonPosition(float amount)
     {
         gameObject.transform.position = Vector3.Lerp(Start.position, End.position, amount);
+        Debug.Log("Set progress " + amount);
     }
 }

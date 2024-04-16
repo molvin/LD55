@@ -533,7 +533,7 @@ public class Player : MonoBehaviour
                 var mover = FindObjectOfType<DemonMover>();
                 if (mover)
                 {
-                    mover.SetDemonPosition(currentRound / Settings.Rounds);
+                    mover.SetDemonPosition(currentRound / (float)Settings.Rounds);
                 }
             
 
