@@ -38,8 +38,7 @@ public class Gem : Draggable
         Collider = go.GetComponentInChildren<MeshCollider>();
         Collider.convex = true;
         Artifact = artifact;
-
-        Description.text = $"{artifact.Name}: {artifact.Text}";
+        Description.text = $"{artifact.Text}";
     }
 
     public void ToggleText(bool on)
