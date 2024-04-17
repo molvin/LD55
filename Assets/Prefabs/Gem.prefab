@@ -259,6 +259,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1904933211172687940}
     m_Modifications:
+    - target: {fileID: 2457078151675744449, guid: 82ab22d10b7180146b37b4d95b049f53, type: 3}
+      propertyPath: m_text
+      value: Place at the bottom of the pentagram to start your summoning ritual
+      objectReference: {fileID: 0}
+    - target: {fileID: 2457078151675744449, guid: 82ab22d10b7180146b37b4d95b049f53, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: a6eb7114a2666d2428a3dd81b58a2d28, type: 2}
+    - target: {fileID: 2457078151675744449, guid: 82ab22d10b7180146b37b4d95b049f53, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 8401878204526361635, guid: a6eb7114a2666d2428a3dd81b58a2d28, type: 2}
+    - target: {fileID: 2457078151675744449, guid: 82ab22d10b7180146b37b4d95b049f53, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2799705598186617922, guid: 82ab22d10b7180146b37b4d95b049f53, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
