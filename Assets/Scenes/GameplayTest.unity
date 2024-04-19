@@ -720,7 +720,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2101851200
 Transform:
   m_ObjectHideFlags: 0
@@ -833,6 +833,10 @@ PrefabInstance:
       propertyPath: CameraAnim
       value: 
       objectReference: {fileID: 1768783344}
+    - target: {fileID: 800811488055798456, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
+      propertyPath: SlotPrefab
+      value: 
+      objectReference: {fileID: 5706262028073016692, guid: 9fc2c07272829154cbe0c6a6a4837280, type: 3}
     - target: {fileID: 2188590060883278622, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_Name
       value: RuneBoard
@@ -847,15 +851,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4877429254916452391, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9921159
+      value: 0.99824136
       objectReference: {fileID: 0}
     - target: {fileID: 4877429254916452391, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.12532341
+      value: -0.059280295
       objectReference: {fileID: 0}
     - target: {fileID: 4877429254916452391, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -14.399
+      value: -6.797
       objectReference: {fileID: 0}
     - target: {fileID: 5581613003847380475, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_Intensity
@@ -907,11 +911,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7193271541832913879, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.85
+      value: 2.03
       objectReference: {fileID: 0}
     - target: {fileID: 7193271541832913879, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1
+      value: -0.48
       objectReference: {fileID: 0}
     - target: {fileID: 7352335244305582981, guid: 2a6d4bf2d45f35441baacd3fa51adc67, type: 3}
       propertyPath: m_LocalPosition.x
