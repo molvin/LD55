@@ -1678,15 +1678,18 @@ public static class Runes
         {
             List<EventHistory> history = new List<EventHistory> { EventHistory.Discard(player.GetRunesInHand()) };
             player.DiscardHand();
+            List<Rune> drawn = new();
             List<Rune> allRunes = GetAllRunes();
-            Rune[] newRunes = Enumerable.Range(0, 5).Select((e) =>
+            for (int i = 0; i < 5; i++)
             {
-                Rune r = allRunes[UnityEngine.Random.Range(0, allRunes.Count)];
+                int index = UnityEngine.Random.Range(0, allRunes.Count);
+                Rune r = allRunes[index];
                 r.Token = true;
                 player.AddNewRuneToHand(r);
-                return r;
-            }).ToArray();
-            history.Add(EventHistory.Draw(newRunes));
+                allRunes.RemoveAt(index);
+                drawn.Add(r);
+            }
+            history.Add(EventHistory.Draw(drawn.ToArray()));
             return history;
         }
     };
